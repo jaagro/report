@@ -6,8 +6,18 @@ import com.jaagro.report.api.dto.ReportTaskDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisStringCommands;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static com.jaagro.report.biz.config.RabbitMqConfig.TOPIC_EXCHANGE;
 
@@ -23,14 +33,24 @@ public class ReportTaskService {
 
     @Autowired
     private AmqpTemplate amqpTemplate;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    private SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
+    private static final long EXPIRE = 24L;
 
     /**
      * 将司机日报表任务塞入mq队列
      */
     @Scheduled(cron = "0 0 1 * * ?")
     public void driverDailyReportTaskToQueue() {
-        log.info("S driverDailyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.DRIVER, ReportDateType.DAILY);
-        putToQueue(new ReportTaskDto(ReportTaskType.DRIVER, ReportDateType.DAILY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.DRIVER, ReportDateType.DAILY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S driverDailyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.DRIVER, ReportDateType.DAILY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -38,8 +58,12 @@ public class ReportTaskService {
      */
     @Scheduled(cron = "0 30 1 * * ?")
     public void driverMonthlyReportTaskToQueue() {
-        log.info("S driverMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.DRIVER, ReportDateType.MONTHLY);
-        putToQueue(new ReportTaskDto(ReportTaskType.DRIVER, ReportDateType.MONTHLY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.DRIVER, ReportDateType.MONTHLY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S driverMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.DRIVER, ReportDateType.MONTHLY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -47,8 +71,12 @@ public class ReportTaskService {
      */
     @Scheduled(cron = "0 0 2 * * ?")
     public void customerDailyReportTaskToQueue() {
-        log.info("S-customerDailyReportTaskToQueue-[reportTaskType={},reportDateType={}]", ReportTaskType.CUSTOMER, ReportDateType.DAILY);
-        putToQueue(new ReportTaskDto(ReportTaskType.CUSTOMER, ReportDateType.DAILY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.CUSTOMER, ReportDateType.DAILY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S-customerDailyReportTaskToQueue-[reportTaskType={},reportDateType={}]", ReportTaskType.CUSTOMER, ReportDateType.DAILY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -56,8 +84,12 @@ public class ReportTaskService {
      */
     @Scheduled(cron = "0 30 2 * * ?")
     public void customerMonthlyReportTaskToQueue() {
-        log.info("S customerMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.CUSTOMER, ReportDateType.MONTHLY);
-        putToQueue(new ReportTaskDto(ReportTaskType.CUSTOMER, ReportDateType.MONTHLY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.CUSTOMER, ReportDateType.MONTHLY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S customerMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.CUSTOMER, ReportDateType.MONTHLY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -65,8 +97,12 @@ public class ReportTaskService {
      */
     @Scheduled(cron = "0 0 3 * * ?")
     public void deptOrderDailyReportTaskToQueue() {
-        log.info("S deptOrderDailyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.ORDER, ReportDateType.DAILY);
-        putToQueue(new ReportTaskDto(ReportTaskType.ORDER, ReportDateType.DAILY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.ORDER, ReportDateType.DAILY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S deptOrderDailyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.ORDER, ReportDateType.DAILY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -75,8 +111,12 @@ public class ReportTaskService {
 
     @Scheduled(cron = "0 30 3 * * ?")
     public void deptOrderMonthlyReportTaskToQueue() {
-        log.info("S deptOrderMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.ORDER, ReportDateType.MONTHLY);
-        putToQueue(new ReportTaskDto(ReportTaskType.ORDER, ReportDateType.MONTHLY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.ORDER, ReportDateType.MONTHLY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S deptOrderMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.ORDER, ReportDateType.MONTHLY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -84,8 +124,12 @@ public class ReportTaskService {
      */
     @Scheduled(cron = "0 0 4 * * ?")
     public void deptWaybillFeeDailyReportTaskToQueue() {
-        log.info("S-deptWaybillFeeDailyReportTaskToQueue-[reportTaskType={},reportDateType={}]", ReportTaskType.WAYBILL_FEE, ReportDateType.DAILY);
-        putToQueue(new ReportTaskDto(ReportTaskType.WAYBILL_FEE, ReportDateType.DAILY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.WAYBILL_FEE, ReportDateType.DAILY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S-deptWaybillFeeDailyReportTaskToQueue-[reportTaskType={},reportDateType={}]", ReportTaskType.WAYBILL_FEE, ReportDateType.DAILY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     /**
@@ -93,12 +137,46 @@ public class ReportTaskService {
      */
     @Scheduled(cron = "0 30 4 * * ?")
     public void deptWaybillFeeMonthlyReportTaskToQueue() {
-        log.info("S deptWaybillFeeMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.WAYBILL_FEE, ReportDateType.MONTHLY);
-        putToQueue(new ReportTaskDto(ReportTaskType.WAYBILL_FEE, ReportDateType.MONTHLY));
+        ReportTaskDto reportTaskDto = new ReportTaskDto(ReportTaskType.WAYBILL_FEE, ReportDateType.MONTHLY);
+        String redisKey = reportTaskDto.toString() + day.format(new Date());
+        if (setIfAbsentAndExpire(redisKey, day.format(new Date()), EXPIRE)) {
+            log.info("S deptWaybillFeeMonthlyReportTaskToQueue [reportTaskType={},reportDateType={}]", ReportTaskType.WAYBILL_FEE, ReportDateType.MONTHLY);
+            putToQueue(reportTaskDto);
+        }
     }
 
     private void putToQueue(ReportTaskDto reportTaskDto) {
         amqpTemplate.convertAndSend(TOPIC_EXCHANGE, "report.send", reportTaskDto);
     }
 
+    @Deprecated
+    private boolean setIfAbsentAndExpireAtomic(String redisKey, String value, long expire) {
+        try {
+            Boolean result = (Boolean) redisTemplate.execute((RedisCallback<Boolean>) connection -> {
+                byte[] redisKeyBytes = redisTemplate.getKeySerializer().serialize(redisKey);
+                byte[] valueBytes = redisTemplate.getValueSerializer().serialize(value);
+                Expiration expiration = Expiration.from(expire, TimeUnit.HOURS);
+                connection.set(redisKeyBytes, valueBytes, expiration, RedisStringCommands.SetOption.SET_IF_ABSENT);
+                return true;
+            });
+            return result != null && result.booleanValue();
+        } catch (Exception ex) {
+            log.error(String.format("setIfAbsentAndExpire error redisKey=%s,value=%s,expire=%s", redisKey, value, expire), ex);
+            return false;
+        }
+    }
+
+    private boolean setIfAbsentAndExpire(String redisKey, String value, long expire) {
+        try {
+            ValueOperations<String, String> opsForValue = stringRedisTemplate.opsForValue();
+            if (opsForValue.setIfAbsent(redisKey, value)) {
+                stringRedisTemplate.expire(redisKey, expire, TimeUnit.HOURS);
+                return true;
+            }
+            return false;
+        } catch (Exception ex) {
+            log.error(String.format("setIfAbsentAndExpire error redisKey=%s,value=%s,expire=%s", redisKey, value, expire), ex);
+            return false;
+        }
+    }
 }
