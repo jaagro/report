@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class CustomerOrderMonthly implements Serializable {
+    private static final long serialVersionUID = 5151173432441305731L;
     /**
      * 客户报表id
      */

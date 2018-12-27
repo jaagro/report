@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Data
 @Accessors(chain = true)
 public class ListDriverReportCriteriaDto implements Serializable{
+    private static final long serialVersionUID = 4543210007780811672L;
     /**
      * 日期(yyyy-mm-dd)/月份(yyyy-mm)
      */

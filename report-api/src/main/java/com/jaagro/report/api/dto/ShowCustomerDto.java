@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class ShowCustomerDto implements Serializable {
 
+    private static final long serialVersionUID = 4109223964021226162L;
     private Integer id;
 
     /**

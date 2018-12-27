@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class DeptOrderDaily implements Serializable {
+    private static final long serialVersionUID = -425018666156406603L;
     /**
      * 订单数据报表id
      */

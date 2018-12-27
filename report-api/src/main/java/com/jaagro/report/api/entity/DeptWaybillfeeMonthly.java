@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class DeptWaybillfeeMonthly implements Serializable {
+    private static final long serialVersionUID = 661765094210198137L;
     /**
      * 运单费用报表id
      */

@@ -13,6 +13,7 @@ import java.util.Date;
 @Accessors(chain = true)
 public class UserLoginDto implements Serializable {
 
+    private static final long serialVersionUID = -5825913133238251423L;
     /**
      *
      */

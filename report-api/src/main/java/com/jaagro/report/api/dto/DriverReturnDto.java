@@ -12,6 +12,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class DriverReturnDto implements Serializable {
+    private static final long serialVersionUID = -1804606594302460103L;
     /**
      * 主键司机ID
      */

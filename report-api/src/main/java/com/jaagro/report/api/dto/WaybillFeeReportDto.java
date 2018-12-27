@@ -3,6 +3,7 @@ package com.jaagro.report.api.dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,8 +11,9 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class WaybillFeeReportDto {
+public class WaybillFeeReportDto implements Serializable{
 
+    private static final long serialVersionUID = 3245571704528676047L;
     /**
      * 日期(yyyy-mm-dd)
      */

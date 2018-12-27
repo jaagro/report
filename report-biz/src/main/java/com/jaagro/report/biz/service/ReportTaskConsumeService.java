@@ -39,7 +39,7 @@ public class ReportTaskConsumeService {
 
     @RabbitListener(queues = RabbitMqConfig.REPORT_SEND_QUEUE)
     private void consumeTask(ReportTaskDto reportTaskDto) {
-        log.info("S consumeTask reportTaskDt0={}", reportTaskDto);
+        log.info("S consumeTask reportTaskDto={}", reportTaskDto);
         SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
         long begin = System.currentTimeMillis();
@@ -82,6 +82,6 @@ public class ReportTaskConsumeService {
             }
         }
         long end = System.currentTimeMillis();
-        log.info("S consumeTask [useTime={},reportTaskDt0={}]", (end - begin), reportTaskDto);
+        log.info("S consumeTask [useTime={},reportTaskDto={}]", (end - begin), reportTaskDto);
     }
 }

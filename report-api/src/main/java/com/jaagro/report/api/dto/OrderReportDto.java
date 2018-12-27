@@ -6,10 +6,14 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author gavin
+ */
 @Data
 @Accessors(chain = true)
 public class OrderReportDto implements Serializable {
 
+    private static final long serialVersionUID = -1431081176841942323L;
     /**
      * 日期(yyyy-mm-dd)
      */
