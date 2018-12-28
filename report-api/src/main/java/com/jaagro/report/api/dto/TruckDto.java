@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class TruckDto implements Serializable {
+    private static final long serialVersionUID = -3252584898264436445L;
     /**
      * 主键车辆表ID
      */

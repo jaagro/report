@@ -13,6 +13,7 @@ import java.util.Date;
 @Accessors(chain = true)
 public class UserLoginCriteriaDto implements Serializable {
 
+    private static final long serialVersionUID = 3996987109562972221L;
     /**
      * 登录日期
      */

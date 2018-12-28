@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class DriverOrderDaily implements Serializable {
+    private static final long serialVersionUID = -8687838905177293017L;
     /**
      * 司机报表id
      */

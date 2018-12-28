@@ -13,6 +13,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class ListCustomerReportCriteriaDto implements Serializable {
 
+    private static final long serialVersionUID = 6436182678970769680L;
     /**
      * 日期(yyyy-mm-dd)/月份(yyyy-mm)
      */

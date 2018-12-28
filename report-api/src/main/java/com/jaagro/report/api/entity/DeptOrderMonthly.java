@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class DeptOrderMonthly implements Serializable {
+    private static final long serialVersionUID = -1582833980584231258L;
     /**
      * 订单数据报表id
      */

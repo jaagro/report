@@ -89,9 +89,13 @@ public class WaybillFeeReportTaskServiceImpl implements WaybillFeeReportTaskServ
         if (!CollectionUtils.isEmpty(deptWaybillfeeDailies)) {
             List<DepartmentReturnDto> departmentReturnDtos = userClientService.getAllDepartments();
             for (DeptWaybillfeeDaily deptWaybillfeeDaily : deptWaybillfeeDailies) {
-                DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeDaily.getDepartmentId())).collect(Collectors.toList()).get(0);
-                if (null != departmentReturnDto) {
-                    deptWaybillfeeDaily.setDepartmentName(departmentReturnDto.getDepartmentName());
+                if (null == deptWaybillfeeDaily.getDepartmentId()) {
+                    deptWaybillfeeDaily.setDepartmentName("其它");
+                } else {
+                    DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeDaily.getDepartmentId())).collect(Collectors.toList()).get(0);
+                    if (null != departmentReturnDto) {
+                        deptWaybillfeeDaily.setDepartmentName(departmentReturnDto.getDepartmentName());
+                    }
                 }
             }
         }
@@ -116,10 +120,15 @@ public class WaybillFeeReportTaskServiceImpl implements WaybillFeeReportTaskServ
         if (!CollectionUtils.isEmpty(deptWaybillfeeMonthlies)) {
             List<DepartmentReturnDto> departmentReturnDtos = userClientService.getAllDepartments();
             for (DeptWaybillfeeMonthly deptWaybillfeeMonthly : deptWaybillfeeMonthlies) {
-                DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeMonthly.getDepartmentId())).collect(Collectors.toList()).get(0);
-                if (null != departmentReturnDto) {
-                    deptWaybillfeeMonthly.setDepartmentName(deptWaybillfeeMonthly.getDepartmentName());
+                if (null != deptWaybillfeeMonthly.getDepartmentId()) {
+                    DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeMonthly.getDepartmentId())).collect(Collectors.toList()).get(0);
+                    if (null != departmentReturnDto) {
+                        deptWaybillfeeMonthly.setDepartmentName(departmentReturnDto.getDepartmentName());
+                    }
+                } else {
+                    deptWaybillfeeMonthly.setDepartmentName("其它");
                 }
+
             }
         }
         return deptWaybillfeeMonthlies;

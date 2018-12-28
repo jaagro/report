@@ -3,8 +3,10 @@
 <mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillFeeReportMapperExt">
     <select id="listWaybillFeeStatisticsByDay" parameterType="java.lang.String"
             resultType="com.jaagro.report.api.entity.DeptWaybillfeeDaily">
-        SELECT reportTime, departmentId,goodsType,anomalyWaybillQuantity,totalWaybillQuantity, goodsQuantity,
-        goodsWeight,incomeAnomalyFee,expendAnomalyFee,(incomeAnomalyFee - expendAnomalyFee) grossProfit FROM (
+        SELECT reportTime,departmentId,goodsType,ifnull(anomalyWaybillQuantity,0) anomalyWaybillQuantity,
+        ifnull(totalWaybillQuantity,0) totalWaybillQuantity, ifnull(goodsQuantity,0) goodsQuantity,
+        ifnull(goodsWeight,0) goodsWeight,ifnull(incomeAnomalyFee,0) incomeAnomalyFee, ifnull(expendAnomalyFee,0)expendAnomalyFee,
+        ifnull((incomeAnomalyFee - expendAnomalyFee),0) grossProfit FROM (
         SELECT createDate as reportTime,dept departmentId,type goodsType,
         SUM(anomalyTotal) AS anomalyWaybillQuantity,
         SUM(waybillTotal) AS totalWaybillQuantity,
@@ -18,7 +20,7 @@
         FROM(
         SELECT
         date_format(w.create_time, '%Y-%m-%d') AS createDate,
-        w.department_id AS dept,
+        w.network_id  AS dept,
         ods.goods_type AS type,
         COUNT(1) AS waybillTotal
         FROM
@@ -41,12 +43,29 @@
         SUM( CASE WHEN o.goods_type=2 THEN g.unload_weight ELSE 0 END) as FodderWeight,
         SUM( CASE when o.goods_type in(3,4,5,6) THEN g.unload_quantity ELSE 0 END) as pigQuantity,
         date_format(w.modify_time, '%Y-%m-%d') AS createDate,
-        w.department_id AS dept,
+        w.network_id  AS dept,
         CASE WHEN o.goods_type=1 THEN 1 WHEN o.goods_type=2 THEN 2 WHEN o.goods_type IN(3,4,5,6) THEN 3 END AS type
         FROM waybill w
         INNER JOIN orders o on w.order_id=o.id
         INNER JOIN waybill_goods g ON w.id = g.waybill_id
-        WHERE w.waybill_status='已完成' AND w.enabled=1
+        WHERE w.waybill_status='已完成' AND w.enabled=1 AND o.direct_order_flag ='n'
+        <if test="day!=null">
+            AND date_format(w.modify_time, '%Y-%m-%d')=#{day}
+        </if>
+        GROUP BY createDate,dept,type
+        UNION
+        SELECT
+        0 AS chknQuantity,
+        SUM( CASE WHEN o.goods_type=1 THEN g.unload_weight ELSE 0 END) as chknWeight,
+        SUM( CASE WHEN o.goods_type=2 THEN g.unload_weight ELSE 0 END) as FodderWeight,
+        SUM( CASE when o.goods_type in(3,4,5,6) THEN g.unload_quantity ELSE 0 END) as pigQuantity,
+        date_format(w.modify_time, '%Y-%m-%d') AS createDate,
+        w.network_id  AS dept,
+        CASE WHEN o.goods_type=1 THEN 1 WHEN o.goods_type=2 THEN 2 WHEN o.goods_type IN(3,4,5,6) THEN 3 END AS type
+        FROM waybill w
+        INNER JOIN orders o on w.order_id=o.id
+        INNER JOIN waybill_goods g ON w.id = g.waybill_id
+        WHERE w.waybill_status='已完成' AND w.enabled=1 AND w.receipt_status=2 AND o.direct_order_flag='y'
         <if test="day!=null">
             AND date_format(w.modify_time, '%Y-%m-%d')=#{day}
         </if>
@@ -58,7 +77,7 @@
         0 FodderWeight,	-- 2 吨（饲料） 卸货重量
         0 AS pigQuantity,	-- 3 头（猪）   卸货数量
         date_format(o.create_time, '%Y-%m-%d') AS createDate,
-        o.department_id AS dept,
+        o.network_id  AS dept,
         CASE WHEN o.goods_type=1 THEN 1 WHEN o.goods_type=2 THEN 2 WHEN o.goods_type IN(3,4,5,6)  THEN 3 END AS type
         FROM order_goods g LEFT JOIN orders o ON g.order_id=o.id
         WHERE o.order_status!='取消'
@@ -68,25 +87,6 @@
         GROUP BY createDate,dept,type
         ) T_QuatityTotalWeightTotalStatistics GROUP BY createDate,dept,type
 
-        UNION
-        -- 异常单数统计
-        SELECT createDate,dept,CASE WHEN type=1 THEN 1 WHEN type=2 THEN 2 WHEN type IN(3,4,5,6) THEN 3 END AS type,
-        COUNT(1) AS anomalyTotal ,0 AS waybillTotal,0 AS QuatityTotal,0 AS WeightTotal ,0 AS incomeAnomalyFee,0 AS
-        expendAnomalyFee FROM(
-        SELECT DISTINCT
-        date_format(t.create_time, '%Y-%m-%d') AS createDate,
-        w.department_id AS dept,
-        ods.goods_type AS type,
-        t.waybill_id
-        FROM waybill w
-        RIGHT JOIN waybill_anomaly t ON w.id = t.waybill_id
-        INNER JOIN orders ods ON w.order_id = ods.id
-        WHERE w.enabled=1 AND t.processing_status!='已作废' AND w.waybill_status!='已作废'
-        <if test="day!=null">
-            AND date_format(t.create_time, '%Y-%m-%d')=#{day}
-        </if>
-        ) T_AnomalyWaybillStatistics GROUP BY createDate,dept,type
-
         UNION ALL
         -- 异常费用收入
         SELECT createDate,dept,CASE WHEN type=1 THEN 1 WHEN type=2 THEN 2 WHEN type IN(3,4,5,6) THEN 3 END AS type, 0 AS
@@ -94,7 +94,7 @@
         0 AS QuatityTotal,0 AS WeightTotal ,SUM(money) incomeAnomalyFee, 0 AS expendAnomalyFee FROM (
         SELECT DISTINCT
         date_format(wa.audit_time, '%Y-%m-%d') createDate,
-        w.department_id AS dept,
+        w.network_id  AS dept,
         ods.goods_type AS type,
         wa.waybill_id waybillId,
         wfa.adjust_type adjustType,
@@ -110,7 +110,7 @@
         UNION ALL
         SELECT DISTINCT
         date_format(wa.audit_time, '%Y-%m-%d') createDate,
-        w.department_id AS dept,
+        w.network_id  AS dept,
         ods.goods_type AS type,
         wa.waybill_id waybillId,
         wfa.adjust_type adjustType,
@@ -136,7 +136,7 @@
         0 AS QuatityTotal,0 AS WeightTotal,0 AS incomeAnomalyFee,SUM(money) expendAnomalyFee FROM (
         SELECT DISTINCT
         date_format(wa.audit_time, '%Y-%m-%d') createDate,
-        w.department_id AS dept,
+        w.network_id  AS dept,
         ods.goods_type AS type,
         wa.waybill_id waybillId,
         wfa.adjust_type adjustType,
@@ -151,7 +151,7 @@
         UNION ALL
         SELECT DISTINCT
         date_format(wa.audit_time, '%Y-%m-%d') createDate,
-        w.department_id AS dept,
+        w.network_id AS dept,
         ods.goods_type AS type,
         wa.waybill_id waybillId,
         wfa.adjust_type adjustType,
