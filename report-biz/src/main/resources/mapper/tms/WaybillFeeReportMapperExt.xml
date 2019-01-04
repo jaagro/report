@@ -14,6 +14,25 @@
         SUM(WeightTotal) AS goodsWeight,
         SUM(incomeAnomalyFee) AS incomeAnomalyFee,
         SUM(expendAnomalyFee) AS expendAnomalyFee FROM(
+
+        -- 运单异常数
+        SELECT createDate,dept,CASE WHEN type=1 THEN 1 WHEN type=2 THEN 2 WHEN type IN(3,4,5,6) THEN 3 END AS type,
+        COUNT(1) AS anomalyTotal, 0 as waybillTotal,0 AS QuatityTotal,0 AS WeightTotal ,0 AS incomeAnomalyFee,0 AS expendAnomalyFee FROM(
+        SELECT DISTINCT
+        date_format(t.create_time, '%Y-%m-%d') AS createDate,
+        w.network_id AS dept,
+        ods.goods_type AS type,
+        t.waybill_id
+        FROM waybill w
+        RIGHT JOIN waybill_anomaly t ON w.id = t.waybill_id
+        INNER JOIN orders ods ON w.order_id = ods.id
+        WHERE w.enabled=1 AND w.waybill_status!='已作废'
+        <if test="day!=null">
+            AND date_format(t.create_time, '%Y-%m-%d')=#{day}
+        </if>
+        )  T_AnomalyWaybillStatistics  group by createDate,dept,type
+
+        UNION ALL
         -- 运单总数统计
         SELECT createDate,dept,CASE WHEN type=1 THEN 1 WHEN type=2 THEN 2 WHEN type IN(3,4,5,6) THEN 3 END AS type,
         0 AS anomalyTotal,waybillTotal,0 AS QuatityTotal,0 AS WeightTotal ,0 AS incomeAnomalyFee,0 AS expendAnomalyFee
