@@ -1,8 +1,5 @@
 package com.jaagro.report.biz.schedule;
 
-import com.jaagro.report.api.constant.ReportDateType;
-import com.jaagro.report.api.constant.ReportTaskType;
-import com.jaagro.report.api.dto.ReturnDataScreenDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -35,7 +32,7 @@ public class DataScreenService {
     private final Integer valueFinal = 50717;
 
 
-    @Scheduled(cron = "0 0/5 8-19 * * ? *")
+    @Scheduled(cron = "0 */5 * * * ?")
     public Integer doSomething() {
         Integer v;
         String value = redisTemplate.opsForValue().get(key);
