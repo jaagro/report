@@ -32,7 +32,7 @@ public class DataScreenController {
     /**
      * 大屏value的初始值
      */
-    private final Integer valueFinal = 50717;
+    private final Integer valueFinal = 212174;
     /**
      * 毛鸡大屏value的key
      */
