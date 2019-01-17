@@ -1,18 +1,14 @@
 package com.jaagro.report.web.controller;
 
 import com.jaagro.report.api.dto.ReturnDataScreenDto;
-import com.jaagro.report.biz.schedule.DataScreenService;
 import com.jaagro.utils.BaseResponse;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -38,7 +34,7 @@ public class DataScreenController {
     private final Integer valueFinal = 50717;
 
     @GetMapping("/timingGrowthData")
-    public BaseResponse<List<ReturnDataScreenDto>> timingGrowthData() {
+    public List<ReturnDataScreenDto> timingGrowthData() {
         List<ReturnDataScreenDto> dataScreenDtoList = new ArrayList<>();
         ReturnDataScreenDto screenDto = new ReturnDataScreenDto();
         String value = redisTemplate.opsForValue().get(key);
@@ -50,7 +46,7 @@ public class DataScreenController {
             screenDto.setValue(valueFinal);
         }
         dataScreenDtoList.add(screenDto);
-        return BaseResponse.successInstance(dataScreenDtoList);
+        return dataScreenDtoList;
     }
 
 }
