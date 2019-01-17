@@ -36,11 +36,11 @@ public class DataScreenController {
     /**
      * 毛鸡大屏value的key
      */
-    private static final String chickenKey = "毛鸡数据大屏value";
+    private static final String chickenKey = "数据大屏value毛鸡";
     /**
      * 毛鸡大屏value的初始值
      */
-    private final Integer chickenValueFinal = 915751;
+    private final Integer chickenValueFinal = 9157510;
 
     /**
      * 饲料
