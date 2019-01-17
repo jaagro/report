@@ -15,6 +15,6 @@ public class ReturnDataScreenDto implements Serializable {
 
     private String name = "";
 
-    public Integer value = 50717;
+    public Integer value;
 
 }
