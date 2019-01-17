@@ -19,10 +19,9 @@ public class DataScreenService {
 
     Integer value = 50717;
 
-    @Scheduled(cron = "*/5 * * * * ?")
+    @Scheduled(cron = "0 0/5 8-19 * * ? *")
     public Integer doSomething() {
         value = value + 20;
-        log.info("----数据大屏:{}", value);
         return value;
     }
 
