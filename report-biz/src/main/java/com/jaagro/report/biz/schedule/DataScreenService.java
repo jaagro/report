@@ -26,15 +26,15 @@ public class DataScreenService {
     /**
      * 大屏value的key
      */
-    private static final String key = "数据大屏value";
+    private static final String key = "数据大屏饲料value";
     /**
      * 大屏value的初始值
      */
-    private final Integer valueFinal = 50717;
+    private final Integer valueFinal = 212174;
     /**
      * 毛鸡大屏value的key
      */
-    private static final String chickenKey = "数据大屏毛鸡value";
+    private static final String chickenKey = "毛鸡数据大屏value";
     /**
      * 毛鸡大屏value的初始值
      */
@@ -51,10 +51,10 @@ public class DataScreenService {
         String value = redisTemplate.opsForValue().get(key);
         if (!StringUtils.isEmpty(value)) {
             v = Integer.parseInt(value);
-            v = v + new Random().nextInt(12 - 8 + 1) + 8;
+            v = v + new Random().nextInt(40 - 20 + 1) + 20;
             redisTemplate.opsForValue().set(key, v.toString(), 30, TimeUnit.DAYS);
         } else {
-            v = valueFinal + new Random().nextInt(12 - 8 + 1) + 8;
+            v = valueFinal + new Random().nextInt(40 - 20 + 1) + 20;
             redisTemplate.opsForValue().set(key, v.toString(), 30, TimeUnit.DAYS);
         }
         return v;
@@ -71,10 +71,10 @@ public class DataScreenService {
         String value = redisTemplate.opsForValue().get(chickenKey);
         if (!StringUtils.isEmpty(value)) {
             v = Integer.parseInt(value);
-            v = v + new Random().nextInt(450 - 400 + 1) + 400;
+            v = v + new Random().nextInt(4500 - 4000 + 1) + 4000;
             redisTemplate.opsForValue().set(chickenKey, v.toString(), 30, TimeUnit.DAYS);
         } else {
-            v = chickenValueFinal + new Random().nextInt(450 - 400 + 1) + 400;
+            v = chickenValueFinal + new Random().nextInt(4500 - 4000 + 1) + 4000;
             redisTemplate.opsForValue().set(chickenKey, v.toString(), 30, TimeUnit.DAYS);
         }
         return v;
