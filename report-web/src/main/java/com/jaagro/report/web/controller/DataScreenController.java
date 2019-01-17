@@ -3,6 +3,7 @@ package com.jaagro.report.web.controller;
 import com.jaagro.report.api.dto.ReturnDataScreenDto;
 import com.jaagro.utils.BaseResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,7 +33,21 @@ public class DataScreenController {
      * 大屏value的初始值
      */
     private final Integer valueFinal = 50717;
+    /**
+     * 毛鸡大屏value的key
+     */
+    private static final String chickenKey = "数据大屏毛鸡value";
+    /**
+     * 毛鸡大屏value的初始值
+     */
+    private final Integer chickenValueFinal = 915751;
 
+    /**
+     * 饲料
+     *
+     * @return
+     */
+    @ApiOperation(value = "饲料运输总量")
     @GetMapping("/timingGrowthData")
     public List<ReturnDataScreenDto> timingGrowthData() {
         List<ReturnDataScreenDto> dataScreenDtoList = new ArrayList<>();
@@ -49,4 +64,25 @@ public class DataScreenController {
         return dataScreenDtoList;
     }
 
+    /**
+     * 毛鸡
+     *
+     * @return
+     */
+    @ApiOperation(value = "毛鸡运输总量")
+    @GetMapping("/timingGrowthDataChicken")
+    public List<ReturnDataScreenDto> timingGrowthDataChicken() {
+        List<ReturnDataScreenDto> dataScreenDtoList = new ArrayList<>();
+        ReturnDataScreenDto screenDto = new ReturnDataScreenDto();
+        String value = redisTemplate.opsForValue().get(chickenKey);
+        if (!StringUtils.isEmpty(value)) {
+            Integer v;
+            v = Integer.parseInt(value);
+            screenDto.setValue(v);
+        } else {
+            screenDto.setValue(chickenValueFinal);
+        }
+        dataScreenDtoList.add(screenDto);
+        return dataScreenDtoList;
+    }
 }
