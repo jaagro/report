@@ -41,6 +41,14 @@ public class DataScreenController {
      * 毛鸡大屏value的初始值
      */
     private final Integer chickenValueFinal = 9157510;
+    /**
+     * 生猪大屏value的key
+     */
+    private static final String pigKey = "数据大屏value生猪";
+    /**
+     * 生猪大屏value的初始值
+     */
+    private final Integer pigValue = 135470;
 
     /**
      * 饲料
@@ -64,6 +72,7 @@ public class DataScreenController {
         return dataScreenDtoList;
     }
 
+
     /**
      * 毛鸡
      *
@@ -81,6 +90,28 @@ public class DataScreenController {
             screenDto.setValue(v);
         } else {
             screenDto.setValue(chickenValueFinal);
+        }
+        dataScreenDtoList.add(screenDto);
+        return dataScreenDtoList;
+    }
+
+    /**
+     * 生猪
+     *
+     * @return
+     */
+    @ApiOperation(value = "生猪运输总量")
+    @GetMapping("/timingGrowthDataPig")
+    public List<ReturnDataScreenDto> timingGrowthDataPig() {
+        List<ReturnDataScreenDto> dataScreenDtoList = new ArrayList<>();
+        ReturnDataScreenDto screenDto = new ReturnDataScreenDto();
+        String value = redisTemplate.opsForValue().get(pigKey);
+        if (!StringUtils.isEmpty(value)) {
+            Integer v;
+            v = Integer.parseInt(value);
+            screenDto.setValue(v);
+        } else {
+            screenDto.setValue(pigValue);
         }
         dataScreenDtoList.add(screenDto);
         return dataScreenDtoList;

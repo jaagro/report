@@ -24,21 +24,29 @@ public class DataScreenService {
     private StringRedisTemplate redisTemplate;
 
     /**
-     * 大屏value的key
+     * 饲料key
      */
     private static final String key = "数据大屏饲料value";
     /**
-     * 大屏value的初始值
+     * 饲料value
      */
     private final Integer valueFinal = 212174;
     /**
-     * 毛鸡大屏value的key
+     * 毛鸡key
      */
     private static final String chickenKey = "数据大屏value毛鸡";
     /**
-     * 毛鸡大屏value的初始值
+     * 毛鸡value
      */
     private final Integer chickenValueFinal = 9157510;
+    /**
+     * 生猪key
+     */
+    private static final String pigKey = "数据大屏value生猪";
+    /**
+     * 生猪value
+     */
+    private final Integer pigValue = 135470;
 
     /**
      * 饲料总量
@@ -80,4 +88,23 @@ public class DataScreenService {
         return v;
     }
 
+    /**
+     * 生猪总量
+     *
+     * @return
+     */
+    @Scheduled(cron = "0 */10 * * * ?")
+    public Integer doSomethingPig() {
+        Integer v;
+        String value = redisTemplate.opsForValue().get(pigKey);
+        if (!StringUtils.isEmpty(value)) {
+            v = Integer.parseInt(value);
+            v = v + new Random().nextInt(110 - 90 + 1) + 90;
+            redisTemplate.opsForValue().set(pigKey, v.toString(), 30, TimeUnit.DAYS);
+        } else {
+            v = pigValue + new Random().nextInt(110 - 90 + 1) + 90;
+            redisTemplate.opsForValue().set(pigKey, v.toString(), 30, TimeUnit.DAYS);
+        }
+        return v;
+    }
 }
