@@ -35,7 +35,8 @@ public class DataScreenService {
     private final Integer valueFinal = 50717;
 
 
-    @Scheduled(cron = "*/5 * * * * ?")
+    //    @Scheduled(cron = "*/5 * * * * ?")
+    @Scheduled(cron = "0 0/5 8-19 * * ? *")
     public Integer doSomething() {
         Integer v;
         String value = redisTemplate.opsForValue().get(key);
