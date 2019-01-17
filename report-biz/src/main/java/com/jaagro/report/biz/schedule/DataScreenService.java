@@ -35,7 +35,6 @@ public class DataScreenService {
     private final Integer valueFinal = 50717;
 
 
-    //    @Scheduled(cron = "*/5 * * * * ?")
     @Scheduled(cron = "0 0/5 8-19 * * ? *")
     public Integer doSomething() {
         Integer v;
@@ -48,7 +47,6 @@ public class DataScreenService {
             v = valueFinal + 20;
             redisTemplate.opsForValue().set(key, v.toString(), 30, TimeUnit.DAYS);
         }
-        log.info("--大屏value:{}", v);
         return v;
     }
 
