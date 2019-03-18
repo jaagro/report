@@ -174,9 +174,16 @@ public class OrderReportServiceImpl implements OrderReportService {
                 if (StringUtils.isEmpty(deptOrderDaily.getDepartmentId())) {
                     deptOrderDaily.setDepartmentName("其它");
                 } else {
-                    DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptOrderDaily.getDepartmentId())).collect(Collectors.toList()).get(0);
-                    if (null != departmentReturnDto) {
-                        deptOrderDaily.setDepartmentName(departmentReturnDto.getDepartmentName());
+                    List<DepartmentReturnDto> departmentReturnDtoList = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptOrderDaily.getDepartmentId())).collect(Collectors.toList());
+
+                    if (!CollectionUtils.isEmpty(departmentReturnDtoList)) {
+                        DepartmentReturnDto departmentReturnDto = departmentReturnDtoList.get(0);
+                        if(StringUtils.isEmpty(departmentReturnDto.getDepartmentName()))
+                        {
+                            deptOrderDaily.setDepartmentName("其它");
+                        }else {
+                            deptOrderDaily.setDepartmentName(departmentReturnDto.getDepartmentName());
+                        }
                     }
                 }
             }
@@ -202,9 +209,14 @@ public class OrderReportServiceImpl implements OrderReportService {
                 if (StringUtils.isEmpty(deptOrderMonthly.getDepartmentId())) {
                     deptOrderMonthly.setDepartmentName("其它");
                 } else {
-                    DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptOrderMonthly.getDepartmentId())).collect(Collectors.toList()).get(0);
-                    if (null != departmentReturnDto) {
-                        deptOrderMonthly.setDepartmentName(departmentReturnDto.getDepartmentName());
+                    List<DepartmentReturnDto> departmentDtoList = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptOrderMonthly.getDepartmentId())).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(departmentDtoList)) {
+                        DepartmentReturnDto departmentDto = departmentDtoList.get(0);
+                        if (StringUtils.isEmpty(departmentDto.getDepartmentName())) {
+                            deptOrderMonthly.setDepartmentName("其它");
+                        } else {
+                            deptOrderMonthly.setDepartmentName(departmentDto.getDepartmentName());
+                        }
                     }
                 }
             }
