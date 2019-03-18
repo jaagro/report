@@ -92,7 +92,11 @@ public class WaybillFeeReportTaskServiceImpl implements WaybillFeeReportTaskServ
                 if (null == deptWaybillfeeDaily.getDepartmentId()) {
                     deptWaybillfeeDaily.setDepartmentName("其它");
                 } else {
-                    DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeDaily.getDepartmentId())).collect(Collectors.toList()).get(0);
+                    DepartmentReturnDto departmentReturnDto = null;
+                    List<DepartmentReturnDto> collect = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeDaily.getDepartmentId())).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(collect)) {
+                        departmentReturnDto = collect.get(0);
+                    }
                     if (null != departmentReturnDto) {
                         deptWaybillfeeDaily.setDepartmentName(departmentReturnDto.getDepartmentName());
                     }
@@ -121,7 +125,11 @@ public class WaybillFeeReportTaskServiceImpl implements WaybillFeeReportTaskServ
             List<DepartmentReturnDto> departmentReturnDtos = userClientService.getAllDepartments();
             for (DeptWaybillfeeMonthly deptWaybillfeeMonthly : deptWaybillfeeMonthlies) {
                 if (null != deptWaybillfeeMonthly.getDepartmentId()) {
-                    DepartmentReturnDto departmentReturnDto = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeMonthly.getDepartmentId())).collect(Collectors.toList()).get(0);
+                    DepartmentReturnDto departmentReturnDto = null;
+                    List<DepartmentReturnDto> collect = departmentReturnDtos.stream().filter(c -> c.getId().equals(deptWaybillfeeMonthly.getDepartmentId())).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(collect)) {
+                        departmentReturnDto = collect.get(0);
+                    }
                     if (null != departmentReturnDto) {
                         deptWaybillfeeMonthly.setDepartmentName(departmentReturnDto.getDepartmentName());
                     }
