@@ -97,7 +97,7 @@ public class WaybillFeeReportTaskServiceImpl implements WaybillFeeReportTaskServ
                     if (!CollectionUtils.isEmpty(collect)) {
                         departmentReturnDto = collect.get(0);
                     }
-                    if (null != departmentReturnDto) {
+                    if (null != departmentReturnDto && departmentReturnDto.getDepartmentName() != null) {
                         deptWaybillfeeDaily.setDepartmentName(departmentReturnDto.getDepartmentName());
                     }
                 }
@@ -130,7 +130,7 @@ public class WaybillFeeReportTaskServiceImpl implements WaybillFeeReportTaskServ
                     if (!CollectionUtils.isEmpty(collect)) {
                         departmentReturnDto = collect.get(0);
                     }
-                    if (null != departmentReturnDto) {
+                    if (null != departmentReturnDto && departmentReturnDto.getDepartmentName() != null) {
                         deptWaybillfeeMonthly.setDepartmentName(departmentReturnDto.getDepartmentName());
                     }
                 } else {
