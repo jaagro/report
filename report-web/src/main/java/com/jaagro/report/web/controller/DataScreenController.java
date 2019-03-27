@@ -1,7 +1,6 @@
 package com.jaagro.report.web.controller;
 
 import com.jaagro.report.api.dto.ReturnDataScreenDto;
-import com.jaagro.utils.BaseResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -116,4 +115,5 @@ public class DataScreenController {
         dataScreenDtoList.add(screenDto);
         return dataScreenDtoList;
     }
+
 }
