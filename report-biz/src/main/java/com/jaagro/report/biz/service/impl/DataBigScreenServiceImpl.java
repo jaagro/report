@@ -116,15 +116,18 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         try {
             if (currentMonth >= 1 && currentMonth <= 3) {
                 c.set(Calendar.MONTH, 0);
+                c.set(Calendar.DATE, 1);
             } else if (currentMonth >= 4 && currentMonth <= 6) {
                 c.set(Calendar.MONTH, 3);
+                c.set(Calendar.DATE, 1);
             } else if (currentMonth >= 7 && currentMonth <= 9) {
-                c.set(Calendar.MONTH, 4);
+                c.set(Calendar.MONTH, 6);
+                c.set(Calendar.DATE, 1);
             } else if (currentMonth >= 10 && currentMonth <= 12) {
                 c.set(Calendar.MONTH, 9);
                 c.set(Calendar.DATE, 1);
-                now = longSdf.parse(shortSdf.format(c.getTime()) + " 00:00:00");
             }
+            now = longSdf.parse(shortSdf.format(c.getTime()) + " 00:00:00");
         } catch (Exception e) {
             e.printStackTrace();
         }
