@@ -1,9 +1,6 @@
 package com.jaagro.report.biz.service.impl;
 
-import com.jaagro.report.api.dto.ContributionTopTenCustomerDto;
-import com.jaagro.report.api.dto.ListHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterCriteriaDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterDto;
+import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.service.DataBigScreenService;
 import com.jaagro.report.biz.mapper.report.CustomerOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeDailyMapperExt;
@@ -17,10 +14,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author baiyiran
@@ -58,6 +52,78 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                 .setGoodsType(productType)
                 .setStartDate(getCurrentQuarterStartTime())
                 .setEndDate(getCurrentQuarterEndTime());
+        //大区id集合
+        List<Integer> departmentIds = userClientService.listRegionDepartmentIds();
+
+        //最终结果
+        List<ListWaybillQuarterDto> resultList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(departmentIds)) {
+            for (Integer id : departmentIds) {
+                ListWaybillQuarterDto quarterDto = new ListWaybillQuarterDto();
+                criteriaDto.setDeptIds(userClientService.getDownDepartmentByDeptId(id));
+                Long aLong = deptWaybillfeeMonthlyMapper.listQuarterWaybill(criteriaDto);
+                if (aLong != null && aLong > 0) {
+                    quarterDto
+                            .setType(userClientService.getDeptNameById(id))
+                            .setValue(aLong);
+                    resultList.add(quarterDto);
+                }
+
+            }
+        }
+        if (!CollectionUtils.isEmpty(resultList)) {
+            Collections.sort(resultList, Comparator.comparingLong(ListWaybillQuarterDto::getValue));
+        }
+        return resultList;
+
+    }
+
+    /**
+     * 大区历史运单汇总
+     *
+     * @return
+     */
+    @Override
+    public List<ListHistoryWaybillDto> listHistoryWaybill() {
+        //大区id集合
+        List<Integer> departmentIds = userClientService.listRegionDepartmentIds();
+
+        //最终结果
+        List<ListHistoryWaybillDto> waybillDtoList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(departmentIds)) {
+            for (Integer id : departmentIds) {
+                ListWaybillQuarterCriteriaDto criteriaDto = new ListWaybillQuarterCriteriaDto();
+                criteriaDto.setDeptIds(userClientService.getDownDepartmentByDeptId(id));
+                List<ListHistoryWaybillDto> historyWaybill = deptWaybillfeeMonthlyMapper.listHistoryWaybill(criteriaDto);
+                if (!CollectionUtils.isEmpty(historyWaybill)) {
+                    for (ListHistoryWaybillDto dto : waybillDtoList) {
+                        if (!StringUtils.isEmpty(dto.getDepartmentId())) {
+                            dto.setX(userClientService.getDeptNameById(dto.getDepartmentId()));
+                        }
+                    }
+                }
+                waybillDtoList.addAll(historyWaybill);
+            }
+        }
+        if (!CollectionUtils.isEmpty(waybillDtoList)) {
+            Collections.sort(waybillDtoList, Comparator.comparing(ListHistoryWaybillDto::getY));
+        }
+        return waybillDtoList;
+    }
+
+    /**
+     * 项目部历史运单汇总
+     *
+     * @param productType
+     * @return
+     */
+    @Override
+    public List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(Integer productType) {
+        ListWaybillQuarterCriteriaDto criteriaDto = new ListWaybillQuarterCriteriaDto();
+        criteriaDto.setGoodsType(productType);
+        //大区id集合
         List<Integer> departmentIds = userClientService.listRegionDepartmentIds();
         List<Integer> deptIds = new ArrayList<>();
         if (!CollectionUtils.isEmpty(departmentIds)) {
@@ -71,35 +137,21 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                 criteriaDto.setDeptIds(deptIds);
             }
         }
-        List<ListWaybillQuarterDto> waybillQuarterDtoList = deptWaybillfeeMonthlyMapper.listQuarterWaybill(criteriaDto);
-        if (!CollectionUtils.isEmpty(waybillQuarterDtoList)) {
-            for (ListWaybillQuarterDto quarterDto : waybillQuarterDtoList) {
-                if (!StringUtils.isEmpty(quarterDto.getDepartmentId())) {
-                    quarterDto.setType(userClientService.getDeptNameById(quarterDto.getDepartmentId()));
-                }
-            }
-
-        }
-        return waybillQuarterDtoList;
-
-    }
-
-    /**
-     * 历史运单汇总
-     *
-     * @return
-     */
-    @Override
-    public List<ListHistoryWaybillDto> listHistoryWaybill() {
-        List<ListHistoryWaybillDto> waybillDtoList = deptWaybillfeeMonthlyMapper.listHistoryWaybill();
+        //最终结果
+        List<ListDeptHistoryWaybillDto> resultList = new ArrayList<>();
+        List<ListDeptHistoryWaybillDto> waybillDtoList = deptWaybillfeeMonthlyMapper.listHistoryWaybillByDept(criteriaDto);
         if (!CollectionUtils.isEmpty(waybillDtoList)) {
-            for (ListHistoryWaybillDto dto : waybillDtoList) {
+            for (ListDeptHistoryWaybillDto dto : waybillDtoList) {
                 if (!StringUtils.isEmpty(dto.getDepartmentId())) {
                     dto.setX(userClientService.getDeptNameById(dto.getDepartmentId()));
                 }
             }
+            resultList.addAll(waybillDtoList);
         }
-        return waybillDtoList;
+        if (!CollectionUtils.isEmpty(resultList)) {
+            Collections.sort(resultList, Comparator.comparingLong(ListDeptHistoryWaybillDto::getY));
+        }
+        return resultList;
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.jaagro.report.web.controller;
 
-import com.jaagro.report.api.dto.ContributionTopTenCustomerDto;
-import com.jaagro.report.api.dto.ListHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterDto;
-import com.jaagro.report.api.dto.ReturnDataScreenDto;
+import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.service.DataBigScreenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,10 +55,22 @@ public class DataBigScreenController {
      *
      * @return
      */
-    @ApiOperation(value = "历史运单汇总")
-    @GetMapping("/listHistoryWaybill")
-    public List<ListHistoryWaybillDto> listHistoryWaybill() {
+    @ApiOperation(value = "大区历史运单汇总")
+    @GetMapping("/listHistoryWaybillByNetwork")
+    public List<ListHistoryWaybillDto> listHistoryWaybillByNetwork() {
         return dataBigScreenService.listHistoryWaybill();
+    }
+
+
+    /**
+     * 历史运单汇总
+     *
+     * @return
+     */
+    @ApiOperation(value = "项目部历史运单汇总")
+    @GetMapping("/listHistoryWaybillByDept")
+    public List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(@RequestParam Integer productType) {
+        return dataBigScreenService.listHistoryWaybillByDept(productType);
     }
 
 
