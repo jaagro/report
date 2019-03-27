@@ -169,7 +169,8 @@
         order by TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)
     </select>
     <select id="listBlackBoardData" resultType="com.jaagro.report.api.dto.RedBlackBoardDto">
-        select dr.name as driver, xmb.daqu as department, xmb.xiangmubu as network,, wt1.create_time as sendTime, wt2.create_time as receiveTime,
+        select dr.name as driver, xmb.daqu as department, xmb.xiangmubu as network,
+               wt1.create_time as sendTime, wt2.create_time as receiveTime,
                TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)   as receiveDate
             from
                ( select waybill_id, driver_id,  max(create_time) create_time
