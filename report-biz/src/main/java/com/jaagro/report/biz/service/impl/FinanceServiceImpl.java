@@ -60,8 +60,8 @@ public class FinanceServiceImpl implements FinanceService {
         }
         CustomerBaseInfoDto dto = new CustomerBaseInfoDto();
         Integer customerType = customerReturnDto.getCustomerType();
-        dto.setCustomerId(dto.getCustomerId())
-                .setCustomerName(dto.getCustomerName())
+        dto.setCustomerId(customerReturnDto.getId())
+                .setCustomerName(customerReturnDto.getCustomerName())
                 .setCustomerType(CustomerTypeEnum.getDescByCode(customerType))
                 .setHeadPortrait(convertToAbstractUrl(Constants.HEAD_PORTRAIT))
                 .setIdCardNo(customerReturnDto.getCreditCode())
@@ -73,7 +73,7 @@ public class FinanceServiceImpl implements FinanceService {
             dto.setPhoneNo(contactList.get(0).getPhone());
         }
         if (customerType != null && customerType.equals(CustomerTypeEnum.PERSON.getCode())){
-            dto.setRealName(dto.getCustomerName());
+            dto.setRealName(customerReturnDto.getCustomerName());
         }else {
             dto.setRealName(contactList.get(0).getCustomerName());
             List<CustomerQualificationReturnDto> qualificationList = customerReturnDto.getQualifications();
@@ -96,11 +96,18 @@ public class FinanceServiceImpl implements FinanceService {
         }
         List<PlantDto> plantDtoList = plantMapper.listByCustomerId(relevanceId);
         if (!CollectionUtils.isEmpty(plantDtoList)){
-            PlantDto plantDto = plantDtoList.get(0);
-            dto.setPlantDetailAddress(plantDto.getProvince()+plantDto.getCity()+plantDto.getCounty()+plantDto.getPlantName());
-            List<PlantImageDto> plantImageDtoList = plantDto.getPlantImageDtoList();
-            if (!CollectionUtils.isEmpty(plantImageDtoList)){
-                dto.setPlantImageUrl(convertToAbstractUrl(plantImageDtoList.get(0).getImageUrl()));
+            boolean hasImage = false;
+            for (PlantDto plantDto : plantDtoList){
+                List<PlantImageDto> plantImageDtoList = plantDto.getPlantImageDtoList();
+                if (!CollectionUtils.isEmpty(plantImageDtoList)){
+                    hasImage = true;
+                    dto.setPlantImageUrl(convertToAbstractUrl(plantImageDtoList.get(0).getImageUrl()));
+                    dto.setPlantDetailAddress(plantDto.getProvince()+plantDto.getCity()+plantDto.getCounty()+plantDto.getPlantName());
+                }
+            } 
+            if (!hasImage){
+                PlantDto plantDto = plantDtoList.get(0);
+                dto.setPlantDetailAddress(plantDto.getProvince()+plantDto.getCity()+plantDto.getCounty()+plantDto.getPlantName());
             }
         }
         return dto;

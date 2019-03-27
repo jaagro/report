@@ -9,7 +9,7 @@ public class Constants {
     /**
      * 对接金融接口头像默认地址
      */
-    public static final String HEAD_PORTRAIT = "";
+    public static final String HEAD_PORTRAIT = "test/web/20190327/1553669417184m.jpg";
     /**
      * 对接金融接口头像默认地址
      */
