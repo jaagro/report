@@ -1,9 +1,6 @@
 package com.jaagro.report.biz.mapper.report;
 
-import com.jaagro.report.api.dto.ListHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterCriteriaDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterDto;
-import com.jaagro.report.api.dto.WaybillFeeReportDto;
+import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.entity.DeptWaybillfeeMonthly;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,12 +39,21 @@ public interface DeptWaybillfeeMonthlyMapperExt extends DeptWaybillfeeMonthlyMap
      * @param criteriaDto
      * @return
      */
-    List<ListWaybillQuarterDto> listQuarterWaybill(ListWaybillQuarterCriteriaDto criteriaDto);
+    Long listQuarterWaybill(ListWaybillQuarterCriteriaDto criteriaDto);
 
     /**
-     * 历史运单汇总
+     * 大区历史运单汇总
      *
+     * @param quarterDto
      * @return
      */
-    List<ListHistoryWaybillDto> listHistoryWaybill();
+    List<ListHistoryWaybillDto> listHistoryWaybill(ListWaybillQuarterCriteriaDto quarterDto);
+
+    /**
+     * 项目部历史运单汇总
+     *
+     * @param criteriaDto
+     * @return
+     */
+    List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(ListWaybillQuarterCriteriaDto criteriaDto);
 }
