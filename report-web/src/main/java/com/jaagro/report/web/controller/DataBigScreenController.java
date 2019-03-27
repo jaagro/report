@@ -44,6 +44,7 @@ public class DataBigScreenController {
     @ApiOperation(value = "本季度运量统计")
     @GetMapping("/listQuarterWaybill")
     public List<ListWaybillQuarterDto> listQuarterWaybill(@RequestParam String productType) {
+        log.info("O listRedBlackBoardData productType: {}", productType);
         return dataBigScreenService.listQuarterWaybill(Integer.parseInt(productType));
     }
 
@@ -66,14 +67,16 @@ public class DataBigScreenController {
      */
     @ApiOperation(value = "项目部历史运单汇总")
     @GetMapping("/listHistoryWaybillByDept")
-    public List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(@RequestParam int productType) {
-        return dataBigScreenService.listHistoryWaybillByDept(productType);
+    public List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(@RequestParam String productType) {
+        log.info("O listRedBlackBoardData productType: {}", productType);
+        return dataBigScreenService.listHistoryWaybillByDept(Integer.parseInt(productType));
     }
 
 
     @ApiOperation(value = "司机红黑板数据列表")
     @GetMapping("/listRedBlackBoardData")
     public List<RedBlackBoardDto> listRedBlackBoardData(@RequestParam String boardType) {
+        log.info("O listRedBlackBoardData boardType: {}", boardType);
         return dataBigScreenService.listRedBlackBoardData(boardType);
     }
 }
