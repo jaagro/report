@@ -36,7 +36,7 @@ public class OrderReportController {
      */
     @ApiOperation("订单日报表数据统计")
     @PostMapping("/createOrderDailyReport")
-    public BaseResponse<DeptOrderDaily> createOrderDailyReport(@RequestBody OrderReportDto orderReportDto) {
+    public BaseResponse<List<DeptOrderDaily>> createOrderDailyReport(@RequestBody OrderReportDto orderReportDto) {
 
         orderReportService.createDailyReport(orderReportDto);
         List<DeptOrderDaily> deptOrderDailyList = orderReportService.getDeptOrderDailyDataListFromTms(orderReportDto);
@@ -47,7 +47,7 @@ public class OrderReportController {
 
     @ApiOperation("订单月报表数据统计")
     @PostMapping("/createOrderMonthlyReport")
-    public BaseResponse<DeptOrderDaily> createOrderMonthlyReport(@RequestBody OrderReportDto orderReportDto) {
+    public BaseResponse<List<DeptOrderMonthly>> createOrderMonthlyReport(@RequestBody OrderReportDto orderReportDto) {
 
         orderReportService.createMonthlyReport(orderReportDto);
         List<DeptOrderMonthly> deptOrderMonthlyList = orderReportService.getOrderMonthlyDataFromOrderDaily(orderReportDto);
@@ -58,7 +58,7 @@ public class OrderReportController {
 
     @ApiOperation("web查询订单日报表数据")
     @PostMapping("/queryOrderDailyReport")
-    public BaseResponse<DeptOrderDaily> queryOrderDailyReport(@RequestBody OrderReportDto orderReportDto) {
+    public BaseResponse<List<DeptOrderDaily>> queryOrderDailyReport(@RequestBody OrderReportDto orderReportDto) {
 
         List<DeptOrderDaily> deptOrderDailyList = orderReportService.listOrderDailyReport(orderReportDto);
 
@@ -68,7 +68,7 @@ public class OrderReportController {
 
     @ApiOperation("web查询订单月报表数据")
     @PostMapping("/queryOrderMonthlyReport")
-    public BaseResponse<DeptOrderMonthly> queryOrderMonthlyReport(@RequestBody OrderReportDto orderReportDto) {
+    public BaseResponse<List<DeptOrderMonthly>> queryOrderMonthlyReport(@RequestBody OrderReportDto orderReportDto) {
 
         List<DeptOrderMonthly> deptOrderMonthlyList = orderReportService.listOrderMonthlyReport(orderReportDto);
 
