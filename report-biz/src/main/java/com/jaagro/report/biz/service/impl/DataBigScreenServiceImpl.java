@@ -79,6 +79,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         }
         if (!CollectionUtils.isEmpty(resultList)) {
             Collections.sort(resultList, Comparator.comparingLong(ListWaybillQuarterDto::getValue));
+            Collections.reverse(resultList);
         }
         return resultList;
 
@@ -114,6 +115,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         }
         if (!CollectionUtils.isEmpty(waybillDtoList)) {
             Collections.sort(waybillDtoList, Comparator.comparing(ListHistoryWaybillDto::getY));
+            Collections.reverse(waybillDtoList);
         }
         return waybillDtoList;
     }
@@ -155,6 +157,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         }
         if (!CollectionUtils.isEmpty(resultList)) {
             Collections.sort(resultList, Comparator.comparingLong(ListDeptHistoryWaybillDto::getY));
+            Collections.reverse(resultList);
         }
         return resultList;
     }

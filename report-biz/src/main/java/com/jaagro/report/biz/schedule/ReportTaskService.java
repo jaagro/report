@@ -149,6 +149,13 @@ public class ReportTaskService {
         amqpTemplate.convertAndSend(TOPIC_EXCHANGE, "report.send", reportTaskDto);
     }
 
+    /**
+     * spring-boot-data-redis 1.x版本无返回值不支持,2.x版本有返回值支持
+     * @param redisKey
+     * @param value
+     * @param expire
+     * @return
+     */
     @Deprecated
     private boolean setIfAbsentAndExpireAtomic(String redisKey, String value, long expire) {
         try {
