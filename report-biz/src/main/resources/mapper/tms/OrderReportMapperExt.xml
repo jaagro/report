@@ -140,4 +140,58 @@
              group by createDate,dept,type order by createDate
 
     </select>
+    <select id="listRedBoardData" resultType="com.jaagro.report.api.dto.RedBlackBoardDto">
+        select
+           dr.name as driver, xmb.daqu as department, xmb.xiangmubu as network,
+           wt1.create_time as sendTime, wt2.create_time as receiveTime,
+           TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)  as receiveDate
+        from
+          ( select waybill_id, max(id) id, max(create_time) create_time
+            from tmsserver2.waybill_tracking
+            where new_status = '待接单' and create_time between #{startDay} and #{endDay}
+            group by waybill_id
+          )  wt1
+          inner join
+          ( select waybill_id, max(id) id, driver_id, max(create_time) create_time
+            from tmsserver2.waybill_tracking
+            where new_status = '待出发'
+            group by waybill_id, driver_id order by max(create_time)
+          ) wt2 on wt1.waybill_id = wt2.waybill_id and wt2.id > wt1.id
+          inner join userserver.driver dr on wt2.driver_id = dr.id
+          inner join tmsserver2.waybill wb on wb.id = wt1.waybill_id
+           inner join (
+            select Case when xn.department_name = '虚拟项目部' then dq.department_name else xn.department_name end as DaQu,
+              x.department_name as XiangMuBu, x.id as Xid
+            from userserver.department x
+              inner join userserver.department xn on x.parent_id = xn.id
+              inner join userserver.department dq on xn.parent_id = dq.id
+            where x.netpoint =1 ) as xmb on wb.network_id = xmb.xid
+        order by TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)
+    </select>
+    <select id="listBlackBoardData" resultType="com.jaagro.report.api.dto.RedBlackBoardDto">
+        select dr.name as driver, xmb.daqu as department, xmb.xiangmubu as network,, wt1.create_time as sendTime, wt2.create_time as receiveTime,
+               TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)   as receiveDate
+            from
+               ( select waybill_id, driver_id,  max(create_time) create_time
+                 from tmsserver2.waybill_tracking
+                 where new_status = '前往装货地' and create_time  between #{startDay} and #{endDay}
+                 group by waybill_id, driver_id
+               ) as wt1
+              inner join
+               ( select waybill_id, driver_id, max(create_time) create_time
+                 from tmsserver2.waybill_tracking
+                 where new_status = '已完成'
+                 group by waybill_id, driver_id
+               ) as wt2 on wt1.waybill_id = wt2.waybill_id and wt1.waybill_id = wt2.waybill_id
+              inner join userserver.driver dr on wt1.driver_id = dr.id
+              inner join tmsserver2.waybill wb on wb.id = wt1.waybill_id
+              inner join (
+                select Case when xn.department_name = '虚拟项目部' then dq.department_name else xn.department_name end as DaQu,
+                  x.department_name as XiangMuBu, x.id as Xid
+                from userserver.department x
+                  inner join userserver.department xn on x.parent_id = xn.id
+                  inner join userserver.department dq on xn.parent_id = dq.id
+                where x.netpoint =1 ) as xmb on wb.network_id = xmb.xid
+            order by TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)
+    </select>
 </mapper>
