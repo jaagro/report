@@ -1,5 +1,6 @@
 package com.jaagro.report.biz.mapper.report;
 
+import com.jaagro.report.api.dto.ContributionTopTenCustomerDto;
 import com.jaagro.report.api.dto.ListCustomerReportCriteriaDto;
 import com.jaagro.report.api.entity.CustomerOrderDaily;
 import com.jaagro.report.api.entity.CustomerOrderMonthly;
@@ -35,11 +36,18 @@ public interface CustomerOrderDailyMapperExt extends CustomerOrderDailyMapper {
     List<CustomerOrderDaily> listCustomerDailyByCriteria(ListCustomerReportCriteriaDto dto);
 
     /**
-     *
      * @param beginMonth
      * @param endMonth
      * @return
      */
-    List<CustomerOrderMonthly> listByBeginAndEndTime(@Param("beginMonth") String beginMonth, @Param("endMonth")String endMonth);
+    List<CustomerOrderMonthly> listByBeginAndEndTime(@Param("beginMonth") String beginMonth, @Param("endMonth") String endMonth);
 
+    /**
+     * 数据大屏接口
+     *
+     * @return
+     * @Author gavin
+     * @Date 20190327
+     */
+    List<ContributionTopTenCustomerDto> listTopTenCustomerData();
 }
