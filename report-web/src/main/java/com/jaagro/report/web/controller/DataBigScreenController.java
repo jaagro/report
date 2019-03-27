@@ -68,7 +68,7 @@ public class DataBigScreenController {
     @ApiOperation(value = "项目部历史运单汇总")
     @GetMapping("/listHistoryWaybillByDept")
     public List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(@RequestParam String productType) {
-        log.info("O listRedBlackBoardData productType: {}", productType);
+        log.info("O listHistoryWaybillByDept productType: {}", productType);
         return dataBigScreenService.listHistoryWaybillByDept(Integer.parseInt(productType));
     }
 
