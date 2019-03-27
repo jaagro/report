@@ -46,4 +46,43 @@
         </where>
         order by report_time desc
     </select>
+    <select id="listQuarterWaybill" parameterType="com.jaagro.report.api.dto.ListWaybillQuarterCriteriaDto"
+            resultType="com.jaagro.report.api.dto.ListWaybillQuarterDto">
+        SELECT
+        department_id,
+        department_name AS type,
+        SUM( CASE WHEN goods_type = 1 THEN goods_quantity WHEN goods_type = 2 THEN goods_weight WHEN goods_type = 3 THEN
+        goods_quantity END ) AS value
+        FROM
+        dept_waybillfee_monthly
+        WHERE
+        enabled = 1
+        and goods_type = #{goodsType}
+        <if test="deptIds != null and deptIds.size() > 0">
+            and department_id in
+            <foreach collection="deptIds" open="(" separator="," close=")" item="did">
+                ${did}
+            </foreach>
+        </if>
+        <![CDATA[and report_time >= DATE_FORMAT(#{startDate}, '%Y-%m' ) ]]>
+        <![CDATA[and report_time <= DATE_FORMAT(#{endDate}, '%Y-%m' ) ]]>
+        GROUP BY
+        department_id
+    </select>
+    <select id="listHistoryWaybill" resultType="com.jaagro.report.api.dto.ListHistoryWaybillDto">
+        SELECT
+            department_id,
+            department_name AS x,
+            SUM( CASE WHEN goods_type = 1 THEN goods_quantity WHEN goods_type = 2 THEN goods_weight WHEN goods_type = 3 THEN goods_quantity END ) AS y,
+            goods_type AS s
+        FROM
+            dept_waybillfee_monthly
+        WHERE
+            enabled = 1
+        GROUP BY
+            department_id,
+            goods_type
+        ORDER BY
+            department_id
+    </select>
 </mapper>

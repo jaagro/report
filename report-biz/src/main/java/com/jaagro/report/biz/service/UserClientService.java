@@ -2,6 +2,7 @@ package com.jaagro.report.biz.service;
 
 import com.jaagro.report.api.dto.DepartmentReturnDto;
 import com.jaagro.utils.BaseResponse;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,4 +42,11 @@ public interface UserClientService {
     @PostMapping("/getAllDepartments")
     List<DepartmentReturnDto> getAllDepartments();
 
+    /**
+     * 获取全部大区id
+     *
+     * @return
+     */
+    @GetMapping("/listRegionDepartmentIds")
+    List<Integer> listRegionDepartmentIds();
 }
