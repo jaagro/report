@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@RequestMapping("/bigData")
 @Api(description = "数据大屏管理", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataBigScreenController {
     @Autowired
