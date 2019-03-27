@@ -50,7 +50,7 @@
             resultType="java.lang.Long">
         SELECT
         SUM( CASE WHEN goods_type = 1 THEN goods_quantity WHEN goods_type = 2 THEN goods_weight WHEN goods_type = 3 THEN
-        goods_quantity END ) AS value
+        goods_quantity END ) AS x
         FROM
         dept_waybillfee_monthly
         WHERE
