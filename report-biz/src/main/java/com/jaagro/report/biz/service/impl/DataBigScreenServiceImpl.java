@@ -1,13 +1,11 @@
 package com.jaagro.report.biz.service.impl;
 
-import com.jaagro.report.api.dto.ContributionTopTenCustomerDto;
-import com.jaagro.report.api.dto.ListHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterCriteriaDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterDto;
+import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.service.DataBigScreenService;
 import com.jaagro.report.biz.mapper.report.CustomerOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
+import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
 import com.jaagro.report.biz.mapper.tms.WaybillFeeReportMapperExt;
 import com.jaagro.report.biz.service.UserClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +32,9 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     private DeptWaybillfeeMonthlyMapperExt deptWaybillfeeMonthlyMapper;
     @Autowired
     private UserClientService userClientService;
+
+    @Autowired
+    private OrderReportMapperExt orderReportMapperExt;
 
 
     /**
@@ -156,5 +157,47 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             e.printStackTrace();
         }
         return now;
+    }
+
+
+    @Override
+    public List<RedBlackBoardDto> listRedBlackBoardData(String boardType) {
+        List<RedBlackBoardDto> dtoList;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        //获取当前月第一天：
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, 0);
+        //设置为1号,当前日期既为本月第一天
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        String firstDay = format.format(c.getTime());
+
+        //获取当前月最后一天
+        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+        String lastDay = format.format(c.getTime());
+        if ("1".equals(boardType)) {
+            //红榜
+            dtoList = orderReportMapperExt.listRedBoardData(firstDay,lastDay);
+        } else {
+            //黑榜
+            dtoList = orderReportMapperExt.listBlackBoardData(firstDay,lastDay);
+        }
+        return dtoList;
+    }
+
+    public static void main(String[] args) {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        //获取当前月第一天：
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, 0);
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        String first = format.format(c.getTime());
+        System.out.println("===============first:" + first);
+
+        //获取当前月最后一天
+        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+        String last = format.format(c.getTime());
+        System.out.println("===============last:" + last);
+
     }
 }
