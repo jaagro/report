@@ -3,12 +3,11 @@ package com.jaagro.report.biz.service.impl;
 import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.service.DataBigScreenService;
 import com.jaagro.report.biz.mapper.report.CustomerOrderDailyMapperExt;
-import com.jaagro.report.biz.mapper.report.DeptWaybillfeeDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
-import com.jaagro.report.biz.mapper.tms.WaybillFeeReportMapperExt;
 import com.jaagro.report.biz.service.UserClientService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -230,22 +229,16 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     public List<RedBlackBoardDto> listRedBlackBoardData(String boardType) {
         List<RedBlackBoardDto> dtoList;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        //获取当前月第一天：
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.MONTH, 0);
-        //设置为1号,当前日期既为本月第一天
-        c.set(Calendar.DAY_OF_MONTH, 1);
-        String firstDay = format.format(c.getTime());
-
-        //获取当前月最后一天
-        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
-        String lastDay = format.format(c.getTime());
+        Date today = new Date();
+        Date yesterday = DateUtils.addDays(today, -1);
+        String startDay = format.format(yesterday);
+        String endDay = format.format(today);
         if ("1".equals(boardType)) {
             //红榜
-            dtoList = orderReportMapperExt.listRedBoardData(firstDay, lastDay);
+            dtoList = orderReportMapperExt.listRedBoardData(startDay, endDay);
         } else {
             //黑榜
-            dtoList = orderReportMapperExt.listBlackBoardData(firstDay, lastDay);
+            dtoList = orderReportMapperExt.listBlackBoardData(startDay, endDay);
         }
         return dtoList;
     }

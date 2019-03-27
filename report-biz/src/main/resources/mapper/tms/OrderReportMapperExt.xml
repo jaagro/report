@@ -167,6 +167,7 @@
               inner join userserver.department dq on xn.parent_id = dq.id
             where x.netpoint =1 ) as xmb on wb.network_id = xmb.xid
         order by TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)
+        limit 10
     </select>
     <select id="listBlackBoardData" resultType="com.jaagro.report.api.dto.RedBlackBoardDto">
         select dr.name as driver, xmb.daqu as department, xmb.xiangmubu as network,
@@ -194,5 +195,6 @@
                   inner join userserver.department dq on xn.parent_id = dq.id
                 where x.netpoint =1 ) as xmb on wb.network_id = xmb.xid
             order by TIMESTAMPDIFF(SECOND, wt1.create_time, wt2.create_time)
+            limit 10
     </select>
 </mapper>
