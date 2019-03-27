@@ -4,6 +4,7 @@ import com.jaagro.report.api.dto.ContributionTopTenCustomerDto;
 import com.jaagro.report.api.dto.ListDeptHistoryWaybillDto;
 import com.jaagro.report.api.dto.ListHistoryWaybillDto;
 import com.jaagro.report.api.dto.ListWaybillQuarterDto;
+import com.jaagro.report.api.dto.RedBlackBoardDto;
 
 import java.util.List;
 
@@ -39,4 +40,7 @@ public interface DataBigScreenService {
      * @return
      */
     List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(Integer productType);
+
+    List<RedBlackBoardDto> listRedBlackBoardData(String boardType);
+
 }

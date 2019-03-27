@@ -7,10 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,4 +71,9 @@ public class DataBigScreenController {
     }
 
 
+    @ApiOperation(value = "司机红黑板数据列表")
+    @GetMapping("/listRedBlackBoardData")
+    public List<RedBlackBoardDto> listRedBlackBoardData(@RequestParam String boardType) {
+        return dataBigScreenService.listRedBlackBoardData(boardType);
+    }
 }
