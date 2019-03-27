@@ -1,10 +1,6 @@
 package com.jaagro.report.web.controller;
 
-import com.jaagro.report.api.dto.ListHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterDto;
 import com.jaagro.report.api.dto.ReturnDataScreenDto;
-import com.jaagro.report.api.service.WaybillFeeReportTaskService;
-import com.jaagro.utils.BaseResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +9,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -29,9 +24,6 @@ import java.util.List;
 public class DataScreenController {
     @Autowired
     private StringRedisTemplate redisTemplate;
-    @Autowired
-    private WaybillFeeReportTaskService waybillFeeReportTaskService;
-
     /**
      * 大屏value的key
      */
@@ -123,28 +115,5 @@ public class DataScreenController {
         dataScreenDtoList.add(screenDto);
         return dataScreenDtoList;
     }
-
-    /**
-     * 本季度运量统计
-     *
-     * @return
-     */
-    @ApiOperation(value = "本季度运量统计")
-    @GetMapping("/listQuarterWaybill")
-    public List<ListWaybillQuarterDto> listQuarterWaybill(@RequestParam Integer productType) {
-        return waybillFeeReportTaskService.listQuarterWaybill(productType);
-    }
-
-    /**
-     * 历史运单汇总
-     *
-     * @return
-     */
-    @ApiOperation(value = "历史运单汇总")
-    @GetMapping("/listHistoryWaybill")
-    public List<ListHistoryWaybillDto> listHistoryWaybill() {
-        return waybillFeeReportTaskService.listHistoryWaybill();
-    }
-
 
 }

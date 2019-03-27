@@ -42,17 +42,4 @@ public interface WaybillFeeReportTaskService {
      */
     List<DeptWaybillfeeMonthly> listWaybillFeeMonthReport(WaybillFeeReportDto dto);
 
-    /**
-     * 通过货物类型查询季度运单
-     *
-     * @param productType
-     */
-    List<ListWaybillQuarterDto> listQuarterWaybill(Integer productType);
-
-    /**
-     * 历史运单汇总
-     *
-     * @return
-     */
-    List<ListHistoryWaybillDto> listHistoryWaybill();
 }
