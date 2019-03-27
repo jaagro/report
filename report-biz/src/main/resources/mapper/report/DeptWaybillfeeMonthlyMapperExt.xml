@@ -50,7 +50,7 @@
             resultType="com.jaagro.report.api.dto.ListWaybillQuarterDto">
         SELECT
         department_id,
-        department_name AS type,
+        any_value(department_name) AS type,
         SUM( CASE WHEN goods_type = 1 THEN goods_quantity WHEN goods_type = 2 THEN goods_weight WHEN goods_type = 3 THEN
         goods_quantity END ) AS value
         FROM
@@ -72,7 +72,7 @@
     <select id="listHistoryWaybill" resultType="com.jaagro.report.api.dto.ListHistoryWaybillDto">
         SELECT
             department_id,
-            department_name AS x,
+            any_value(department_name) AS x,
             SUM( CASE WHEN goods_type = 1 THEN goods_quantity WHEN goods_type = 2 THEN goods_weight WHEN goods_type = 3 THEN goods_quantity END ) AS y,
             goods_type AS s
         FROM
