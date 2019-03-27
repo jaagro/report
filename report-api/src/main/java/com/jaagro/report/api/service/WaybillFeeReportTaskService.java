@@ -1,6 +1,6 @@
 package com.jaagro.report.api.service;
 
-import com.jaagro.report.api.dto.WaybillFeeReportDto;
+import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.entity.DeptWaybillfeeDaily;
 import com.jaagro.report.api.entity.DeptWaybillfeeMonthly;
 
@@ -41,4 +41,5 @@ public interface WaybillFeeReportTaskService {
      * @return
      */
     List<DeptWaybillfeeMonthly> listWaybillFeeMonthReport(WaybillFeeReportDto dto);
+
 }

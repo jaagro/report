@@ -94,4 +94,8 @@
             SUBSTR( report_time, 1, 7 ),
             customer_name
     </select>
+
+    <select id="listTopTenCustomerData" resultType="com.jaagro.report.api.dto.ContributionTopTenCustomerDto">
+        select sum(amount+tonnage) as value,customer_name as content from customer_order_daily group by customer_name order by value desc limit 10
+    </select>
 </mapper>

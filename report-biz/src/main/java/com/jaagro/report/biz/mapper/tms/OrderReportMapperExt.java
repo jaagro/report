@@ -1,6 +1,7 @@
 package com.jaagro.report.biz.mapper.tms;
 
 import com.jaagro.report.api.dto.OrderReportDto;
+import com.jaagro.report.api.dto.RedBlackBoardDto;
 import com.jaagro.report.api.entity.DeptOrderDaily;
 import com.jaagro.report.api.entity.DeptOrderMonthly;
 import org.apache.ibatis.annotations.Param;
@@ -25,10 +26,19 @@ public interface OrderReportMapperExt {
     List<DeptOrderDaily> getDeptOrderDailyDataListFromTms(OrderReportDto orderReportDto);
 
     /**
-     * 从tms统计月报表的数据
-     * @param orderReportDto
+     * 大屏数据司机红榜
+     * @param startDay
+     * @param endDay
      * @return
      */
-//    List<DeptOrderMonthly> getDeptOrderMonthlyDataListFromTms(OrderReportDto orderReportDto);
+    List<RedBlackBoardDto> listRedBoardData(@Param("startDay") String startDay, @Param("endDay") String endDay);
+
+    /**
+     * 大屏数据司机黑榜
+     * @param startDay
+     * @param endDay
+     * @return
+     */
+    List<RedBlackBoardDto> listBlackBoardData(@Param("startDay") String startDay,@Param("endDay") String endDay);
 
 }
