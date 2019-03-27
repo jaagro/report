@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/bigScreenData")
+@RequestMapping("/bigData")
 @Api(description = "数据大屏管理", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataBigScreenController {
     @Autowired
@@ -52,11 +52,24 @@ public class DataBigScreenController {
      *
      * @return
      */
-    @ApiOperation(value = "历史运单汇总")
-    @GetMapping("/listHistoryWaybill")
-    public List<ListHistoryWaybillDto> listHistoryWaybill() {
+    @ApiOperation(value = "大区历史运单汇总")
+    @GetMapping("/listHistoryWaybillByNetwork")
+    public List<ListHistoryWaybillDto> listHistoryWaybillByNetwork() {
         return dataBigScreenService.listHistoryWaybill();
     }
+
+
+    /**
+     * 历史运单汇总
+     *
+     * @return
+     */
+    @ApiOperation(value = "项目部历史运单汇总")
+    @GetMapping("/listHistoryWaybillByDept")
+    public List<ListDeptHistoryWaybillDto> listHistoryWaybillByDept(@RequestParam Integer productType) {
+        return dataBigScreenService.listHistoryWaybillByDept(productType);
+    }
+
 
     @ApiOperation(value = "司机红黑板数据列表")
     @GetMapping("/listRedBlackBoardData")
