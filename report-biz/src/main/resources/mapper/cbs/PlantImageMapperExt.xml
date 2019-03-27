@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.PlantImageMapperExt" >
+    <resultMap id="DetailResultMap" type="com.jaagro.report.api.dto.plant.PlantImageDto" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="plant_id" property="plantId" jdbcType="INTEGER" />
+        <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+        <result column="enable" property="enable" jdbcType="BIT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+        <result column="modify_user_id" property="modifyUserId" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, plant_id, image_url, enable, create_time, create_user_id, modify_time, modify_user_id
+    </sql>
+    <select id="listByPlantId" resultMap="DetailResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM plant_image
+        WHERE enable = 1
+        AND plant_id = #{plantId}
+    </select>
+</mapper>
