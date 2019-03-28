@@ -121,4 +121,11 @@ public class DataBigScreenController {
         return dataBigScreenService.listWaybillTotalByProdTypeAndType(productType,type);
     }
 
+    @ApiOperation(value = "数据大屏货物同比")
+    @GetMapping("/listTotalCompareByProdTypeAndType")
+    public List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(@RequestParam String productType, @RequestParam String type) {
+        log.info("O listTotalCompareByProdTypeAndType productType:{}  type: {}",productType, type);
+        return dataBigScreenService.listTotalCompareByProdTypeAndType(productType,type);
+    }
+
 }

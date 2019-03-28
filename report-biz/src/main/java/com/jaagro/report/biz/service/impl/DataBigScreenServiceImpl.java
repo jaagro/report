@@ -304,6 +304,10 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                     .setStrStartDate(strStartMonth)
                     .setStrEndDate(strEndMonth);
             dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
+            for (ListWaybillCountDto listWaybillCountDto : dtoList) {
+                listWaybillCountDto.setX(listWaybillCountDto.getX()+"-01 00:00:00");
+                
+            }
 
         }
 
@@ -343,6 +347,18 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         }
 
         return dtoList;
+    }
+
+    /**
+     * 数据大屏货物同比
+     *
+     * @param productType
+     * @param type
+     * @return
+     */
+    @Override
+    public List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(String productType, String type) {
+        return null;
     }
 
     public static void main(String[] args) {
