@@ -14,8 +14,6 @@ import java.io.Serializable;
 @Data
 public class ListHistoryWaybillDto implements Serializable {
 
-    private Integer departmentId;
-
     private String x;
 
     private String y;
