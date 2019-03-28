@@ -96,7 +96,7 @@
     </select>
 
     <select id="listWaybillCountByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillCountDto">
-        select report_time as x,
+        select DATE_FORMAT(report_time, "%Y/%m/%d %H:%i:%S") as x,
                 sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as y
         from dept_order_daily
         where goods_type = #{productType}

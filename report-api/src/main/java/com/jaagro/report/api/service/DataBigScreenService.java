@@ -79,4 +79,12 @@ public interface DataBigScreenService {
      * @return
      */
     List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(String productType, String type);
+
+    /**
+     * 数据大屏货物同比
+     * @param productType
+     * @param type
+     * @return
+     */
+    List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(String productType, String type);
 }
