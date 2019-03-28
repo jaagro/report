@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillAnomalyMapperExt">
+
+    <select id="listThisMonthWaybillAnomaly"
+            resultType="com.jaagro.report.api.dto.ListThisMonthWaybillAnomalyDto">
+        SELECT
+            DATE_FORMAT( w.create_time, "%Y-%m-%d" )  AS 'date',
+            t.type_name AS type,
+            w.truck_no AS truckNumber,
+            w.anomaly_desc AS 'desc'
+        FROM
+            waybill_anomaly w,
+            waybill_anomaly_type t
+        WHERE
+            w.anomaly_type_id = t.id
+            AND w.enabled = 1
+            AND DATE_FORMAT( w.create_time, "%Y-%m" ) = DATE_FORMAT( curdate( ), "%Y-%m" )
+        ORDER BY
+            w.create_time DESC
+    </select>
+
+</mapper>

@@ -10,6 +10,7 @@ import com.jaagro.report.biz.mapper.report.DeptOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptOrderMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
+import com.jaagro.report.biz.mapper.tms.WaybillAnomalyMapperExt;
 import com.jaagro.report.biz.service.UserClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
@@ -39,6 +40,9 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
 
     @Autowired
     private OrderReportMapperExt orderReportMapperExt;
+    @Autowired
+    private WaybillAnomalyMapperExt waybillAnomalyMapperExt;
+
     @Autowired
     private DeptOrderMonthlyMapperExt deptOrderMontlyMapperExt;
 
@@ -181,6 +185,16 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             }
         }
         return listWaybillAmountDtoList;
+    }
+
+    /**
+     * 当月运单异常情况
+     *
+     * @return
+     */
+    @Override
+    public List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly() {
+        return waybillAnomalyMapperExt.listThisMonthWaybillAnomaly();
     }
 
     /**
