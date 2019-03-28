@@ -56,6 +56,13 @@ public interface DataBigScreenService {
     List<ListWaybillAmountDto> listWaybillAmountByDept(Integer type);
 
     /**
+     * 当月运单异常情况
+     *
+     * @return
+     */
+    List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly();
+
+    /**
      * 数据大屏当月货物明细统计
      * type:1 统计前5天该货物的总运量
      * type:2 统计前5个月货物的总运量

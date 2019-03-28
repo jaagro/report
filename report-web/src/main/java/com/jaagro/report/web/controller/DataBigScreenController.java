@@ -96,6 +96,19 @@ public class DataBigScreenController {
     }
 
     /**
+     * 当月运单异常情况
+     *
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "当月运单异常情况")
+    @GetMapping("/listThisMonthWaybillAnomaly")
+    public List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly() {
+        log.info("O listThisMonthWaybillAnomaly");
+        return dataBigScreenService.listThisMonthWaybillAnomaly();
+    }
+
+    /**
      *
      * @param productType:货物类型 1-毛鸡；2-饲料；3-猪
      * @param type: 1-日统计 2-月统计
