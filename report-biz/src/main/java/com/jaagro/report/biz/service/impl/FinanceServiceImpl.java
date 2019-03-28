@@ -180,4 +180,16 @@ public class FinanceServiceImpl implements FinanceService {
         }
         return returnBreedingPlanInfoDtos;
     }
+
+    /**
+     * 贷款申请 选择订单
+     * <p>
+     * 返回当前客户的养殖计划
+     *
+     * @return
+     */
+    @Override
+    public List<ReturnBreedingPlanInfoDto> getBreedingPlanInfo() {
+        return null;
+    }
 }

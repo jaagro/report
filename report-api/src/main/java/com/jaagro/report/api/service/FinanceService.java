@@ -27,4 +27,13 @@ public interface FinanceService {
      * @return
      */
     List<ReturnBreedingPlanInfoDto> listBreedingPlanInfo();
+
+    /**
+     * 贷款申请 选择订单
+     * <p>
+     * 返回当前客户的养殖计划
+     *
+     * @return
+     */
+    List<ReturnBreedingPlanInfoDto> getBreedingPlanInfo();
 }
