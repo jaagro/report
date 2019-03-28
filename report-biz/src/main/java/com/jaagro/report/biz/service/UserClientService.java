@@ -49,4 +49,13 @@ public interface UserClientService {
      */
     @GetMapping("/listRegionDepartmentIds")
     List<Integer> listRegionDepartmentIds();
+
+    /**
+     * 获取指定部门的下属部门
+     *
+     * @return
+     */
+    @Ignore
+    @PostMapping("/getDownDeptIdsByDeptId/{deptId}")
+    List<Integer> getDownDeptIdsByDeptId(@PathVariable("deptId") Integer deptId);
 }
