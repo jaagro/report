@@ -46,4 +46,11 @@ public interface DataBigScreenService {
      * @return
      */
     List<ListWaybillAmountDto> listWaybillAmountByDept(Integer type);
+
+    /**
+     * 当月运单异常情况
+     *
+     * @return
+     */
+    List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly();
 }

@@ -92,4 +92,17 @@ public class DataBigScreenController {
         log.info("O listWaybillAmountByDept type: {}", type);
         return dataBigScreenService.listWaybillAmountByDept(Integer.parseInt(type));
     }
+
+    /**
+     * 当月运单异常情况
+     *
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "当月运单异常情况")
+    @GetMapping("/listThisMonthWaybillAnomaly")
+    public List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly() {
+        log.info("O listThisMonthWaybillAnomaly");
+        return dataBigScreenService.listThisMonthWaybillAnomaly();
+    }
 }
