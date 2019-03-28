@@ -7,6 +7,7 @@ import com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto;
 import com.jaagro.report.api.service.DataBigScreenService;
 import com.jaagro.report.biz.mapper.report.CustomerOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptOrderDailyMapperExt;
+import com.jaagro.report.biz.mapper.report.DeptOrderMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
 import com.jaagro.report.biz.service.UserClientService;
@@ -38,7 +39,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
 
     @Autowired
     private OrderReportMapperExt orderReportMapperExt;
-
+    @Autowired
+    private DeptOrderMonthlyMapperExt deptOrderMontlyMapperExt;
 
     /**
      * 客户贡献前十
@@ -305,7 +307,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             countCriteria.setProductType(productType)
                     .setStrStartDate(strStartMonth)
                     .setStrEndDate(strEndMonth);
-            dtoList = deptOrderDailyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
+            dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
 
         }
 
@@ -321,7 +323,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
      * @return
      */
     @Override
-    public List<ListWaybillTotalDto> listWaybillTotaByProdTypeAndType(String productType, String type) {
+    public List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(String productType, String type) {
         List<ListWaybillTotalDto> dtoList = new ArrayList<>();
         if(Integer.parseInt(type)==1) {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -340,7 +342,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
             countCriteria.setProductType(productType)
                     .setStrEndDate(strThisMonth);
-            dtoList = deptOrderDailyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+            dtoList = deptOrderMontlyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
 
         }
 

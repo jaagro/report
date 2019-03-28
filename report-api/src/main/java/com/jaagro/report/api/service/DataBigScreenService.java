@@ -71,5 +71,5 @@ public interface DataBigScreenService {
      * @param type
      * @return
      */
-    List<ListWaybillTotalDto> listWaybillTotaByProdTypeAndType(String productType, String type);
+    List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(String productType, String type);
 }

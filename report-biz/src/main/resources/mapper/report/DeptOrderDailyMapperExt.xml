@@ -99,7 +99,7 @@
         select report_time as x,
                 sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as y
         from dept_order_daily
-        where goods_type =#{productType}
+        where goods_type = #{productType}
         and report_time between #{strStartDate} and #{strEndDate}
         group by report_time
         order by report_time desc
