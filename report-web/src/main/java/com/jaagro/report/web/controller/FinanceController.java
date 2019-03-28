@@ -13,23 +13,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 对接金融接口
+ *
  * @author yj
  * @date 2019/3/27 11:01
  */
 @RestController
 @Slf4j
-@Api(description = "对接金融接口",produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(description = "对接金融接口", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FinanceController {
     @Autowired
     private FinanceService financeService;
 
     @ApiOperation("获取客户基本信息")
     @GetMapping("/getCustomerBaseInfo")
-    public BaseResponse getCustomerBaseInfo(){
+    public BaseResponse getCustomerBaseInfo() {
         CustomerBaseInfoDto dto = financeService.getCustomerBaseInfo();
-        if (dto == null){
+        if (dto == null) {
             return BaseResponse.queryDataEmpty();
         }
         return BaseResponse.successInstance(dto);
+    }
+
+    @ApiOperation("获取当前客户养殖批次列表")
+    @GetMapping("/listBreedingPlanBaseInfo")
+    public BaseResponse listBreedingPlanInfo() {
+
+        return BaseResponse.successInstance(null);
     }
 }
