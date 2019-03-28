@@ -107,8 +107,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                             dto.setX(userClientService.getDeptNameById(dto.getDepartmentId()));
                         }
                     }
+                    waybillDtoList.addAll(historyWaybill);
                 }
-                waybillDtoList.addAll(historyWaybill);
             }
         }
         if (!CollectionUtils.isEmpty(waybillDtoList)) {
