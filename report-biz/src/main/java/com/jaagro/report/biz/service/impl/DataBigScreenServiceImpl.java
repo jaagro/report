@@ -63,7 +63,6 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
 
         //最终结果
         List<ListWaybillQuarterDto> resultList = new ArrayList<>();
-
         if (!CollectionUtils.isEmpty(departmentIds)) {
             for (Integer id : departmentIds) {
                 ListWaybillQuarterDto quarterDto = new ListWaybillQuarterDto();
@@ -75,7 +74,6 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                             .setValue(aLong);
                     resultList.add(quarterDto);
                 }
-
             }
         }
         if (!CollectionUtils.isEmpty(resultList)) {

@@ -53,9 +53,9 @@ public interface UserClientService {
     /**
      * 获取指定部门的下属部门
      *
+     * @param deptId
      * @return
      */
-    @Ignore
-    @PostMapping("/getDownDeptIdsByDeptId/{deptId}")
+    @GetMapping("/getDownDeptIdsByDeptId/{deptId}")
     List<Integer> getDownDeptIdsByDeptId(@PathVariable("deptId") Integer deptId);
 }
