@@ -14,8 +14,6 @@ import java.io.Serializable;
 @Data
 public class ListWaybillQuarterDto implements Serializable {
 
-    private Integer departmentId;
-
     private String type;
 
     private Long value;
