@@ -103,7 +103,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                 criteriaDto.setDeptIds(userClientService.getDownDepartmentByDeptId(id));
                 List<ListHistoryWaybillDto> historyWaybill = deptWaybillfeeMonthlyMapper.listHistoryWaybill(criteriaDto);
                 if (!CollectionUtils.isEmpty(historyWaybill)) {
-                    for (ListHistoryWaybillDto dto : waybillDtoList) {
+                    for (ListHistoryWaybillDto dto : historyWaybill) {
                         if (!StringUtils.isEmpty(dto.getDepartmentId())) {
                             dto.setX(userClientService.getDeptNameById(dto.getDepartmentId()));
                         }
