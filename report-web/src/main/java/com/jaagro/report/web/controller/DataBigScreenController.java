@@ -1,6 +1,8 @@
 package com.jaagro.report.web.controller;
 
 import com.jaagro.report.api.dto.*;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillCountDto;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto;
 import com.jaagro.report.api.service.DataBigScreenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -105,4 +107,31 @@ public class DataBigScreenController {
         log.info("O listThisMonthWaybillAnomaly");
         return dataBigScreenService.listThisMonthWaybillAnomaly();
     }
+
+    /**
+     *
+     * @param productType:货物类型 1-毛鸡；2-饲料；3-猪
+     * @param type: 1-日统计 2-月统计
+     * @return
+     */
+    @ApiOperation(value = "当月货物明细统计")
+    @GetMapping("/listWaybillCountByProdTypeAndType")
+    public List<ListWaybillCountDto> listWaybillCountByProdTypeAndType(@RequestParam String productType, @RequestParam String type) {
+        log.info("O listWaybillCountByProdTypeAndType productType:{}  type: {}",productType, type);
+        return dataBigScreenService.listWaybillCountByProdTypeAndType(productType,type);
+    }
+
+    /**
+     *
+     * @param productType:货物类型 1-毛鸡；2-饲料；3-猪
+     * @param type: 1-日统计 2-月统计
+     * @return
+     */
+    @ApiOperation(value = "数据大屏运量总和")
+    @GetMapping("/listWaybillTotalByProdTypeAndType")
+    public List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(@RequestParam String productType, @RequestParam String type) {
+        log.info("O listWaybillTotalByProdTypeAndType productType:{}  type: {}",productType, type);
+        return dataBigScreenService.listWaybillTotalByProdTypeAndType(productType,type);
+    }
+
 }

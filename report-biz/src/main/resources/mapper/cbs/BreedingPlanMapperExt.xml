@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.BreedingPlanMapperExt">
+
+    <!--          自动生成扩展XML author: generator on 2019/2/21                 -->
+    <select id="listBreedingPlanInfo" resultType="com.jaagro.report.api.dto.finance.BreedingPlanInfoDo">
+     select bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price babyChickPrice ,bc.contract_date
+     from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
+     inner join batch_contract bc on (bp.id=bc.plan_id)
+     where  po.purchase_order_status not in (3) and bp.plan_status in (1,2) and bp.enable=1
+     and bp.customer_id=#{customerId}
+    </select>
+</mapper>

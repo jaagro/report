@@ -1,9 +1,13 @@
 package com.jaagro.report.biz.service.impl;
 
 import com.jaagro.report.api.dto.*;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillCountCriteria;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillCountDto;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto;
 import com.jaagro.report.api.service.DataBigScreenService;
 import com.jaagro.report.biz.mapper.report.CustomerOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptOrderDailyMapperExt;
+import com.jaagro.report.biz.mapper.report.DeptOrderMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
 import com.jaagro.report.biz.mapper.tms.WaybillAnomalyMapperExt;
@@ -39,6 +43,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     @Autowired
     private WaybillAnomalyMapperExt waybillAnomalyMapperExt;
 
+    @Autowired
+    private DeptOrderMonthlyMapperExt deptOrderMontlyMapperExt;
 
     /**
      * 客户贡献前十
@@ -274,20 +280,96 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         return dtoList;
     }
 
+    /**
+     * 当月货物明细统计
+     * type:1 统计前5天该货物的总运量
+     * type:2 统计前5个月货物的总运量
+     *
+     * @param productType
+     * @param type
+     * @return
+     */
+    @Override
+    public List<ListWaybillCountDto> listWaybillCountByProdTypeAndType(String productType, String type) {
+        List<ListWaybillCountDto> dtoList = new ArrayList<>();
+        if(Integer.parseInt(type)==1) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date today = new Date();
+            Date yesterday = DateUtils.addDays(today, -1);
+            String strEndDay = format.format(yesterday);
+            Date endDay = DateUtils.addDays(today, -5);
+            String strStartDay = format.format(endDay);
+            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
+            countCriteria.setProductType(productType)
+                    .setStrStartDate(strStartDay)
+                    .setStrEndDate(strEndDay);
+            dtoList = deptOrderDailyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
+
+
+        }else{
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+            Date today = new Date();
+            Date yesterday = DateUtils.addMonths(today,0);
+            String strEndMonth = format.format(yesterday);
+            Date endDay = DateUtils.addMonths(today, -4);
+            String  strStartMonth= format.format(endDay);
+            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
+            countCriteria.setProductType(productType)
+                    .setStrStartDate(strStartMonth)
+                    .setStrEndDate(strEndMonth);
+            dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
+
+        }
+
+
+        return dtoList;
+    }
+
+    /**
+     * 数据大屏运量总和
+     *
+     * @param productType
+     * @param type
+     * @return
+     */
+    @Override
+    public List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(String productType, String type) {
+        List<ListWaybillTotalDto> dtoList = new ArrayList<>();
+        if(Integer.parseInt(type)==1) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date today = new Date();
+            Date yesterday = DateUtils.addDays(today, -1);
+            String strEndDay = format.format(yesterday);
+            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
+            countCriteria.setProductType(productType)
+                    .setStrEndDate(strEndDay);
+            dtoList = deptOrderDailyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+        }else{
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+            Date today = new Date();
+            Date thisMonth = DateUtils.addMonths(today,0);
+            String strThisMonth = format.format(thisMonth);
+            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
+            countCriteria.setProductType(productType)
+                    .setStrEndDate(strThisMonth);
+            dtoList = deptOrderMontlyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+
+        }
+
+        return dtoList;
+    }
+
     public static void main(String[] args) {
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        //获取当前月第一天：
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.MONTH, 0);
-        c.set(Calendar.DAY_OF_MONTH, 1);
-        String first = format.format(c.getTime());
-        System.out.println("===============first:" + first);
-
-        //获取当前月最后一天
-        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
-        String last = format.format(c.getTime());
-        System.out.println("===============last:" + last);
+        List<RedBlackBoardDto> dtoList;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        Date today = new Date();
+        Date yesterday = DateUtils.addMonths(today,0);
+        String strEndMonth = format.format(yesterday);
+        Date endDay = DateUtils.addMonths(today, -4);
+        String  strStartMonth= format.format(endDay);
+        System.out.println("===============startDay:" + strStartMonth);
+        System.out.println("===============endDay:" + strEndMonth);
 
     }
 }
