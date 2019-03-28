@@ -68,11 +68,10 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
 
         //最终结果
         List<ListWaybillQuarterDto> resultList = new ArrayList<>();
-
         if (!CollectionUtils.isEmpty(departmentIds)) {
             for (Integer id : departmentIds) {
                 ListWaybillQuarterDto quarterDto = new ListWaybillQuarterDto();
-                criteriaDto.setDeptIds(userClientService.getDownDepartmentByDeptId(id));
+                criteriaDto.setDeptIds(userClientService.getDownDeptIdsByDeptId(id));
                 Long aLong = deptWaybillfeeMonthlyMapper.listQuarterWaybill(criteriaDto);
                 if (aLong != null && aLong > 0) {
                     quarterDto
@@ -80,7 +79,6 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                             .setValue(aLong);
                     resultList.add(quarterDto);
                 }
-
             }
         }
         if (!CollectionUtils.isEmpty(resultList)) {
@@ -107,13 +105,11 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         if (!CollectionUtils.isEmpty(departmentIds)) {
             for (Integer id : departmentIds) {
                 ListWaybillQuarterCriteriaDto criteriaDto = new ListWaybillQuarterCriteriaDto();
-                criteriaDto.setDeptIds(userClientService.getDownDepartmentByDeptId(id));
+                criteriaDto.setDeptIds(userClientService.getDownDeptIdsByDeptId(id));
                 List<ListHistoryWaybillDto> historyWaybill = deptWaybillfeeMonthlyMapper.listHistoryWaybill(criteriaDto);
                 if (!CollectionUtils.isEmpty(historyWaybill)) {
                     for (ListHistoryWaybillDto dto : historyWaybill) {
-                        if (!StringUtils.isEmpty(dto.getDepartmentId())) {
-                            dto.setX(userClientService.getDeptNameById(dto.getDepartmentId()));
-                        }
+                        dto.setX(userClientService.getDeptNameById(id));
                     }
                     waybillDtoList.addAll(historyWaybill);
                 }
@@ -141,7 +137,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         List<Integer> deptIds = new ArrayList<>();
         if (!CollectionUtils.isEmpty(departmentIds)) {
             for (Integer deptId : departmentIds) {
-                List<Integer> integerList = userClientService.getDownDepartmentByDeptId(deptId);
+                List<Integer> integerList = userClientService.getDownDeptIdsByDeptId(deptId);
                 if (!CollectionUtils.isEmpty(integerList)) {
                     deptIds.addAll(integerList);
                 }
