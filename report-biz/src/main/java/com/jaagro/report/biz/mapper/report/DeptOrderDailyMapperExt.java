@@ -1,5 +1,6 @@
 package com.jaagro.report.biz.mapper.report;
 
+import com.jaagro.report.api.dto.ListWaybillAmountDto;
 import com.jaagro.report.api.dto.OrderReportDto;
 import com.jaagro.report.api.entity.DeptOrderDaily;
 import com.jaagro.report.api.entity.DeptOrderMonthly;
@@ -41,4 +42,11 @@ public interface DeptOrderDailyMapperExt extends DeptOrderDailyMapper {
      */
     List<DeptOrderDaily> listOrderDailyReport(OrderReportDto dto);
 
+    /**
+     * 项目部统计运量数
+     *
+     * @param type
+     * @return
+     */
+    List<ListWaybillAmountDto> listWaybillAmountByDept(@Param("type") Integer type);
 }

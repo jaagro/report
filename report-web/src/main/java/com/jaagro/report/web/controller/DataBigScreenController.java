@@ -79,4 +79,17 @@ public class DataBigScreenController {
         log.info("O listRedBlackBoardData boardType: {}", boardType);
         return dataBigScreenService.listRedBlackBoardData(boardType);
     }
+
+    /**
+     * 项目部统计运量数
+     *
+     * @param type: 1- 日报 2-月报
+     * @return
+     */
+    @ApiOperation(value = "项目部统计运量数前十")
+    @GetMapping("/listWaybillAmountByDept")
+    public List<ListWaybillAmountDto> listWaybillAmountByDept(@RequestParam String type) {
+        log.info("O listWaybillAmountByDept type: {}", type);
+        return dataBigScreenService.listWaybillAmountByDept(Integer.parseInt(type));
+    }
 }
