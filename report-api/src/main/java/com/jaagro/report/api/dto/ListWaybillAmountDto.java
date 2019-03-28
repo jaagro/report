@@ -6,16 +6,19 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * 季度运单返回dto
+ * 运单量返回dto
  *
  * @author baiyiran
  */
 @Accessors(chain = true)
 @Data
-public class ListWaybillQuarterDto implements Serializable {
+public class ListWaybillAmountDto implements Serializable {
 
-    private String type;
+    private Integer departmentId;
 
-    private Long value;
+    private String x;
 
+    private String y;
+
+    private String z;
 }
