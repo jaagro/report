@@ -1,10 +1,6 @@
 package com.jaagro.report.api.service;
 
-import com.jaagro.report.api.dto.ContributionTopTenCustomerDto;
-import com.jaagro.report.api.dto.ListDeptHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListHistoryWaybillDto;
-import com.jaagro.report.api.dto.ListWaybillQuarterDto;
-import com.jaagro.report.api.dto.RedBlackBoardDto;
+import com.jaagro.report.api.dto.*;
 
 import java.util.List;
 
@@ -43,4 +39,11 @@ public interface DataBigScreenService {
 
     List<RedBlackBoardDto> listRedBlackBoardData(String boardType);
 
+    /**
+     * 项目部统计运量数
+     *
+     * @param type
+     * @return
+     */
+    List<ListWaybillAmountDto> listWaybillAmountByDept(Integer type);
 }

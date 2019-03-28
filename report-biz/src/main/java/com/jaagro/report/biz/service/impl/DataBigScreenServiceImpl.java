@@ -3,6 +3,7 @@ package com.jaagro.report.biz.service.impl;
 import com.jaagro.report.api.dto.*;
 import com.jaagro.report.api.service.DataBigScreenService;
 import com.jaagro.report.biz.mapper.report.CustomerOrderDailyMapperExt;
+import com.jaagro.report.biz.mapper.report.DeptOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
 import com.jaagro.report.biz.service.UserClientService;
@@ -27,6 +28,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     private CustomerOrderDailyMapperExt customerOrderDailyMapperExt;
     @Autowired
     private DeptWaybillfeeMonthlyMapperExt deptWaybillfeeMonthlyMapper;
+    @Autowired
+    private DeptOrderDailyMapperExt deptOrderDailyMapperExt;
     @Autowired
     private UserClientService userClientService;
 
@@ -102,13 +105,13 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                 criteriaDto.setDeptIds(userClientService.getDownDepartmentByDeptId(id));
                 List<ListHistoryWaybillDto> historyWaybill = deptWaybillfeeMonthlyMapper.listHistoryWaybill(criteriaDto);
                 if (!CollectionUtils.isEmpty(historyWaybill)) {
-                    for (ListHistoryWaybillDto dto : waybillDtoList) {
+                    for (ListHistoryWaybillDto dto : historyWaybill) {
                         if (!StringUtils.isEmpty(dto.getDepartmentId())) {
                             dto.setX(userClientService.getDeptNameById(dto.getDepartmentId()));
                         }
                     }
+                    waybillDtoList.addAll(historyWaybill);
                 }
-                waybillDtoList.addAll(historyWaybill);
             }
         }
         if (!CollectionUtils.isEmpty(waybillDtoList)) {
@@ -158,6 +161,25 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             Collections.reverse(resultList);
         }
         return resultList;
+    }
+
+    /**
+     * 项目部统计运量数
+     *
+     * @param type
+     * @return
+     */
+    @Override
+    public List<ListWaybillAmountDto> listWaybillAmountByDept(Integer type) {
+        List<ListWaybillAmountDto> listWaybillAmountDtoList = deptOrderDailyMapperExt.listWaybillAmountByDept(type);
+        if (!CollectionUtils.isEmpty(listWaybillAmountDtoList)) {
+            for (ListWaybillAmountDto amountDto : listWaybillAmountDtoList) {
+                if (!StringUtils.isEmpty(amountDto.getDepartmentId())) {
+                    amountDto.setX(userClientService.getDeptNameById(amountDto.getDepartmentId()));
+                }
+            }
+        }
+        return listWaybillAmountDtoList;
     }
 
     /**
