@@ -49,4 +49,11 @@ public interface DeptOrderMonthlyMapperExt extends DeptOrderMonthlyMapper {
      * @return
      */
     List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(ListWaybillCountCriteria countCriteria);
+
+    /**
+     * 数据大屏-运量月环比：本月总和上个月总和
+     * @param countCriteria
+     * @return
+     */
+    List<ListWaybillTotalDto>  listTotalCompareByProdTypeAndType (ListWaybillCountCriteria countCriteria);
 }
