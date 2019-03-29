@@ -2,6 +2,7 @@ package com.jaagro.report.biz.mapper.tms;
 
 
 import com.jaagro.report.api.dto.ListWashTruckImageDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ import java.util.List;
  */
 public interface WashTruckImageMapperExt {
 
-    List<ListWashTruckImageDto> listWashTruckImage(String type);
+    List<ListWashTruckImageDto> listWashTruckImage(@Param("type") String type);
 }
