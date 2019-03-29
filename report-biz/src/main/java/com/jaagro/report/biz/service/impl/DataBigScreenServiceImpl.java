@@ -10,7 +10,9 @@ import com.jaagro.report.biz.mapper.report.DeptOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptOrderMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
+import com.jaagro.report.biz.mapper.tms.WashTruckImageMapperExt;
 import com.jaagro.report.biz.mapper.tms.WaybillAnomalyMapperExt;
+import com.jaagro.report.biz.service.OssSignUrlClientService;
 import com.jaagro.report.biz.service.UserClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,9 +45,13 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     private OrderReportMapperExt orderReportMapperExt;
     @Autowired
     private WaybillAnomalyMapperExt waybillAnomalyMapperExt;
+    @Autowired
+    private WashTruckImageMapperExt washTruckImageMapperExt;
 
     @Autowired
     private DeptOrderMonthlyMapperExt deptOrderMontlyMapperExt;
+    @Autowired
+    private OssSignUrlClientService ossSignUrlClientService;
 
     /**
      * 客户贡献前十
@@ -419,6 +426,24 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                 break;
         }
         return list;
+    }
+
+    /**
+     * 洗车图片
+     *
+     * @return
+     */
+    @Override
+    public List<ListWashTruckImageDto> listWashTruckImage() {
+        List<ListWashTruckImageDto> imageDtoList = washTruckImageMapperExt.listWashTruckImage();
+        if (!CollectionUtils.isEmpty(imageDtoList)) {
+            for (ListWashTruckImageDto dto : imageDtoList) {
+                String[] strArray = {dto.getUrl()};
+                List<URL> urlList = ossSignUrlClientService.listSignedUrl(strArray);
+                dto.setUrl(urlList.get(0).toString());
+            }
+        }
+        return imageDtoList;
     }
 
     public static void main(String[] args) {
