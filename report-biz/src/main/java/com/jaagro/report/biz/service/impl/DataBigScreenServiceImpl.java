@@ -292,7 +292,7 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     @Override
     public List<ListWaybillCountDto> listWaybillCountByProdTypeAndType(String productType, String type) {
         List<ListWaybillCountDto> dtoList = new ArrayList<>();
-        if(Integer.parseInt(type)==1) {
+        if (Integer.parseInt(type) == 1) {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date today = new Date();
             Date yesterday = DateUtils.addDays(today, -1);
@@ -304,28 +304,24 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                     .setStrStartDate(strStartDay)
                     .setStrEndDate(strEndDay);
             dtoList = deptOrderDailyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
-
-
-        }else{
+        } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
             Date today = new Date();
-            Date yesterday = DateUtils.addMonths(today,0);
+            Date yesterday = DateUtils.addMonths(today, 0);
             String strEndMonth = format.format(yesterday);
             Date endDay = DateUtils.addMonths(today, -4);
-            String  strStartMonth= format.format(endDay);
+            String strStartMonth = format.format(endDay);
             ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
             countCriteria.setProductType(productType)
                     .setStrStartDate(strStartMonth)
                     .setStrEndDate(strEndMonth);
             dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
             for (ListWaybillCountDto listWaybillCountDto : dtoList) {
-                listWaybillCountDto.setX(listWaybillCountDto.getX()+"-01 00:00:00");
-                
+                listWaybillCountDto.setX(listWaybillCountDto.getX() + "-01 00:00:00");
+
             }
 
         }
-
-
         return dtoList;
     }
 
@@ -339,27 +335,24 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     @Override
     public List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(String productType, String type) {
         List<ListWaybillTotalDto> dtoList = new ArrayList<>();
-        if(Integer.parseInt(type)==1) {
+        if (Integer.parseInt(type) == 1) {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Date today = new Date();
-            Date yesterday = DateUtils.addDays(today, -1);
+            Date yesterday = DateUtils.addDays(new Date(), -1);
             String strEndDay = format.format(yesterday);
-            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
-            countCriteria.setProductType(productType)
+            ListWaybillCountCriteria criteria = new ListWaybillCountCriteria();
+            criteria.setProductType(productType)
                     .setStrEndDate(strEndDay);
-            dtoList = deptOrderDailyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
-        }else{
+            dtoList = deptOrderDailyMapperExt.listWaybillTotalByProdTypeAndType(criteria);
+        } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
-            Date today = new Date();
-            Date thisMonth = DateUtils.addMonths(today,0);
+            Date thisMonth = DateUtils.addMonths(new Date(), 0);
             String strThisMonth = format.format(thisMonth);
-            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
-            countCriteria.setProductType(productType)
+            ListWaybillCountCriteria criteria = new ListWaybillCountCriteria();
+            criteria.setProductType(productType)
                     .setStrEndDate(strThisMonth);
-            dtoList = deptOrderMontlyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+            dtoList = deptOrderMontlyMapperExt.listWaybillTotalByProdTypeAndType(criteria);
 
         }
-
         return dtoList;
     }
 
@@ -372,7 +365,29 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
      */
     @Override
     public List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(String productType, String type) {
-        return null;
+        List<ListWaybillTotalDto> dtoList = new ArrayList<>();
+        if (Integer.parseInt(type) == 1) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date today = new Date();
+            Date yesterday = DateUtils.addDays(today, -1);
+            String strEndDay = format.format(yesterday);
+            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
+            countCriteria.setProductType(productType)
+                    .setStrEndDate(strEndDay);
+            dtoList = deptOrderDailyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+            Date today = new Date();
+            Date thisMonth = DateUtils.addMonths(today, 0);
+            String strThisMonth = format.format(thisMonth);
+            ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
+            countCriteria.setProductType(productType)
+                    .setStrEndDate(strThisMonth);
+            dtoList = deptOrderMontlyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+
+        }
+
+        return dtoList;
     }
 
     public static void main(String[] args) {
@@ -380,10 +395,10 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         List<RedBlackBoardDto> dtoList;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
         Date today = new Date();
-        Date yesterday = DateUtils.addMonths(today,0);
+        Date yesterday = DateUtils.addMonths(today, 0);
         String strEndMonth = format.format(yesterday);
         Date endDay = DateUtils.addMonths(today, -4);
-        String  strStartMonth= format.format(endDay);
+        String strStartMonth = format.format(endDay);
         System.out.println("===============startDay:" + strStartMonth);
         System.out.println("===============endDay:" + strEndMonth);
 

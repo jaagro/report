@@ -109,36 +109,76 @@ public class DataBigScreenController {
     }
 
     /**
-     *
-     * @param productType:货物类型 1-毛鸡；2-饲料；3-猪
+     *当月货物明细统计
      * @param type: 1-日统计 2-月统计
      * @return
      */
-    @ApiOperation(value = "当月货物明细统计")
-    @GetMapping("/listWaybillCountByProdTypeAndType")
-    public List<ListWaybillCountDto> listWaybillCountByProdTypeAndType(@RequestParam String productType, @RequestParam String type) {
-        log.info("O listWaybillCountByProdTypeAndType productType:{}  type: {}",productType, type);
-        return dataBigScreenService.listWaybillCountByProdTypeAndType(productType,type);
+    @ApiOperation(value = "当月货物明细统计-毛鸡")
+    @GetMapping("/listWaybillCountChickenByType")
+    public List<ListWaybillCountDto> listWaybillCountChickenByType(@RequestParam String type) {
+        log.info("O listWaybillCountChickenByType  type: {}", type);
+        return dataBigScreenService.listWaybillCountByProdTypeAndType("1",type);
+    }
+    @ApiOperation(value = "当月货物明细统计-饲料")
+    @GetMapping("/listWaybillCountFoodByType")
+    public List<ListWaybillCountDto> listWaybillCountFoodByType(@RequestParam String type) {
+        log.info("O listWaybillCountFoodByType  type: {}", type);
+        return dataBigScreenService.listWaybillCountByProdTypeAndType("2",type);
+    }
+
+    @ApiOperation(value = "当月货物明细统计-猪")
+    @GetMapping("/listWaybillCountPigByType")
+    public List<ListWaybillCountDto> listWaybillCountPigByType(@RequestParam String type) {
+        log.info("O listWaybillCountPigByType  type: {}", type);
+        return dataBigScreenService.listWaybillCountByProdTypeAndType("3",type);
+    }
+    /**
+     * 数据大屏运量总和
+     * @param type: 1-日统计 2-月统计
+     * @return
+     */
+    @ApiOperation(value = "数据大屏运量总和-毛鸡")
+    @GetMapping("/listWaybillTotalChickenByType")
+    public List<ListWaybillTotalDto> listWaybillTotalChickenByType(@RequestParam String type) {
+        log.info("O listWaybillTotalChickenByType type: {}", type);
+        return dataBigScreenService.listWaybillTotalByProdTypeAndType("1",type);
+    }
+    @ApiOperation(value = "数据大屏运量总和-饲料")
+    @GetMapping("/listWaybillTotalFoodByType")
+    public List<ListWaybillTotalDto> listWaybillTotalFoodByType(@RequestParam String type) {
+        log.info("O listWaybillTotalFoodByType type: {}", type);
+        return dataBigScreenService.listWaybillTotalByProdTypeAndType("2",type);
+    }
+    @ApiOperation(value = "数据大屏运量总和-猪")
+    @GetMapping("/listWaybillTotalPigByType")
+    public List<ListWaybillTotalDto> listWaybillTotalPigByType(@RequestParam String type) {
+        log.info("O listWaybillTotalPigByType type: {}", type);
+        return dataBigScreenService.listWaybillTotalByProdTypeAndType("3",type);
     }
 
     /**
      *
-     * @param productType:货物类型 1-毛鸡；2-饲料；3-猪
-     * @param type: 1-日统计 2-月统计
+     * 数据大屏货物同比
+     * @param type
      * @return
      */
-    @ApiOperation(value = "数据大屏运量总和")
-    @GetMapping("/listWaybillTotalByProdTypeAndType")
-    public List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(@RequestParam String productType, @RequestParam String type) {
-        log.info("O listWaybillTotalByProdTypeAndType productType:{}  type: {}",productType, type);
-        return dataBigScreenService.listWaybillTotalByProdTypeAndType(productType,type);
+    @ApiOperation(value = "数据大屏货物同比-毛鸡")
+    @GetMapping("/listTotalCompareChickenByType")
+    public List<ListWaybillTotalDto> listTotalCompareChickenByType(@RequestParam String type) {
+        log.info("O listTotalCompareChickenByType type: {}",type);
+        return dataBigScreenService.listTotalCompareByProdTypeAndType("1",type);
     }
-
-    @ApiOperation(value = "数据大屏货物同比")
-    @GetMapping("/listTotalCompareByProdTypeAndType")
-    public List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(@RequestParam String productType, @RequestParam String type) {
-        log.info("O listTotalCompareByProdTypeAndType productType:{}  type: {}",productType, type);
-        return dataBigScreenService.listTotalCompareByProdTypeAndType(productType,type);
+    @ApiOperation(value = "数据大屏货物同比-饲料")
+    @GetMapping("/listTotalCompareFoodByType")
+    public List<ListWaybillTotalDto> listTotalCompareFoodByType(@RequestParam String type) {
+        log.info("O listTotalCompareFoodByType type: {}",type);
+        return dataBigScreenService.listTotalCompareByProdTypeAndType("2",type);
+    }
+    @ApiOperation(value = "数据大屏货物同比-毛鸡")
+    @GetMapping("/listTotalComparePigByType")
+    public List<ListWaybillTotalDto> listTotalComparePigByType(@RequestParam String type) {
+        log.info("O listTotalComparePigByType type: {}",type);
+        return dataBigScreenService.listTotalCompareByProdTypeAndType("3",type);
     }
 
 }
