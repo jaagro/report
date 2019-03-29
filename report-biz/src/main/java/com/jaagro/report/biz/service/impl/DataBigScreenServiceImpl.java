@@ -419,9 +419,10 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                 list.add(new ListDeptHistoryWaybillDto().setX("河南大区").setY(8L));
                 break;
             default:
-                list.add(new ListDeptHistoryWaybillDto().setX("中南大区").setY(67L));
-                list.add(new ListDeptHistoryWaybillDto().setX("华东大区").setY(52L));
-                list.add(new ListDeptHistoryWaybillDto().setX("西南大区").setY(59L));
+                list.add(new ListDeptHistoryWaybillDto().setX("中南大区").setY(64L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东大区").setY(54L));
+                list.add(new ListDeptHistoryWaybillDto().setX("东北大区").setY(72L));
+                list.add(new ListDeptHistoryWaybillDto().setX("西南大区").setY(46L));
                 list.add(new ListDeptHistoryWaybillDto().setX("河南大区").setY(50L));
                 break;
         }
