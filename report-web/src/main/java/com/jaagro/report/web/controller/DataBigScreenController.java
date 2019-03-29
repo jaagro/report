@@ -101,22 +101,20 @@ public class DataBigScreenController {
      * @return
      */
     @ApiOperation(value = "大区运量数据")
-    @GetMapping("/listWaybillByNetwork/{productType}")
-    public List<ListDeptHistoryWaybillDto> listWaybillByNetwork(@PathVariable String productType) {
+    @GetMapping("/listWaybillByNetwork")
+    public List<ListDeptHistoryWaybillDto> listWaybillByNetwork(@RequestParam String productType) {
         return dataBigScreenService.listWaybillByNetwork(Integer.parseInt(productType));
     }
 
     /**
-     * 当月运单异常情况
+     * 洗车图片
      *
-     * @param
      * @return
      */
-    @ApiOperation(value = "当月运单异常情况")
-    @GetMapping("/listThisMonthWaybillAnomaly")
-    public List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly() {
-        log.info("O listThisMonthWaybillAnomaly");
-        return dataBigScreenService.listThisMonthWaybillAnomaly();
+    @ApiOperation(value = "洗车图片")
+    @GetMapping("/listWashTruckImage")
+    public List<ListWashTruckImageDto> listWashTruckImage() {
+        return dataBigScreenService.listWashTruckImage();
     }
 
     /**
@@ -198,6 +196,19 @@ public class DataBigScreenController {
     public List<ListWaybillTotalDto> listTotalComparePigByType(@RequestParam String type) {
         log.info("O listTotalComparePigByType type: {}", type);
         return dataBigScreenService.listTotalCompareByProdTypeAndType("3", type);
+    }
+
+    /**
+     * 当月运单异常情况
+     *
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "当月运单异常情况")
+    @GetMapping("/listThisMonthWaybillAnomaly")
+    public List<ListThisMonthWaybillAnomalyDto> listThisMonthWaybillAnomaly() {
+        log.info("O listThisMonthWaybillAnomaly");
+        return dataBigScreenService.listThisMonthWaybillAnomaly();
     }
 
 }

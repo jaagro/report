@@ -100,4 +100,11 @@ public interface DataBigScreenService {
      * @return
      */
     List<ListDeptHistoryWaybillDto> listWaybillByNetwork(Integer productType);
+
+    /**
+     * 洗车图片
+     *
+     * @return
+     */
+    List<ListWashTruckImageDto> listWashTruckImage();
 }
