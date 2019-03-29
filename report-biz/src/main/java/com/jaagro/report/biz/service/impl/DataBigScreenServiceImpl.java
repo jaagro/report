@@ -316,9 +316,10 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
                     .setStrStartDate(strStartMonth)
                     .setStrEndDate(strEndMonth);
             dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
+            SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
             for (ListWaybillCountDto listWaybillCountDto : dtoList) {
-                listWaybillCountDto.setX(listWaybillCountDto.getX() + "-01 00:00:00");
-
+                String strD=listWaybillCountDto.getX() + "-01 00:00:00";
+                listWaybillCountDto.setX(strD.replace("-","/"));
             }
 
         }
@@ -367,23 +368,21 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     public List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(String productType, String type) {
         List<ListWaybillTotalDto> dtoList = new ArrayList<>();
         if (Integer.parseInt(type) == 1) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Date today = new Date();
-            Date yesterday = DateUtils.addDays(today, -1);
-            String strEndDay = format.format(yesterday);
             ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
-            countCriteria.setProductType(productType)
-                    .setStrEndDate(strEndDay);
-            dtoList = deptOrderDailyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+            countCriteria.setProductType(productType);
+            dtoList = deptOrderDailyMapperExt.listTotalCompareByProdTypeAndType(countCriteria);
         } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
             Date today = new Date();
             Date thisMonth = DateUtils.addMonths(today, 0);
             String strThisMonth = format.format(thisMonth);
+            Date lastMonth = DateUtils.addMonths(today, -1);
+            String strLastMonth = format.format(lastMonth);
             ListWaybillCountCriteria countCriteria = new ListWaybillCountCriteria();
             countCriteria.setProductType(productType)
-                    .setStrEndDate(strThisMonth);
-            dtoList = deptOrderMontlyMapperExt.listWaybillTotalByProdTypeAndType(countCriteria);
+                    .setStrStartDate(strThisMonth)
+                    .setStrEndDate(strLastMonth);
+            dtoList = deptOrderMontlyMapperExt.listTotalCompareByProdTypeAndType(countCriteria);
 
         }
 
@@ -392,15 +391,10 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
 
     public static void main(String[] args) {
 
-        List<RedBlackBoardDto> dtoList;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
-        Date today = new Date();
-        Date yesterday = DateUtils.addMonths(today, 0);
-        String strEndMonth = format.format(yesterday);
-        Date endDay = DateUtils.addMonths(today, -4);
-        String strStartMonth = format.format(endDay);
-        System.out.println("===============startDay:" + strStartMonth);
-        System.out.println("===============endDay:" + strEndMonth);
+        String strDate ="2019-10-01 00:00:00";
+        strDate = strDate.replace("-","/");
+        System.out.println(strDate);
+
 
     }
 }

@@ -53,10 +53,25 @@
         order by report_time desc
     </select>
 
-<select id="listWaybillTotalByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto">
-      select '' as name,
-            sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
-      from dept_order_monthly
-      where goods_type = #{productType} and  report_time = #{strEndDate}
-</select>
+    <select id="listWaybillTotalByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto">
+          select '' as name,
+                sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
+          from dept_order_monthly
+          where goods_type = #{productType} and  report_time = #{strEndDate}
+    </select>
+
+    <select id="listTotalCompareByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto">
+            select '' as name,
+            ((
+                select sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
+                from dept_order_monthly
+                 where goods_type = #{productType} and  report_time = #{strStartDate}
+            )
+            -
+            (
+                select sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
+                from dept_order_monthly
+                 where goods_type = #{productType} and  report_time = #{strEndDate}
+            )) as value
+    </select>
 </mapper>

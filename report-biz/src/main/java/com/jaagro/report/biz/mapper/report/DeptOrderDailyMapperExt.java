@@ -68,5 +68,12 @@ public interface DeptOrderDailyMapperExt extends DeptOrderDailyMapper {
      */
     List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(ListWaybillCountCriteria countCriteria);
 
+    /**
+     * 数据大屏-运量日环比：昨天总和减去前天总和
+     * @param countCriteria
+     * @return
+     */
+    List<ListWaybillTotalDto>  listTotalCompareByProdTypeAndType (ListWaybillCountCriteria countCriteria);
+
 
 }
