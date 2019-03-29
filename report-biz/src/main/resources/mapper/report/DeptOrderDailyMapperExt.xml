@@ -74,8 +74,8 @@
             resultType="com.jaagro.report.api.dto.ListWaybillAmountDto">
         SELECT
         department_id,
-        SUM( total_waybill_quantity ) AS y,
-        SUM( complete_waybill_quantity ) AS z
+        SUM( total_waybill_quantity )*10 AS y,
+        SUM( complete_waybill_quantity )*10 AS z
         FROM
         dept_order_daily
         WHERE

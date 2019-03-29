@@ -318,8 +318,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
             SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
             for (ListWaybillCountDto listWaybillCountDto : dtoList) {
-                String strD=listWaybillCountDto.getX() + "-01 00:00:00";
-                listWaybillCountDto.setX(strD.replace("-","/"));
+                String strD = listWaybillCountDto.getX() + "-01 00:00:00";
+                listWaybillCountDto.setX(strD.replace("-", "/"));
             }
 
         }
@@ -389,10 +389,42 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         return dtoList;
     }
 
+    /**
+     * 大区运量数据
+     *
+     * @param productType
+     * @return
+     */
+    @Override
+    public List<ListDeptHistoryWaybillDto> listWaybillByNetwork(Integer productType) {
+        List<ListDeptHistoryWaybillDto> list = new ArrayList<>();
+        switch (productType) {
+            case 1:
+                list.add(new ListDeptHistoryWaybillDto().setX("正大").setY(2100L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东").setY(1900L));
+                list.add(new ListDeptHistoryWaybillDto().setX("湖北").setY(1000L));
+                break;
+            case 2:
+                list.add(new ListDeptHistoryWaybillDto().setX("中南大区").setY(18L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东大区").setY(16L));
+                list.add(new ListDeptHistoryWaybillDto().setX("东北大区").setY(11L));
+                list.add(new ListDeptHistoryWaybillDto().setX("西南大区").setY(9L));
+                list.add(new ListDeptHistoryWaybillDto().setX("河南大区").setY(8L));
+                break;
+            default:
+                list.add(new ListDeptHistoryWaybillDto().setX("中南大区").setY(67L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东大区").setY(52L));
+                list.add(new ListDeptHistoryWaybillDto().setX("西南大区").setY(59L));
+                list.add(new ListDeptHistoryWaybillDto().setX("河南大区").setY(50L));
+                break;
+        }
+        return list;
+    }
+
     public static void main(String[] args) {
 
-        String strDate ="2019-10-01 00:00:00";
-        strDate = strDate.replace("-","/");
+        String strDate = "2019-10-01 00:00:00";
+        strDate = strDate.replace("-", "/");
         System.out.println(strDate);
 
 
