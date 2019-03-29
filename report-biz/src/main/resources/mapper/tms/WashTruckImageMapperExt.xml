@@ -2,14 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.jaagro.report.biz.mapper.tms.WashTruckImageMapperExt">
     <select id="listWashTruckImage" resultType="com.jaagro.report.api.dto.ListWashTruckImageDto">
-    SELECT
+        SELECT
         r.truck_number AS description,
         i.image_url AS url
     FROM
-        wash_truck_image i,
-        wash_truck_record r
+        wash_truck_image i
+        LEFT JOIN wash_truck_record r ON i.wash_truck_record_id = r.id
     WHERE
-        i.wash_truck_record_id = r.id
-        AND r.ENABLE = 1
+        r.ENABLE = 1
     </select>
 </mapper>
