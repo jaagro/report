@@ -435,8 +435,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
      * @return
      */
     @Override
-    public List<ListWashTruckImageDto> listWashTruckImage() {
-        List<ListWashTruckImageDto> imageDtoList = washTruckImageMapperExt.listWashTruckImage();
+    public List<ListWashTruckImageDto> listWashTruckImage(String type) {
+        List<ListWashTruckImageDto> imageDtoList = washTruckImageMapperExt.listWashTruckImage(type);
         if (!CollectionUtils.isEmpty(imageDtoList)) {
             for (ListWashTruckImageDto dto : imageDtoList) {
                 String[] strArray = {dto.getUrl()};

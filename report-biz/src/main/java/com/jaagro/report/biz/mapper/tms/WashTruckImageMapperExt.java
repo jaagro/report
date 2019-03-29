@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface WashTruckImageMapperExt {
 
-    List<ListWashTruckImageDto> listWashTruckImage();
+    List<ListWashTruckImageDto> listWashTruckImage(String type);
 }

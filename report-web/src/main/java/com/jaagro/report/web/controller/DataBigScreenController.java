@@ -109,12 +109,13 @@ public class DataBigScreenController {
     /**
      * 洗车图片
      *
+     * @param type 1-正序 2-倒序
      * @return
      */
     @ApiOperation(value = "洗车图片")
     @GetMapping("/listWashTruckImage")
-    public List<ListWashTruckImageDto> listWashTruckImage() {
-        return dataBigScreenService.listWashTruckImage();
+    public List<ListWashTruckImageDto> listWashTruckImage(@RequestParam String type) {
+        return dataBigScreenService.listWashTruckImage(type);
     }
 
     /**

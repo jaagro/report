@@ -106,5 +106,5 @@ public interface DataBigScreenService {
      *
      * @return
      */
-    List<ListWashTruckImageDto> listWashTruckImage();
+    List<ListWashTruckImageDto> listWashTruckImage(String type);
 }
