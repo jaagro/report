@@ -337,12 +337,12 @@ public class FinanceServiceImpl implements FinanceService {
         loanApplyRecord
                 .setCustomerId(relevanceId)
                 .setLoanType(LoanTypeEnum.getCodeByType(dto.getLoanType()));
-        if (breedingPlanByCriteria.getId() != null) {
+        if (breedingPlanByCriteria.getId() != null && breedingPlanByCriteria.getBatchNo() != null) {
             loanApplyRecord
                     .setBatchNo(breedingPlanByCriteria.getBatchNo())
                     .setPlanId(breedingPlanByCriteria.getId());
         }
-        if (purchaseOrder != null && purchaseOrder.getId() != null) {
+        if (purchaseOrder != null && purchaseOrder.getId() != null && purchaseOrder.getPurchaseNo() != null) {
             loanApplyRecord
                     .setPurchaseOrderNo(purchaseOrder.getPurchaseNo())
                     .setPurchaseOrderId(purchaseOrder.getId());
