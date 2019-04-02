@@ -8,6 +8,7 @@ import com.jaagro.report.api.dto.finance.*;
 import com.jaagro.report.api.dto.plant.PlantDto;
 import com.jaagro.report.api.dto.plant.PlantImageDto;
 import com.jaagro.report.api.enums.CustomerTypeEnum;
+import com.jaagro.report.api.enums.LoanTypeEnum;
 import com.jaagro.report.api.enums.PackageUnitEnum;
 import com.jaagro.report.api.enums.ProductTypeEnum;
 import com.jaagro.report.api.exception.BusinessException;
@@ -157,38 +158,77 @@ public class FinanceServiceImpl implements FinanceService {
         if (showCustomer == null) {
             throw new BusinessException("客户不存在");
         }
-        List<ReturnBreedingPlanInfoDto> returnBreedingPlanInfoDtos = new ArrayList<>();
         List<BreedingPlanInfoDo> breedingPlanInfoDos = null;
-        if (Constants.BATCH.equals(type)) {
+        if (LoanTypeEnum.BATCH.getType().equals(type)) {
             breedingPlanInfoDos = breedingPlanMapper.listBreedingPlanInfoByBatchType(relevanceId);
         }
-        if (Constants.PURCHASE_ORDER.equals(type)) {
-            breedingPlanMapper.listBreedingPlanInfoByPurchaseOrderType(relevanceId);
+        if (LoanTypeEnum.PURCHASE_ORDER.getType().equals(type)) {
+            breedingPlanInfoDos = breedingPlanMapper.listBreedingPlanInfoByPurchaseOrderType(relevanceId);
         }
-        if (!CollectionUtils.isEmpty(breedingPlanInfoDos)) {
-            for (BreedingPlanInfoDo breedingPlanInfoDo : breedingPlanInfoDos) {
-                ReturnBreedingPlanInfoDto returnBreedingPlanInfoDto = new ReturnBreedingPlanInfoDto();
-                returnBreedingPlanInfoDto
-                        .setOperatorCode(Constants.OPERATOR_CODE)
-                        .setOperatorName(Constants.OPERATOR_NAME)
-                        .setSource(Constants.SOURCE);
-                if (showCustomer.getId() != null) {
-                    returnBreedingPlanInfoDto.setCustomerId(showCustomer.getId());
-                }
-                if (showCustomer.getCustomerName() != null) {
-                    returnBreedingPlanInfoDto.setCustomerName(showCustomer.getCustomerName());
-                }
-                if (showCustomer.getCustomerType() != null) {
-                    returnBreedingPlanInfoDto
-                            .setCustomerType(CustomerTypeEnum.getDescByCode(showCustomer.getCustomerType()));
-                }
-                BeanUtils.copyProperties(breedingPlanInfoDo, returnBreedingPlanInfoDto);
-                if (breedingPlanInfoDo.getBabyChickPrice() != null && breedingPlanInfoDo.getPlanChickenQuantity() != null) {
-                    BigDecimal batchAmount = BigDecimal.valueOf(breedingPlanInfoDo.getPlanChickenQuantity()).multiply(breedingPlanInfoDo.getBabyChickPrice());
-                    returnBreedingPlanInfoDto.setBatchAmount(batchAmount);
-                }
-                returnBreedingPlanInfoDtos.add(returnBreedingPlanInfoDto);
+        List<ReturnBreedingPlanInfoDto> returnBreedingPlanInfoDtos = new ArrayList<>();
+        for (BreedingPlanInfoDo breedingPlan : breedingPlanInfoDos) {
+            ReturnBreedingPlanInfoDto returnBreedingPlanInfoDto = new ReturnBreedingPlanInfoDto();
+            returnBreedingPlanInfoDto
+                    .setBreedingType("活禽")
+                    .setOperatorCode(Constants.OPERATOR_CODE)
+                    .setOperatorName(Constants.OPERATOR_NAME)
+                    .setSource(Constants.SOURCE);
+            if (showCustomer.getId() != null) {
+                returnBreedingPlanInfoDto.setCustomerId(showCustomer.getId());
             }
+            if (showCustomer.getCustomerName() != null) {
+                returnBreedingPlanInfoDto.setCustomerName(showCustomer.getCustomerName());
+            }
+            if (showCustomer.getCustomerType() != null) {
+                returnBreedingPlanInfoDto
+                        .setCustomerType(CustomerTypeEnum.getDescByCode(showCustomer.getCustomerType()));
+            }
+            BeanUtils.copyProperties(breedingPlan, returnBreedingPlanInfoDto);
+            if (breedingPlan.getBabyChickPrice() != null && breedingPlan.getPlanChickenQuantity() != null) {
+                BigDecimal batchAmount = BigDecimal.valueOf(breedingPlan.getPlanChickenQuantity()).multiply(breedingPlan.getBabyChickPrice());
+                returnBreedingPlanInfoDto.setBatchAmount(batchAmount);
+            }
+            if (LoanTypeEnum.PURCHASE_ORDER.getType().equals(type)) {
+                List<ReturnPurchaseOrderDto> returnPurchaseOrderDtos = new ArrayList<>();
+                List<PurchaseOrder> purchaseOrders = null;
+                if (breedingPlan.getId() != null) {
+                    purchaseOrders = purchaseOrderMapper.listPurchaseOrderByPlanId(breedingPlan.getId());
+                }
+                if (purchaseOrders != null) {
+                    for (PurchaseOrder purchaseOrder : purchaseOrders) {
+                        ReturnPurchaseOrderDto returnPurchaseOrderDto = new ReturnPurchaseOrderDto();
+                        BeanUtils.copyProperties(purchaseOrder, returnPurchaseOrderDto);
+                        if (purchaseOrder.getProductType() != null) {
+                            returnPurchaseOrderDto
+                                    .setProductType(ProductTypeEnum.getDescByCode(purchaseOrder.getProductType()));
+                        }
+                        if (purchaseOrder.getProductType() != null) {
+                            if (ProductTypeEnum.SPROUT.getCode() == purchaseOrder.getProductType()) {
+                                returnPurchaseOrderDto.setUnit(PackageUnitEnum.PIECE.getDesc());
+                            }
+                            if (ProductTypeEnum.FEED.getCode() == purchaseOrder.getProductType()) {
+                                returnPurchaseOrderDto.setUnit(PackageUnitEnum.TONS.getDesc());
+                            }
+                            if (ProductTypeEnum.DRUG.getCode() == purchaseOrder.getProductType()
+                                    || ProductTypeEnum.VACCINE.getCode() == purchaseOrder.getProductType()) {
+                                returnPurchaseOrderDto.setUnit(PackageUnitEnum.BOX.getDesc());
+                            }
+                        }
+                        if (purchaseOrder.getId() != null) {
+                            BigDecimal quantity = purchaseOrderItemsMapper.calculateTotalPurchaseOrderQuantity(purchaseOrder.getId());
+                            returnPurchaseOrderDto.setQuantity(quantity);
+                        }
+                        if (purchaseOrder.getCreateTime() != null) {
+                            returnPurchaseOrderDto
+                                    .setPurchaseTime(purchaseOrder.getCreateTime());
+                        }
+                        returnPurchaseOrderDtos.add(returnPurchaseOrderDto);
+                    }
+                    returnBreedingPlanInfoDto
+                            .setReturnPurchaseOrderDtos(returnPurchaseOrderDtos);
+                }
+            }
+            returnBreedingPlanInfoDtos.add(returnBreedingPlanInfoDto);
         }
         return returnBreedingPlanInfoDtos;
     }
@@ -276,23 +316,52 @@ public class FinanceServiceImpl implements FinanceService {
         if (showCustomer == null) {
             throw new BusinessException("客户不存在");
         }
-        PurchaseOrder purchaseOrder = purchaseOrderMapper.selectByPurchaseNo(dto.getPurchaseNo());
-        if (purchaseOrder == null) {
-            throw new BusinessException("当前采购单不存在");
-
+        BreedingPlanInfoCriteria breedingPlanInfoCriteria = new BreedingPlanInfoCriteria();
+        breedingPlanInfoCriteria.setBatchNo(dto.getBatchNo());
+        BreedingPlan breedingPlanByCriteria = breedingPlanMapper.getBreedingPlanByCriteria(breedingPlanInfoCriteria);
+        if (breedingPlanByCriteria == null) {
+            throw new RuntimeException("当前养殖批次不存在");
+        }
+        PurchaseOrder purchaseOrder = null;
+        if (LoanTypeEnum.PURCHASE_ORDER.getType().equals(dto.getLoanType())) {
+            if (dto.getPurchaseNo() != null) {
+                purchaseOrder = purchaseOrderMapper.selectByPurchaseNo(dto.getPurchaseNo());
+                if (purchaseOrder == null) {
+                    throw new BusinessException("当前采购单不存在");
+                }
+            } else {
+                throw new BusinessException("采购单号不能为空");
+            }
         }
         LoanApplyRecord loanApplyRecord = new LoanApplyRecord();
         loanApplyRecord
-                .setPlanId(purchaseOrder.getPlanId())
-                .setPurchaseOrderId(purchaseOrder.getId())
-                .setCustomerId(relevanceId);
+                .setCustomerId(relevanceId)
+                .setLoanType(LoanTypeEnum.getCodeByType(dto.getLoanType()));
+        if (breedingPlanByCriteria.getId() != null) {
+            loanApplyRecord
+                    .setBatchNo(breedingPlanByCriteria.getBatchNo())
+                    .setPlanId(breedingPlanByCriteria.getId());
+        }
+        if (purchaseOrder != null && purchaseOrder.getId() != null) {
+            loanApplyRecord
+                    .setPurchaseOrderNo(purchaseOrder.getPurchaseNo())
+                    .setPurchaseOrderId(purchaseOrder.getId());
+        }
         loanApplyRecordMapper.insertSelective(loanApplyRecord);
         ReturnCustomerInfoDto returnCustomerInfoDto = new ReturnCustomerInfoDto();
-        returnCustomerInfoDto
-                .setBatchNo(purchaseOrder.getBatchNo())
-                .setPurchaseNo(purchaseOrder.getPurchaseNo())
-                .setCustomerName(showCustomer.getCustomerName())
-                .setId(relevanceId);
+        if (breedingPlanInfoCriteria.getBatchNo() != null) {
+            returnCustomerInfoDto
+                    .setBatchNo(breedingPlanInfoCriteria.getBatchNo());
+        }
+        if (purchaseOrder != null && purchaseOrder.getPurchaseNo() != null) {
+            returnCustomerInfoDto
+                    .setPurchaseNo(purchaseOrder.getPurchaseNo());
+        }
+        if (showCustomer.getCustomerName() != null) {
+            returnCustomerInfoDto
+                    .setCustomerName(showCustomer.getCustomerName())
+                    .setId(relevanceId);
+        }
         return returnCustomerInfoDto;
     }
 }

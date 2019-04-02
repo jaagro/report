@@ -12,11 +12,20 @@
             <if test="customerId != null">
                 customer_id,
             </if>
+            <if test="loanType != null">
+                loan_type,
+            </if>
             <if test="planId != null">
                 plan_id,
             </if>
+            <if test="batchNo != null">
+                batch_no,
+            </if>
             <if test="purchaseOrderId != null">
                 purchase_order_id,
+            </if>
+            <if test="purchaseOrderNo != null">
+                purchase_order_no,
             </if>
             <if test="enable != null">
                 enable,
@@ -32,11 +41,20 @@
             <if test="customerId != null">
                 #{customerId,jdbcType=INTEGER},
             </if>
+            <if test="loanType != null">
+                #{loanType,jdbcType=INTEGER},
+            </if>
             <if test="planId != null">
                 #{planId,jdbcType=INTEGER},
             </if>
+            <if test="batchNo != null">
+                #{batchNo,jdbcType=VARCHAR},
+            </if>
             <if test="purchaseOrderId != null">
                 #{purchaseOrderId,jdbcType=INTEGER},
+            </if>
+            <if test="purchaseOrderNo != null">
+                #{purchaseOrderNo,jdbcType=VARCHAR},
             </if>
             <if test="enable != null">
                 #{enable,jdbcType=BIT},

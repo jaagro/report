@@ -5,22 +5,21 @@
     <!--          自动生成扩展XML author: generator on 2019/2/21                 -->
     <select id="listBreedingPlanInfoByBatchType" resultType="com.jaagro.report.api.dto.finance.BreedingPlanInfoDo"
             parameterType="java.lang.Integer">
-            select distinct bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price babyChickPrice ,bc.contract_date
+            select * from (select distinct bp.id,bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price ,bc.contract_date
             from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
             inner join batch_contract bc on (bp.id=bc.plan_id)
             where po.purchase_order_status in (1) and bp.plan_status in (2) and bp.enable=1 and
             bp.customer_id=#{customerId}
             union
-            select distinct bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price babyChickPrice ,bc.contract_date
-            from breeding_plan bp
+			select distinct bp.id , bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price ,bc.contract_date from breeding_plan bp
             inner join batch_contract bc on (bp.id=bc.plan_id)
             where bp.plan_status in (1) and bp.enable=1
-            and bp.customer_id=#{customerId}
+            and bp.customer_id=#{customerId})tab
     </select>
     <select id="listBreedingPlanInfoByPurchaseOrderType"
             resultType="com.jaagro.report.api.dto.finance.BreedingPlanInfoDo"
             parameterType="java.lang.Integer">
-            select distinct bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price babyChickPrice ,bc.contract_date
+            select distinct bp.id ,bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price ,bc.contract_date
             from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
             inner join batch_contract bc on (bp.id=bc.plan_id)
             left JOIN loan_apply_record lar on (bp.id=lar.plan_id)
@@ -34,4 +33,9 @@
          from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
          inner join batch_contract bc on (bp.id=bc.plan_id) where bp.batch_no=#{batchNo}
     </select>
+    <select id="getBreedingPlanByCriteria" resultType="com.jaagro.report.api.dto.finance.BreedingPlan"
+            parameterType="com.jaagro.report.api.dto.finance.BreedingPlanInfoCriteria">
+         select * from breeding_plan where batch_no=#{batchNo} limit 1
+    </select>
+
 </mapper>

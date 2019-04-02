@@ -62,10 +62,13 @@ public class FinanceController {
         return BaseResponse.successInstance(breedingPlanInfo);
     }
 
-    @ApiOperation("获取当前客户养殖批次列表")
+    @ApiOperation("保存养殖户贷款记录")
     @PostMapping("/saveLoanApplyRecord")
     public BaseResponse saveLoanApplyRecord(@RequestBody CreateLoanApplyRecordDto dto) {
-        if (dto.getPurchaseNo() == null) {
+        if (dto.getLoanType() == null) {
+            return BaseResponse.errorInstance("贷款类型不能为空");
+        }
+        if (dto.getBatchNo() == null) {
             return BaseResponse.errorInstance("采购单号不能为空");
         }
         return BaseResponse.successInstance(financeService.saveLoanApplyRecord(dto));

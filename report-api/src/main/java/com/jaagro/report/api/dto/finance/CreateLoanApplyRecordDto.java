@@ -14,9 +14,19 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 public class CreateLoanApplyRecordDto implements Serializable {
+
+    /**
+     * 批次号
+     */
+    private String batchNo;
     /**
      * 商品采购单编号
      */
     private String purchaseNo;
+
+    /**
+     * 贷款类型
+     */
+    private String loanType;
 
 }

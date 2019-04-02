@@ -1,5 +1,6 @@
 package com.jaagro.report.biz.mapper.cbs;
 
+import com.jaagro.report.api.dto.finance.BreedingPlan;
 import com.jaagro.report.api.dto.finance.BreedingPlanDetailsDo;
 import com.jaagro.report.api.dto.finance.BreedingPlanInfoCriteria;
 import com.jaagro.report.api.dto.finance.BreedingPlanInfoDo;
@@ -27,4 +28,10 @@ public interface BreedingPlanMapperExt {
      * @return
      */
     List<BreedingPlanDetailsDo> getBreedingPlanInfo(BreedingPlanInfoCriteria criteria);
+
+    /**
+     * @param criteria
+     * @return
+     */
+    BreedingPlan getBreedingPlanByCriteria(BreedingPlanInfoCriteria criteria);
 }

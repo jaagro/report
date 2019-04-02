@@ -26,14 +26,29 @@ public class LoanApplyRecord implements Serializable {
     private Integer customerId;
 
     /**
+     * 贷款类型(1-批次贷款,2-采购单贷款)
+     */
+    private Integer loanType;
+
+    /**
      * 计划id
      */
     private Integer planId;
 
     /**
+     * 批次号
+     */
+    private String batchNo;
+
+    /**
      * 采购订单id
      */
     private Integer purchaseOrderId;
+
+    /**
+     * 采购单号
+     */
+    private String purchaseOrderNo;
 
     /**
      * 是否有效(0-无效,1-有效)
