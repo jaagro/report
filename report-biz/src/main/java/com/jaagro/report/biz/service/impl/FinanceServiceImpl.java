@@ -449,7 +449,7 @@ public class FinanceServiceImpl implements FinanceService {
                 if (BreedingStandardParamEnum.FEEDING_FODDER_NUM.getCode() == breedingParamDto.getParamType()) {
                     Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.FEED_FOOD.getCode(), breedingParamDto.getDayAge());
                     if (!CollectionUtils.isEmpty(map)){
-                        breedingParamDto.setActualValue(new BigDecimal((int) map.get("feedTimes")));
+                        breedingParamDto.setActualValue(new BigDecimal((Long) map.get("feedTimes")));
                         breedingParamDto.setUnit("次");
                     }
                 }
