@@ -320,7 +320,7 @@ public class FinanceServiceImpl implements FinanceService {
         breedingPlanInfoCriteria.setBatchNo(dto.getBatchNo());
         BreedingPlan breedingPlanByCriteria = breedingPlanMapper.getBreedingPlanByCriteria(breedingPlanInfoCriteria);
         if (breedingPlanByCriteria == null) {
-            throw new RuntimeException("当前养殖批次不存在");
+            throw new BusinessException("当前养殖批次不存在");
         }
         PurchaseOrder purchaseOrder = null;
         if (LoanTypeEnum.PURCHASE_ORDER.getType().equals(dto.getLoanType())) {
