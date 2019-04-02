@@ -7,6 +7,7 @@ import com.jaagro.report.api.dto.customer.*;
 import com.jaagro.report.api.dto.finance.*;
 import com.jaagro.report.api.dto.plant.PlantDto;
 import com.jaagro.report.api.dto.plant.PlantImageDto;
+import com.jaagro.report.api.enums.*;
 import com.jaagro.report.api.enums.CustomerTypeEnum;
 import com.jaagro.report.api.enums.LoanTypeEnum;
 import com.jaagro.report.api.enums.PackageUnitEnum;
@@ -29,6 +30,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 对接金融接口
@@ -55,6 +57,14 @@ public class FinanceServiceImpl implements FinanceService {
     private PurchaseOrderMapperExt purchaseOrderMapper;
     @Autowired
     private LoanApplyRecordMapperExt loanApplyRecordMapper;
+    @Autowired
+    private BreedingBatchParameterMapperExt breedingBatchParameterMapper;
+    @Autowired
+    private BreedingRecordMapperExt breedingRecordMapper;
+    @Autowired
+    private DeviceValueMapperExt deviceValueMapper;
+    @Autowired
+    private BreedingBatchDrugMapperExt breedingBatchDrugMapper;
 
 
     /**
@@ -363,5 +373,105 @@ public class FinanceServiceImpl implements FinanceService {
                     .setId(relevanceId);
         }
         return returnCustomerInfoDto;
+    }
+
+    /**
+     * 贷款预审-养殖详情
+     *
+     * @param batchNo
+     * @return
+     */
+    @Override
+    public BatchDetailDto getBreedingDetail(String batchNo) {
+        GetCustomerUserDto customerUser = currentUserService.getCustomerUserById();
+        if (customerUser == null) {
+            throw new BusinessException("当前登录用户信息不存在");
+        }
+        Integer relevanceId = customerUser.getRelevanceId();
+        ShowCustomerDto showCustomer = customerClientService.getShowCustomerById(relevanceId);
+        if (showCustomer == null) {
+            throw new BusinessException("客户不存在");
+        }
+        BatchDetailDto batchDetailDto = breedingPlanMapper.selectByBatchNo(batchNo);
+        if (batchDetailDto == null){
+            throw new BusinessException("批次不存在");
+        }
+        // 初始化默认信息
+        generateBatchDetail(batchDetailDto,showCustomer);
+        // 设置养殖参数信息
+        generateBatchParam(batchDetailDto);
+        // 设置药品配置信息
+        generateBatchDrug(batchDetailDto);
+        return batchDetailDto;
+    }
+
+    /**
+     * 药品配置
+     * @param batchDetailDto
+     */
+    private void generateBatchDrug(BatchDetailDto batchDetailDto) {
+        List<BreedingBatchDrugDto> breedingBatchDrugDtoList = breedingBatchDrugMapper.listByBatchNo(batchDetailDto.getBatchNo());
+        if (!CollectionUtils.isEmpty(breedingBatchDrugDtoList)){
+            for (BreedingBatchDrugDto drugDto : breedingBatchDrugDtoList){
+                if (drugDto.getStopDrugFlag() != null && !drugDto.getStopDrugFlag()){
+                    List<FeedMedicineDto> feedMedicineDtoList = breedingRecordMapper.listFeedDrugItems(batchDetailDto.getBatchNo(),drugDto.getProductId(),drugDto.getDayAgeStart(),drugDto.getDayAgeEnd());
+                    drugDto.setActualValueList(feedMedicineDtoList);
+                }
+            }
+        }
+        batchDetailDto.setBreedingBatchDrugDtoList(breedingBatchDrugDtoList);
+    }
+
+    /**
+     * 参数配置
+     * @param batchDetailDto
+     */
+    private void generateBatchParam(BatchDetailDto batchDetailDto) {
+        String batchNo = batchDetailDto.getBatchNo();
+        List<BreedingParamDto> breedingParamDtoList = breedingBatchParameterMapper.listByBatchNo(batchNo);
+        if (!CollectionUtils.isEmpty(breedingParamDtoList)){
+            for (BreedingParamDto breedingParamDto : breedingParamDtoList){
+                // 喂养参数
+                if (BreedingStandardParamEnum.DIE.getCode() == breedingParamDto.getParamType()) {
+                    Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.DEATH_AMOUNT.getCode(), breedingParamDto.getDayAge());
+                    if (!CollectionUtils.isEmpty(map)){
+                        breedingParamDto.setActualValue((BigDecimal) map.get("totalFeed"));
+                        breedingParamDto.setUnit((String) map.get("unit"));
+                    }
+                }
+                if (BreedingStandardParamEnum.FEEDING_WEIGHT.getCode() == breedingParamDto.getParamType()) {
+                    Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.FEED_FOOD.getCode(), breedingParamDto.getDayAge());
+                    if (!CollectionUtils.isEmpty(map)){
+                        breedingParamDto.setActualValue((BigDecimal) map.get("totalFeed"));
+                        breedingParamDto.setUnit((String) map.get("unit"));
+                    }
+                }
+                if (BreedingStandardParamEnum.FEEDING_FODDER_NUM.getCode() == breedingParamDto.getParamType()) {
+                    Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.FEED_FOOD.getCode(), breedingParamDto.getDayAge());
+                    if (!CollectionUtils.isEmpty(map)){
+                        breedingParamDto.setActualValue(new BigDecimal((int) map.get("feedTimes")));
+                        breedingParamDto.setUnit("次");
+                    }
+                }
+                // 检测参数
+                List<BigDecimal> actualResultList = deviceValueMapper.listByBatchNoAndValueType(batchNo,breedingParamDto.getParamType());
+                breedingParamDto.setActualResultList(actualResultList);
+            }
+        }
+        batchDetailDto.setBreedingParamDtoList(breedingParamDtoList);
+    }
+
+
+    /**
+     * 基础信息
+     * @param batchDetailDto
+     * @param showCustomer
+     */
+    private void generateBatchDetail(BatchDetailDto batchDetailDto,ShowCustomerDto showCustomer) {
+        batchDetailDto.setBreedingType(Constants.BREEDING_TYPE)
+                .setCustomerId(showCustomer.getId())
+                .setCustomerName(showCustomer.getCustomerName())
+                .setOperatorCode(Constants.OPERATOR_CODE)
+                .setOperatorName(Constants.OPERATOR_NAME);
     }
 }

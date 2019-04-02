@@ -31,4 +31,8 @@ public class Constants {
      * 批次列表类型
      */
     public static final String PURCHASE_ORDER = "purchaseOrder";
+    /**
+     * 默认养殖品类
+     */
+    public static final String BREEDING_TYPE = "白羽鸡";
 }

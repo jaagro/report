@@ -73,4 +73,11 @@ public class FinanceController {
         }
         return BaseResponse.successInstance(financeService.saveLoanApplyRecord(dto));
     }
+
+    @ApiOperation("养殖详情")
+    @GetMapping("/getBreedingDetail")
+    public BaseResponse getBreedingDetail(@RequestParam String batchNo){
+        log.info("O getBreedingDetail batchNo={}",batchNo);
+        return BaseResponse.successInstance(financeService.getBreedingDetail(batchNo));
+    }
 }

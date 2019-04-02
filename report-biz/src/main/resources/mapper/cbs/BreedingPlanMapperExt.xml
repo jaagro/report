@@ -38,4 +38,18 @@
          select * from breeding_plan where batch_no=#{batchNo} limit 1
     </select>
 
+    <select id="selectByBatchNo" resultType="com.jaagro.report.api.dto.finance.BatchDetailDto">
+        SELECT
+            bp.batch_no,
+            max(bp.plan_chicken_quantity) plan_chicken_quantity,
+            max(bp.plan_time) plan_time,
+            max(DATE_ADD(bp.plan_time, INTERVAL bs.breeding_days DAY)) expect_such_time
+        FROM
+            breeding_plan bp
+        LEFT JOIN breeding_batch_parameter bbp on bp.id = bbp.plan_id
+        LEFT JOIN breeding_standard_parameter bsp on bbp.param_id = bsp.id
+        LEFT JOIN breeding_standard bs on bsp.standard_id = bs.id
+        WHERE bp.batch_no = #{batchNo}
+        GROUP BY bp.batch_no
+    </select>
 </mapper>

@@ -42,4 +42,11 @@ public interface FinanceService {
      * @param dto
      */
     ReturnCustomerInfoDto saveLoanApplyRecord(CreateLoanApplyRecordDto dto);
+
+    /**
+     * 贷款预审-养殖详情
+     * @param batchNo
+     * @return
+     */
+    BatchDetailDto getBreedingDetail(String batchNo);
 }
