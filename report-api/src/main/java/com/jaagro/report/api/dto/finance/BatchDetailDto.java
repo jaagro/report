@@ -4,74 +4,61 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
- * @description: 贷款-选择协议 出参
- * （养殖计划信息列表）
- * @author: @Gao.
- * @create: 2019-03-28 10:05
- **/
+ * 养殖详情
+ * @author yj
+ * @date 2019/3/29 18:04
+ */
 @Data
 @Accessors(chain = true)
-public class ReturnBreedingPlanInfoDto implements Serializable {
+public class BatchDetailDto implements Serializable{
+    private static final long serialVersionUID = -7075741664076370334L;
     /**
      * 客户id
      */
     private Integer customerId;
-
-    /**
-     * 客户类型
-     */
-    private String customerType;
-
     /**
      * 客户名称
      */
     private String customerName;
-
     /**
      * 批次号
      */
     private String batchNo;
-
     /**
-     * 计划上鸡数量
+     * 养殖类型
+     */
+    private String breedingType;
+    /**
+     * 上鸡数量
      */
     private Integer planChickenQuantity;
-
-
-    private String breedingType;
-
     /**
-     * 批次金额
+     * 上鸡时间
      */
-    private BigDecimal batchAmount;
-
+    private Date planTime;
     /**
-     * 签订日期
+     * 出栏时间
      */
-    private Date contractDate;
-
+    private Date expectSuchTime;
+    /**
+     * 养殖参数列表
+     */
+    private List<BreedingParamDto> breedingParamDtoList;
+    /**
+     * 喂药参数列表
+     */
+    private List<BreedingBatchDrugDto> breedingBatchDrugDtoList;
     /**
      * 操作员编码
      */
     private String operatorCode;
-
     /**
      * 操作员姓名
      */
     private String operatorName;
 
-    /**
-     * 来源
-     */
-    private String source;
-
-    /**
-     * 采购单列表
-     */
-    List<ReturnPurchaseOrderDto> returnPurchaseOrderDtos;
 }

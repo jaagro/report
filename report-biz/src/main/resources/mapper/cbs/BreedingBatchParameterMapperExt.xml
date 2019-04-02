@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.BreedingBatchParameterMapperExt">
+    <select id="listByBatchNo" resultType="com.jaagro.report.api.dto.finance.BreedingParamDto">
+        SELECT
+            param_name,
+            param_type,
+            param_value,
+            unit,
+            threshold_direction,
+            lower_limit,
+            upper_limit,
+            day_age
+        FROM
+            breeding_batch_parameter
+        WHERE
+            enable = 1
+        And batch_no = #{batchNo}
+        order by day_age asc
+    </select>
+</mapper>

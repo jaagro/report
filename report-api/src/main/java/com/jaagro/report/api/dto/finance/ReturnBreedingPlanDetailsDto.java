@@ -49,12 +49,7 @@ public class ReturnBreedingPlanDetailsDto implements Serializable {
      * 计划上鸡数量
      */
     private Integer planChickenQuantity;
-
-    /**
-     * 批次金额
-     */
-    private BigDecimal batchAmount;
-
+    
     /**
      * 签订日期
      */

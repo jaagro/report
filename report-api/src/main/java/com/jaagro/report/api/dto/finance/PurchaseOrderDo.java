@@ -1,6 +1,8 @@
 package com.jaagro.report.api.dto.finance;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -8,35 +10,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @description: 养殖计划信息
+ * @description: 采购订单
  * @author: @Gao.
- * @create: 2019-03-28 13:34
+ * @create: 2019-04-01 14:48
  **/
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-public class BreedingPlanInfoDo implements Serializable {
-    /**
-     * 养殖计划id
-     */
-    private Integer id;
-    /**
-     * 养殖批次号
-     */
-    private String batchNo;
-
-    /**
-     * 上鸡计划
-     */
-    private Integer planChickenQuantity;
-    /**
-     * 鸡苗价格
-     */
-    private BigDecimal babyChickPrice;
-
-    /**
-     * 签订日期
-     */
-    private Date contractDate;
+public class PurchaseOrderDo implements Serializable {
 
     /**
      * 采购订单id
