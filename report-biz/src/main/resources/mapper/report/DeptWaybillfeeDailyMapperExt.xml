@@ -53,7 +53,7 @@
         goodsQuantityNext
         FROM dept_waybillfee_daily currentData
         GROUP BY reportTime, department_id, goods_type ORDER BY reportTime DESC
-        )tab  where ( totalWaybillQuantity + anomalyWaybillQuantity + goodsQuantity + goodsWeight +
+        )tab where ( totalWaybillQuantity + anomalyWaybillQuantity + goodsQuantity + goodsWeight +
         incomeCustomerFee + incomeAnomalyFee + expendFreight + expendAnomalyFee + grossProfit +
         grossProfitRate) > 0 and reportTime=#{month}
     </select>
