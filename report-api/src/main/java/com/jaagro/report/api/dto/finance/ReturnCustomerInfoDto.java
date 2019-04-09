@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @description: 返回客户基本信息
@@ -24,7 +25,7 @@ public class ReturnCustomerInfoDto implements Serializable {
     /**
      * 商品采购单编号
      */
-    private String purchaseNo;
+    private List<String> purchaseNos;
 
     /**
      * 批次号

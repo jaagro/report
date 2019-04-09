@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @description: 贷款记录
@@ -22,7 +23,7 @@ public class CreateLoanApplyRecordDto implements Serializable {
     /**
      * 商品采购单编号
      */
-    private String purchaseNo;
+    private List<String> purchaseNo;
 
     /**
      * 贷款类型
