@@ -12,8 +12,17 @@ import java.util.List;
 public interface PlantMapperExt {
     /**
      * 根据客户id查询养殖场
+     *
      * @param customerId
      * @return
      */
     List<PlantDto> listByCustomerId(@Param("customerId") Integer customerId);
+
+    /**
+     * 根据养殖场id 查询养殖场信息
+     *
+     * @param plantId
+     * @return
+     */
+    PlantDto listByPlantId(@Param("plantId") Integer plantId);
 }
