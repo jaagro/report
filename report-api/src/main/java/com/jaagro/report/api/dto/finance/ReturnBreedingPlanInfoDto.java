@@ -71,6 +71,11 @@ public class ReturnBreedingPlanInfoDto implements Serializable {
     private String source;
 
     /**
+     * 养殖场相关信息
+     */
+    private List<ReturnPlantDto> returnPlantDtos;
+
+    /**
      * 采购单列表
      */
     List<ReturnPurchaseOrderDto> returnPurchaseOrderDtos;

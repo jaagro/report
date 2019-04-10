@@ -65,6 +65,10 @@ public class FinanceServiceImpl implements FinanceService {
     private DeviceValueMapperExt deviceValueMapper;
     @Autowired
     private BreedingBatchDrugMapperExt breedingBatchDrugMapper;
+    @Autowired
+    private BatchPlantCoopMapperExt batchPlantCoopMapper;
+    @Autowired
+    private CoopMapperExt coopMapper;
 
 
     /**
@@ -183,6 +187,19 @@ public class FinanceServiceImpl implements FinanceService {
                     .setOperatorCode(Constants.OPERATOR_CODE)
                     .setOperatorName(Constants.OPERATOR_NAME)
                     .setSource(Constants.SOURCE);
+            if (null != breedingPlan.getId()) {
+                List<ReturnPlantDto> returnPlantDtos = batchPlantCoopMapper.listPlantPlanId(breedingPlan.getId());
+                for (ReturnPlantDto returnPlantDto : returnPlantDtos) {
+                    if (returnPlantDto.getId() != null) {
+                        List<Integer> coopIds = batchPlantCoopMapper.listCoopIdPlantId(returnPlantDto.getId());
+                        if (!CollectionUtils.isEmpty(coopIds)) {
+                            List<ReturnCoopDto> returnCoopDtos = coopMapper.listByCoopByCoopId(coopIds);
+                            returnPlantDto.setReturnCoopDtos(returnCoopDtos);
+                        }
+                    }
+                }
+                returnBreedingPlanInfoDto.setReturnPlantDtos(returnPlantDtos);
+            }
             if (showCustomer.getId() != null) {
                 returnBreedingPlanInfoDto.setCustomerId(showCustomer.getId());
             }

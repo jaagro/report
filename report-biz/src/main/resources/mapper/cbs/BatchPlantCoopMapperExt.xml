@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.BatchPlantCoopMapperExt">
+
+    <!--          自动生成扩展XML author: generator on 2019/2/21                 -->
+    <select id="listCoopIdPlantId" resultType="java.lang.Integer"
+            parameterType="java.lang.Integer">
+        select distinct coop_id from batch_plant_coop where enable=1 and plant_id = #{plantId,jdbcType=INTEGER}
+    </select>
+    <select id="listPlantPlanId" resultType="com.jaagro.report.api.dto.finance.ReturnPlantDto"
+            parameterType="java.lang.Integer">
+        select distinct pt.id, pt.plant_name from batch_plant_coop bpc
+        inner join plant pt on (bpc.plant_id=pt.id) where pt.enable=1 and bpc.plan_id=#{planId}
+    </select>
+</mapper>

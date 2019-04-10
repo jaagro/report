@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.CoopMapperExt">
+
+    <select id="listByCoopByCoopId" resultType="com.jaagro.report.api.dto.finance.ReturnCoopDto"
+            parameterType="java.util.List">
+        select id ,coop_name from coop
+        <where>
+            enable=1
+            <if test="coopIds!=null">
+                and id IN
+                <foreach collection="coopIds" open="(" separator="," close=")" item="coopId">
+                    ${coopId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>
