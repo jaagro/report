@@ -6,6 +6,7 @@
             param_name,
             param_type,
             param_value,
+            value_type,
             unit,
             threshold_direction,
             lower_limit,
