@@ -65,6 +65,10 @@ public class FinanceServiceImpl implements FinanceService {
     private DeviceValueMapperExt deviceValueMapper;
     @Autowired
     private BreedingBatchDrugMapperExt breedingBatchDrugMapper;
+    @Autowired
+    private BatchPlantCoopMapperExt batchPlantCoopMapper;
+    @Autowired
+    private CoopMapperExt coopMapper;
 
 
     /**
@@ -183,6 +187,19 @@ public class FinanceServiceImpl implements FinanceService {
                     .setOperatorCode(Constants.OPERATOR_CODE)
                     .setOperatorName(Constants.OPERATOR_NAME)
                     .setSource(Constants.SOURCE);
+            if (null != breedingPlan.getId()) {
+                List<ReturnPlantDto> returnPlantDtos = batchPlantCoopMapper.listPlantPlanId(breedingPlan.getId());
+                for (ReturnPlantDto returnPlantDto : returnPlantDtos) {
+                    if (returnPlantDto.getId() != null) {
+                        List<Integer> coopIds = batchPlantCoopMapper.listCoopIdPlantId(returnPlantDto.getId());
+                        if (!CollectionUtils.isEmpty(coopIds)) {
+                            List<ReturnCoopDto> returnCoopDtos = coopMapper.listByCoopByCoopId(coopIds);
+                            returnPlantDto.setReturnCoopDtos(returnCoopDtos);
+                        }
+                    }
+                }
+                returnBreedingPlanInfoDto.setReturnPlantDtos(returnPlantDtos);
+            }
             if (showCustomer.getId() != null) {
                 returnBreedingPlanInfoDto.setCustomerId(showCustomer.getId());
             }
@@ -332,40 +349,48 @@ public class FinanceServiceImpl implements FinanceService {
         if (breedingPlanByCriteria == null) {
             throw new BusinessException("当前养殖批次不存在");
         }
-        PurchaseOrder purchaseOrder = null;
-        if (LoanTypeEnum.PURCHASE_ORDER.getType().equals(dto.getLoanType())) {
-            if (dto.getPurchaseNo() != null) {
-                purchaseOrder = purchaseOrderMapper.selectByPurchaseNo(dto.getPurchaseNo());
-                if (purchaseOrder == null) {
-                    throw new BusinessException("当前采购单不存在");
+        List<String> purchaseNoList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(dto.getPurchaseNo()) && LoanTypeEnum.PURCHASE_ORDER.getType().equals(dto.getLoanType())) {
+            List<String> purchaseNos = dto.getPurchaseNo();
+            for (String purchaseNo : purchaseNos) {
+                purchaseNoList.add(purchaseNo);
+                PurchaseOrder purchaseOrder = purchaseOrderMapper.selectByPurchaseNo(purchaseNo);
+                LoanApplyRecord loanApplyRecord = new LoanApplyRecord();
+                loanApplyRecord
+                        .setCustomerId(relevanceId)
+                        .setLoanType(LoanTypeEnum.getCodeByType(dto.getLoanType()));
+                if (breedingPlanByCriteria.getId() != null && breedingPlanByCriteria.getBatchNo() != null) {
+                    loanApplyRecord
+                            .setBatchNo(breedingPlanByCriteria.getBatchNo())
+                            .setPlanId(breedingPlanByCriteria.getId());
                 }
-            } else {
-                throw new BusinessException("采购单号不能为空");
+                if (purchaseOrder != null && purchaseOrder.getId() != null && purchaseOrder.getPurchaseNo() != null) {
+                    loanApplyRecord
+                            .setPurchaseOrderNo(purchaseOrder.getPurchaseNo())
+                            .setPurchaseOrderId(purchaseOrder.getId());
+                }
+                loanApplyRecordMapper.insertSelective(loanApplyRecord);
             }
-        }
-        LoanApplyRecord loanApplyRecord = new LoanApplyRecord();
-        loanApplyRecord
-                .setCustomerId(relevanceId)
-                .setLoanType(LoanTypeEnum.getCodeByType(dto.getLoanType()));
-        if (breedingPlanByCriteria.getId() != null && breedingPlanByCriteria.getBatchNo() != null) {
+        } else if (LoanTypeEnum.BATCH.getType().equals(dto.getLoanType())) {
+            LoanApplyRecord loanApplyRecord = new LoanApplyRecord();
             loanApplyRecord
-                    .setBatchNo(breedingPlanByCriteria.getBatchNo())
-                    .setPlanId(breedingPlanByCriteria.getId());
+                    .setCustomerId(relevanceId)
+                    .setLoanType(LoanTypeEnum.getCodeByType(dto.getLoanType()));
+            if (breedingPlanByCriteria.getId() != null && breedingPlanByCriteria.getBatchNo() != null) {
+                loanApplyRecord
+                        .setBatchNo(breedingPlanByCriteria.getBatchNo())
+                        .setPlanId(breedingPlanByCriteria.getId());
+            }
+            loanApplyRecordMapper.insertSelective(loanApplyRecord);
         }
-        if (purchaseOrder != null && purchaseOrder.getId() != null && purchaseOrder.getPurchaseNo() != null) {
-            loanApplyRecord
-                    .setPurchaseOrderNo(purchaseOrder.getPurchaseNo())
-                    .setPurchaseOrderId(purchaseOrder.getId());
-        }
-        loanApplyRecordMapper.insertSelective(loanApplyRecord);
         ReturnCustomerInfoDto returnCustomerInfoDto = new ReturnCustomerInfoDto();
         if (breedingPlanInfoCriteria.getBatchNo() != null) {
             returnCustomerInfoDto
                     .setBatchNo(breedingPlanInfoCriteria.getBatchNo());
         }
-        if (purchaseOrder != null && purchaseOrder.getPurchaseNo() != null) {
+        if (!CollectionUtils.isEmpty(purchaseNoList)) {
             returnCustomerInfoDto
-                    .setPurchaseNo(purchaseOrder.getPurchaseNo());
+                    .setPurchaseNos(purchaseNoList);
         }
         if (showCustomer.getCustomerName() != null) {
             returnCustomerInfoDto
@@ -393,11 +418,11 @@ public class FinanceServiceImpl implements FinanceService {
             throw new BusinessException("客户不存在");
         }
         BatchDetailDto batchDetailDto = breedingPlanMapper.selectByBatchNo(batchNo);
-        if (batchDetailDto == null){
+        if (batchDetailDto == null) {
             throw new BusinessException("批次不存在");
         }
         // 初始化默认信息
-        generateBatchDetail(batchDetailDto,showCustomer);
+        generateBatchDetail(batchDetailDto, showCustomer);
         // 设置养殖参数信息
         generateBatchParam(batchDetailDto);
         // 设置药品配置信息
@@ -407,14 +432,15 @@ public class FinanceServiceImpl implements FinanceService {
 
     /**
      * 药品配置
+     *
      * @param batchDetailDto
      */
     private void generateBatchDrug(BatchDetailDto batchDetailDto) {
         List<BreedingBatchDrugDto> breedingBatchDrugDtoList = breedingBatchDrugMapper.listByBatchNo(batchDetailDto.getBatchNo());
-        if (!CollectionUtils.isEmpty(breedingBatchDrugDtoList)){
-            for (BreedingBatchDrugDto drugDto : breedingBatchDrugDtoList){
-                if (drugDto.getStopDrugFlag() != null && !drugDto.getStopDrugFlag()){
-                    List<FeedMedicineDto> feedMedicineDtoList = breedingRecordMapper.listFeedDrugItems(batchDetailDto.getBatchNo(),drugDto.getProductId(),drugDto.getDayAgeStart(),drugDto.getDayAgeEnd());
+        if (!CollectionUtils.isEmpty(breedingBatchDrugDtoList)) {
+            for (BreedingBatchDrugDto drugDto : breedingBatchDrugDtoList) {
+                if (drugDto.getStopDrugFlag() != null && !drugDto.getStopDrugFlag()) {
+                    List<FeedMedicineDto> feedMedicineDtoList = breedingRecordMapper.listFeedDrugItems(batchDetailDto.getBatchNo(), drugDto.getProductId(), drugDto.getDayAgeStart(), drugDto.getDayAgeEnd());
                     drugDto.setActualValueList(feedMedicineDtoList);
                 }
             }
@@ -424,37 +450,38 @@ public class FinanceServiceImpl implements FinanceService {
 
     /**
      * 参数配置
+     *
      * @param batchDetailDto
      */
     private void generateBatchParam(BatchDetailDto batchDetailDto) {
         String batchNo = batchDetailDto.getBatchNo();
         List<BreedingParamDto> breedingParamDtoList = breedingBatchParameterMapper.listByBatchNo(batchNo);
-        if (!CollectionUtils.isEmpty(breedingParamDtoList)){
-            for (BreedingParamDto breedingParamDto : breedingParamDtoList){
+        if (!CollectionUtils.isEmpty(breedingParamDtoList)) {
+            for (BreedingParamDto breedingParamDto : breedingParamDtoList) {
                 // 喂养参数
                 if (BreedingStandardParamEnum.DIE.getCode() == breedingParamDto.getParamType()) {
                     Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.DEATH_AMOUNT.getCode(), breedingParamDto.getDayAge());
-                    if (!CollectionUtils.isEmpty(map)){
+                    if (!CollectionUtils.isEmpty(map)) {
                         breedingParamDto.setActualValue((BigDecimal) map.get("totalFeed"));
                         breedingParamDto.setUnit((String) map.get("unit"));
                     }
                 }
                 if (BreedingStandardParamEnum.FEEDING_WEIGHT.getCode() == breedingParamDto.getParamType()) {
                     Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.FEED_FOOD.getCode(), breedingParamDto.getDayAge());
-                    if (!CollectionUtils.isEmpty(map)){
+                    if (!CollectionUtils.isEmpty(map)) {
                         breedingParamDto.setActualValue((BigDecimal) map.get("totalFeed"));
                         breedingParamDto.setUnit((String) map.get("unit"));
                     }
                 }
                 if (BreedingStandardParamEnum.FEEDING_FODDER_NUM.getCode() == breedingParamDto.getParamType()) {
                     Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.FEED_FOOD.getCode(), breedingParamDto.getDayAge());
-                    if (!CollectionUtils.isEmpty(map)){
+                    if (!CollectionUtils.isEmpty(map)) {
                         breedingParamDto.setActualValue(new BigDecimal((Long) map.get("feedTimes")));
                         breedingParamDto.setUnit("次");
                     }
                 }
                 // 检测参数
-                List<BigDecimal> actualResultList = deviceValueMapper.listByBatchNoAndValueType(batchNo,breedingParamDto.getParamType());
+                List<BigDecimal> actualResultList = deviceValueMapper.listByBatchNoAndValueType(batchNo, breedingParamDto.getParamType());
                 breedingParamDto.setActualResultList(actualResultList);
             }
         }
@@ -464,10 +491,11 @@ public class FinanceServiceImpl implements FinanceService {
 
     /**
      * 基础信息
+     *
      * @param batchDetailDto
      * @param showCustomer
      */
-    private void generateBatchDetail(BatchDetailDto batchDetailDto,ShowCustomerDto showCustomer) {
+    private void generateBatchDetail(BatchDetailDto batchDetailDto, ShowCustomerDto showCustomer) {
         batchDetailDto.setBreedingType(Constants.BREEDING_TYPE)
                 .setCustomerId(showCustomer.getId())
                 .setCustomerName(showCustomer.getCustomerName())

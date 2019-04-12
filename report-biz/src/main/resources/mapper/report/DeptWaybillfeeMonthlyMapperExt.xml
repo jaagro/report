@@ -5,7 +5,7 @@
         insert into dept_waybillfee_monthly (id, report_time, department_name,
         department_id, goods_type, total_waybill_quantity, anomaly_waybill_quantity,
         goods_quantity, goods_weight,
-        income_customer_fee, income_anomaly_fee,
+        income_customer_fee, income_anomaly_fee,chain_relative_ratio,
         expend_freight, expend_anomaly_fee,
         gross_profit, gross_profit_rate,
         modify_time)
@@ -14,7 +14,7 @@
             (#{item.id}, #{item.reportTime}, #{item.departmentName},
             #{item.departmentId}, #{item.goodsType}, #{item.totalWaybillQuantity},#{item.anomalyWaybillQuantity},
             #{item.goodsQuantity}, #{item.goodsWeight},#{item.incomeCustomerFee},
-            #{item.incomeAnomalyFee},#{item.expendFreight},
+            #{item.incomeAnomalyFee},#{item.chainRelativeRatio},#{item.expendFreight},
             #{item.expendAnomalyFee}, #{item.grossProfit}, #{item.grossProfitRate},
             #{item.modifyTime})
         </foreach>
@@ -27,7 +27,7 @@
             parameterType="com.jaagro.report.api.dto.WaybillFeeReportDto">
         SELECT report_time, department_id, goods_type, total_waybill_quantity,
         anomaly_waybill_quantity,goods_quantity, goods_weight, income_customer_fee,
-        income_anomaly_fee, expend_freight, expend_anomaly_fee, gross_profit, gross_profit_rate
+        income_anomaly_fee, expend_freight, expend_anomaly_fee, gross_profit, gross_profit_rate,chain_relative_ratio
         FROM dept_waybillfee_monthly
         <where>
             1=1

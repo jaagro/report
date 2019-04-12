@@ -25,66 +25,85 @@
     </delete>
     <select id="listWaybillFeeStatisticsByMonth" resultType="com.jaagro.report.api.entity.DeptWaybillfeeMonthly"
             parameterType="java.lang.String">
-        SELECT * FROM (
-            SELECT
-            date_format(report_time, '%Y-%m') reportTime,
-            department_id departmentId,
-            goods_type goodsType,
-            ifnull(sum(total_waybill_quantity), 0) totalWaybillQuantity,
-            ifnull(sum(anomaly_waybill_quantity),0) anomalyWaybillQuantity,
-            ifnull(sum(goods_quantity), 0) goodsQuantity,
-            ifnull(sum(goods_weight), 0) goodsWeight,
-            ifnull(sum(income_customer_fee), 0) incomeCustomerFee,
-            ifnull(sum(income_anomaly_fee), 0) incomeAnomalyFee,
-            ifnull(sum(expend_freight), 0) expendFreight,
-            ifnull(sum(expend_anomaly_fee), 0) expendAnomalyFee,
-            ifnull(sum(gross_profit), 0) grossProfit,
-            ifnull(sum(gross_profit_rate), 0) grossProfitRate
-            FROM  dept_waybillfee_daily
-            <if test="month!=null">
-            WHERE date_format(report_time, '%Y-%m')=#{month}
-             </if>
-            GROUP BY reportTime, department_id, goods_type ORDER BY reportTime DESC
-        ) tab
-        WHERE ( totalWaybillQuantity + anomalyWaybillQuantity + goodsQuantity + goodsWeight +
+        select reportTime,departmentId,goodsType,totalWaybillQuantity,anomalyWaybillQuantity,
+        goodsQuantity,goodsWeight,incomeCustomerFee,incomeAnomalyFee,expendFreight,expendAnomalyFee,
+        grossProfit,grossProfitRate,goodsWeightNext,goodsQuantityNext,
+        case when goodsType in (1,2) then (goodsWeight - goodsWeightNext) when goodsType=3 then (goodsQuantity-
+        goodsQuantityNext) end as chainRelativeRatio from (
+        select date_format(report_time, '%Y-%m') reportTime, department_id departmentId, goods_type goodsType,
+        ifnull(sum(total_waybill_quantity), 0) totalWaybillQuantity,
+        ifnull(sum(anomaly_waybill_quantity),0) anomalyWaybillQuantity,
+        ifnull(sum(goods_quantity), 0) goodsQuantity,
+        ifnull(sum(goods_weight), 0) goodsWeight,
+        ifnull(sum(income_customer_fee), 0) incomeCustomerFee,
+        ifnull(sum(income_anomaly_fee), 0) incomeAnomalyFee,
+        ifnull(sum(expend_freight), 0) expendFreight,
+        ifnull(sum(expend_anomaly_fee), 0) expendAnomalyFee,
+        ifnull(sum(gross_profit), 0) grossProfit,
+        ifnull(sum(gross_profit_rate), 0) grossProfitRate,
+        (select ifnull(sum(goods_weight), 0) from dept_waybillfee_daily nextData
+        where DATE_ADD( date_format(nextData.report_time, '%Y-%m'),INTERVAL 1
+        MONTH)=date_format(currentData.report_time, '%Y-%m')
+        and nextData.department_id=currentData.department_id and nextData.goods_type=currentData.goods_type )
+        goodsWeightNext,
+        (select ifnull(sum(goods_quantity), 0) from dept_waybillfee_daily nextData
+        where DATE_ADD( date_format(nextData.report_time, '%Y-%m'),INTERVAL 1
+        MONTH)=date_format(currentData.report_time, '%Y-%m')
+        and nextData.department_id=currentData.department_id and nextData.goods_type=currentData.goods_type )
+        goodsQuantityNext
+        FROM dept_waybillfee_daily currentData
+        GROUP BY reportTime, department_id, goods_type ORDER BY reportTime DESC
+        )tab where ( totalWaybillQuantity + anomalyWaybillQuantity + goodsQuantity + goodsWeight +
         incomeCustomerFee + incomeAnomalyFee + expendFreight + expendAnomalyFee + grossProfit +
-        grossProfitRate) > 0
+        grossProfitRate) > 0 and reportTime=#{month}
     </select>
     <select id="listWaybillFeeDailyReport" resultType="com.jaagro.report.api.entity.DeptWaybillfeeDaily"
             parameterType="com.jaagro.report.api.dto.WaybillFeeReportDto">
-        SELECT * FROM (
-            SELECT
-            report_time,
-            department_id,
-            goods_type,
-            ifnull(total_waybill_quantity, 0) total_waybill_quantity,
-            ifnull(anomaly_waybill_quantity, 0) anomaly_waybill_quantity,
-            ifnull(goods_quantity, 0) goods_quantity,
-            ifnull(goods_weight, 0) goods_weight,
-            ifnull(income_customer_fee, 0) income_customer_fee,
-            ifnull(income_anomaly_fee, 0) income_anomaly_fee,
-            ifnull(expend_freight, 0) expend_freight,
-            ifnull(expend_anomaly_fee, 0) expend_anomaly_fee,
-            ifnull(gross_profit, 0) gross_profit,
-            ifnull(gross_profit_rate, 0) gross_profit_rate
-            FROM dept_waybillfee_daily
-            <where>
-                1=1
-                <if test="reportTime != null and reportTime.length()>0">
-                    AND report_time=#{reportTime}
-                </if>
-                <if test="departIds!=null and departIds.size()>0">
-                    AND department_id IN
-                    <foreach collection="departIds" open="(" separator="," close=")" item="did">
-                        ${did}
-                    </foreach>
-                </if>
-                <if test="goodsType != null">
-                    AND goods_type = #{goodsType}
-                </if>
-            </where>
-            ORDER BY report_time DESC ) tab
-        WHERE ( total_waybill_quantity + anomaly_waybill_quantity + goods_quantity + goods_weight + income_customer_fee +
-        income_anomaly_fee + expend_freight + expend_anomaly_fee + gross_profit + gross_profit_rate) > 0
+        select * from (
+        select report_time, department_id,goods_type, total_waybill_quantity,anomaly_waybill_quantity,
+        goods_quantity, goods_weight,income_customer_fee,income_anomaly_fee,expend_freight,expend_anomaly_fee,
+        gross_profit,gross_profit_rate,goods_quantity_next, goods_weight_next,
+        case when goods_type in (1,2) then (goods_weight - goods_weight_next) when goods_type=3 then (goods_quantity-
+        goods_quantity_next) end as chain_relative_ratio from (
+        select report_time, department_id,goods_type,
+        ifnull(total_waybill_quantity, 0) total_waybill_quantity,
+        ifnull(anomaly_waybill_quantity, 0) anomaly_waybill_quantity,
+        ifnull(goods_quantity, 0) goods_quantity,
+        ifnull(goods_weight, 0) goods_weight,
+        ifnull(income_customer_fee, 0) income_customer_fee,
+        ifnull(income_anomaly_fee, 0) income_anomaly_fee,
+        ifnull(expend_freight, 0) expend_freight,
+        ifnull(expend_anomaly_fee, 0) expend_anomaly_fee,
+        ifnull(gross_profit, 0) gross_profit,
+        ifnull(gross_profit_rate, 0) gross_profit_rate,
+        ifnull( (select ifnull(goods_quantity, 0) goods_quantity_next from dept_waybillfee_daily nextData
+        where DATE_ADD(nextData.report_time,INTERVAL 1 DAY)=currentData.report_time
+        and nextData.department_id=currentData.department_id and nextData.goods_type=currentData.goods_type),0)
+        goods_quantity_next,
+        ifnull( (select ifnull(goods_weight, 0) goods_weight_next from dept_waybillfee_daily nextData
+        where DATE_ADD(nextData.report_time,INTERVAL 1 DAY)=currentData.report_time and
+        nextData.department_id=currentData.department_id
+        and nextData.goods_type=currentData.goods_type),0) goods_weight_next
+        from dept_waybillfee_daily currentData
+        )tab
+        <where>
+            1=1
+            <if test="reportTime != null and reportTime.length()>0">
+                AND report_time=#{reportTime}
+            </if>
+            <if test="departIds!=null and departIds.size()>0">
+                AND department_id IN
+                <foreach collection="departIds" open="(" separator="," close=")" item="did">
+                    ${did}
+                </foreach>
+            </if>
+            <if test="goodsType != null">
+                AND goods_type = #{goodsType}
+            </if>
+        </where>
+        )tab1
+        WHERE (total_waybill_quantity + anomaly_waybill_quantity + goods_quantity + goods_weight + income_customer_fee +
+        income_anomaly_fee + expend_freight + expend_anomaly_fee + gross_profit + gross_profit_rate +
+        chain_relative_ratio) > 0
     </select>
 </mapper>
