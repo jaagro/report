@@ -12,7 +12,8 @@ import java.util.List;
  * @author yj
  * @since 2018/11/29
  */
-@FeignClient(value = "${feignClient.application.user}")
+//@FeignClient(value = "${feignClient.application.user}")
+@FeignClient(value = "user")
 public interface DriverClientService {
     /**
      * 批量获取司机信息
