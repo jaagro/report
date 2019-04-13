@@ -1,8 +1,8 @@
-#feignClient:
-#  application:
-#    crm: crm
-#    tms: tms
-#    user: user
+feignClient:
+  application:
+    crm: crm
+    tms: tms
+    user: user
 
 spring:
   application:
