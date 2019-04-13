@@ -1,4 +1,4 @@
-package com.jaagro.report.api.dto;
+package com.jaagro.report.api.dto.customer;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -25,4 +25,9 @@ public class ShowCustomerDto implements Serializable {
      * 客户是否直接下单
      */
     private String enableDirectOrder;
+
+    /**
+     * 客户类型
+     */
+    private Integer customerType;
 }

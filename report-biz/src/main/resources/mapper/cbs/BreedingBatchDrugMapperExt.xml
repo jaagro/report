@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.BreedingBatchDrugMapperExt">
+    <select id="listByBatchNo" resultType="com.jaagro.report.api.dto.finance.BreedingBatchDrugDto">
+        SELECT
+            bbd.product_id,
+            p.product_name,
+            p.capacity_unit,
+            bbd.day_age_start,
+            bbd.day_age_end,
+            bbd.stop_drug_flag,
+            bbd.feed_volume
+        FROM
+            breeding_batch_drug bbd
+        LEFT JOIN product p on bbd.product_id = p.id
+        WHERE bbd.enable = 1
+        AND bbd.batch_no = #{batchNo};
+    </select>
+</mapper>

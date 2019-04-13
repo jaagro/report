@@ -1,6 +1,10 @@
 package com.jaagro.report.biz.mapper.report;
 
+import com.jaagro.report.api.dto.ListWaybillAmountDto;
 import com.jaagro.report.api.dto.OrderReportDto;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillCountCriteria;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillCountDto;
+import com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto;
 import com.jaagro.report.api.entity.DeptOrderDaily;
 import com.jaagro.report.api.entity.DeptOrderMonthly;
 import org.apache.ibatis.annotations.Param;
@@ -40,5 +44,36 @@ public interface DeptOrderDailyMapperExt extends DeptOrderDailyMapper {
      * @return
      */
     List<DeptOrderDaily> listOrderDailyReport(OrderReportDto dto);
+
+    /**
+     * 项目部统计运量数
+     *
+     * @param type
+     * @return
+     */
+    List<ListWaybillAmountDto> listWaybillAmountByDept(@Param("type") Integer type);
+
+
+    /**
+     * 数据大屏-当月货物明细统计
+     * @param countCriteria
+     * @return
+     */
+    List<ListWaybillCountDto> listWaybillCountByProdTypeAndType(ListWaybillCountCriteria countCriteria);
+
+    /**
+     * 数据大屏-昨天运量总和
+     * @param countCriteria
+     * @return
+     */
+    List<ListWaybillTotalDto> listWaybillTotalByProdTypeAndType(ListWaybillCountCriteria countCriteria);
+
+    /**
+     * 数据大屏-运量日环比：昨天总和减去前天总和
+     * @param countCriteria
+     * @return
+     */
+    List<ListWaybillTotalDto>  listTotalCompareByProdTypeAndType (ListWaybillCountCriteria countCriteria);
+
 
 }

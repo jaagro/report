@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.BreedingPlanMapperExt">
+
+    <!--          自动生成扩展XML author: generator on 2019/2/21                 -->
+    <select id="listBreedingPlanInfoByBatchType" resultType="com.jaagro.report.api.dto.finance.BreedingPlanInfoDo"
+            parameterType="java.lang.Integer">
+            select * from (select distinct bp.id,bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price ,bc.contract_date
+            from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
+            inner join batch_contract bc on (bp.id=bc.plan_id)
+            where po.purchase_order_status in (1) and bp.plan_status in (2) and bp.enable=1 and
+            bp.customer_id=#{customerId}
+            union
+			select distinct bp.id , bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price ,bc.contract_date from breeding_plan bp
+            inner join batch_contract bc on (bp.id=bc.plan_id)
+            where bp.plan_status in (1) and bp.enable=1
+            and bp.customer_id=#{customerId})tab
+    </select>
+    <select id="listBreedingPlanInfoByPurchaseOrderType"
+            resultType="com.jaagro.report.api.dto.finance.BreedingPlanInfoDo"
+            parameterType="java.lang.Integer">
+            select distinct bp.id ,bp.batch_no,bp.plan_chicken_quantity,bc.babychick_price ,bc.contract_date
+            from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
+            inner join batch_contract bc on (bp.id=bc.plan_id)
+            left JOIN loan_apply_record lar on (bp.id=lar.plan_id)
+            where po.purchase_order_status in (2) and bp.plan_status in (2,3,4) and bp.enable=1 and
+            lar.id is null and bp.customer_id=#{customerId}
+    </select>
+    <select id="getBreedingPlanInfo" resultType="com.jaagro.report.api.dto.finance.BreedingPlanDetailsDo"
+            parameterType="com.jaagro.report.api.dto.finance.BreedingPlanInfoCriteria">
+         select distinct bp.batch_no batchNo,bp.plan_chicken_quantity planChickenQuantity,bc.contract_date contractDate,po.id purchaseOrderId,
+         po.purchase_no purchaseNo,po.product_type productType,po.total_price totalPrice,po.create_time purchaseTime
+         from breeding_plan bp inner join purchase_order po on (bp.id=po.plan_id)
+         inner join batch_contract bc on (bp.id=bc.plan_id) where bp.batch_no=#{batchNo}
+    </select>
+    <select id="getBreedingPlanByCriteria" resultType="com.jaagro.report.api.dto.finance.BreedingPlan"
+            parameterType="com.jaagro.report.api.dto.finance.BreedingPlanInfoCriteria">
+         select * from breeding_plan where batch_no=#{batchNo} limit 1
+    </select>
+
+    <select id="selectByBatchNo" resultType="com.jaagro.report.api.dto.finance.BatchDetailDto">
+        SELECT
+            bp.batch_no,
+            max(bp.plan_chicken_quantity) plan_chicken_quantity,
+            max(bp.plan_time) plan_time,
+            max(DATE_ADD(bp.plan_time, INTERVAL bs.breeding_days DAY)) expect_such_time
+        FROM
+            breeding_plan bp
+        LEFT JOIN breeding_batch_parameter bbp on bp.id = bbp.plan_id
+        LEFT JOIN breeding_standard_parameter bsp on bbp.param_id = bsp.id
+        LEFT JOIN breeding_standard bs on bsp.standard_id = bs.id
+        WHERE bp.batch_no = #{batchNo}
+        GROUP BY bp.batch_no
+    </select>
+</mapper>

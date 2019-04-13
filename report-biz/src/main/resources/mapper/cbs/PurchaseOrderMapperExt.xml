@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.PurchaseOrderMapperExt">
+
+    <!--          自动生成扩展XML author: generator on 2019/2/21                 -->
+    <sql id="Base_Column_List">
+    id, customer_id, plan_id, signer_id, batch_no, purchase_no, product_type, total_price,
+    purchase_order_status, supplier_id, plan_delivery_time, delivery_time, signer_time,
+    notes, enable, create_time, create_user_id, modify_time, modify_user_id, order_phase,
+    plan_execute_time, purchase_name
+  </sql>
+
+    <select id="selectByPurchaseNo" resultType="com.jaagro.report.api.dto.finance.PurchaseOrder"
+            parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from purchase_order
+        where purchase_no = #{purchaseNo}
+    </select>
+    <select id="listPurchaseOrderByPlanId" resultType="com.jaagro.report.api.dto.finance.PurchaseOrder"
+            parameterType="java.lang.Integer">
+        select id, purchase_no, product_type, total_price, create_time, order_phase, purchase_name
+        from purchase_order
+        where plan_id = #{planId} order by order_phase asc
+    </select>
+
+</mapper>

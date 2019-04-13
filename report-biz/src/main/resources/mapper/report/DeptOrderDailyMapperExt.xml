@@ -54,7 +54,7 @@
     <select id="listOrderDailyReport" parameterType="com.jaagro.report.api.dto.OrderReportDto"
             resultType="com.jaagro.report.api.entity.DeptOrderDaily">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from dept_order_daily
         <where>
             1=1
@@ -70,4 +70,58 @@
         order by report_time desc
     </select>
 
+    <select id="listWaybillAmountByDept" parameterType="java.lang.Integer"
+            resultType="com.jaagro.report.api.dto.ListWaybillAmountDto">
+        SELECT
+        department_id,
+        SUM( total_waybill_quantity )*10 AS y,
+        SUM( complete_waybill_quantity )*10 AS z
+        FROM
+        dept_order_daily
+        WHERE
+        enabled = 1
+        <if test="type != null and type == 1">
+            AND DATE_FORMAT( report_time, "%Y-%m_%d" ) = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 1 DAY ), "%Y-%m_%d"
+            )
+        </if>
+        <if test="type != null and type == 2">
+            AND DATE_FORMAT( report_time, "%Y-%m" ) = DATE_FORMAT( curdate( ), "%Y-%m" )
+        </if>
+        GROUP BY
+        department_id
+        ORDER BY
+        y DESC,
+        z DESC
+        LIMIT 10
+    </select>
+
+    <select id="listWaybillCountByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillCountDto">
+        select DATE_FORMAT(report_time, "%Y/%m/%d %H:%i:%S") as x,
+                sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as y
+        from dept_order_daily
+        where goods_type = #{productType}
+        and report_time between #{strStartDate} and #{strEndDate}
+        group by report_time
+        order by report_time desc
+    </select>
+    <select id="listWaybillTotalByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto">
+       select '' as name,
+                sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
+      from dept_order_daily
+      where goods_type =#{productType} and  report_time = #{strEndDate}
+    </select>
+
+    <select id="listTotalCompareByProdTypeAndType" resultType="com.jaagro.report.api.dto.bigscreen.ListWaybillTotalDto">
+            select '' as name,
+            ((
+            select
+                   sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
+             from dept_order_daily where goods_type = #{productType} and report_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 1 DAY ), "%Y-%m_%d")
+            )
+            -
+            (
+            select sum(CASE WHEN goods_type in(1,2) THEN goods_weight ELSE goods_quantity END) as value
+             from dept_order_daily where goods_type = #{productType} and report_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 2 DAY ), "%Y-%m_%d")
+            )) as value
+    </select>
 </mapper>

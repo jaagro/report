@@ -91,6 +91,11 @@ public class DeptWaybillfeeDaily implements Serializable {
     private BigDecimal grossProfitRate;
 
     /**
+     * 环比
+     */
+    private BigDecimal chainRelativeRatio;
+
+    /**
      * 是否有效(0-无效,1-有效)
      */
     private Boolean enabled;

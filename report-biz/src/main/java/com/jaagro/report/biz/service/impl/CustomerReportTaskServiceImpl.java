@@ -1,7 +1,7 @@
 package com.jaagro.report.biz.service.impl;
 
 import com.jaagro.report.api.dto.ListCustomerReportCriteriaDto;
-import com.jaagro.report.api.dto.ShowCustomerDto;
+import com.jaagro.report.api.dto.customer.ShowCustomerDto;
 import com.jaagro.report.api.entity.CustomerOrderDaily;
 import com.jaagro.report.api.entity.CustomerOrderMonthly;
 import com.jaagro.report.api.service.CustomerReportTaskService;
