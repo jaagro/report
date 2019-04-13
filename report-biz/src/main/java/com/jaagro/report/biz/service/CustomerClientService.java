@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * @author tony
  */
-//@FeignClient(value = "${feignClient.application.crm}")
-@FeignClient(value = "crm")
+@FeignClient(value = "${feignClient.application.crm}")
 public interface CustomerClientService {
     /**
      * 获取客户显示信息
