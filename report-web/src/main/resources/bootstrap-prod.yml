@@ -9,9 +9,3 @@ spring:
   # 日志输出
   profiles:
     active: dev
-
-feignClient:
-  application:
-    crm: crm-zheng
-    tms: tms-zheng
-    user: user-zheng
