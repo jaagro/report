@@ -1,9 +1,9 @@
-spring:
-  application:
-    name: report
-
 feignClient:
   application:
     crm: crm
     tms: tms
     user: user
+
+spring:
+  application:
+    name: report
