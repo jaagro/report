@@ -49,18 +49,18 @@ public class FinanceController {
         return BaseResponse.successInstance(dtos);
     }
 
-    @ApiOperation("获取当前客户养殖批次信息")
-    @PostMapping("/getBreedingPlanInfo")
-    public BaseResponse getBreedingPlanInfo(@RequestBody BreedingPlanInfoCriteria criteria) {
-        if (criteria.getBatchNo() == null) {
-            return BaseResponse.errorInstance("养殖批次号不能为空");
-        }
-        List<ReturnBreedingPlanDetailsDto> breedingPlanInfo = financeService.getBreedingPlanInfo(criteria);
-        if (CollectionUtils.isEmpty(breedingPlanInfo)) {
-            return BaseResponse.queryDataEmpty();
-        }
-        return BaseResponse.successInstance(breedingPlanInfo);
-    }
+//    @ApiOperation("获取当前客户养殖批次信息")
+//    @PostMapping("/getBreedingPlanInfo")
+//    public BaseResponse getBreedingPlanInfo(@RequestBody BreedingPlanInfoCriteria criteria) {
+//        if (criteria.getBatchNo() == null) {
+//            return BaseResponse.errorInstance("养殖批次号不能为空");
+//        }
+//        List<ReturnBreedingPlanDetailsDto> breedingPlanInfo = financeService.getBreedingPlanInfo(criteria);
+//        if (CollectionUtils.isEmpty(breedingPlanInfo)) {
+//            return BaseResponse.queryDataEmpty();
+//        }
+//        return BaseResponse.successInstance(breedingPlanInfo);
+//    }
 
     @ApiOperation("保存养殖户贷款记录")
     @PostMapping("/saveLoanApplyRecord")
