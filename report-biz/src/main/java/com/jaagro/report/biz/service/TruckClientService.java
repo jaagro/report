@@ -13,6 +13,7 @@ import java.util.List;
  * @author tony
  */
 @FeignClient(value = "${feignClient.application.crm}")
+//@FeignClient(value = "crm")
 public interface TruckClientService {
     /**
      * 批量查询车辆信息

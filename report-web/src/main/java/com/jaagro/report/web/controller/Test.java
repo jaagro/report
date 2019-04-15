@@ -4,6 +4,7 @@ import com.jaagro.report.api.service.WaybillFeeReportTaskService;
 import com.jaagro.report.biz.mapper.report.UserLoginMapperExt;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,5 +39,13 @@ public class Test {
         String reportTime = "2018-12-01 06:23:08";
         reportTime = reportTime.substring(0, 10);
         System.err.println(reportTime);
+    }
+
+    @Value("${feignClient.application.crm}")
+    private String app;
+
+    @GetMapping("/getApplicationYaml")
+    public String getApplicationYaml(){
+        return app;
     }
 }
