@@ -9,9 +9,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -174,7 +176,7 @@ public class DataBigScreenController {
         log.info("O listTotalCompareFoodByType type: {}",type);
         return dataBigScreenService.listTotalCompareByProdTypeAndType("2",type);
     }
-    @ApiOperation(value = "数据大屏货物同比-毛鸡")
+    @ApiOperation(value = "数据大屏货物同比-猪")
     @GetMapping("/listTotalComparePigByType")
     public List<ListWaybillTotalDto> listTotalComparePigByType(@RequestParam String type) {
         log.info("O listTotalComparePigByType type: {}",type);
