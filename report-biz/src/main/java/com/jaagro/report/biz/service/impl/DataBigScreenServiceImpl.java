@@ -10,7 +10,9 @@ import com.jaagro.report.biz.mapper.report.DeptOrderDailyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptOrderMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.DeptWaybillfeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.tms.OrderReportMapperExt;
+import com.jaagro.report.biz.mapper.tms.WashTruckImageMapperExt;
 import com.jaagro.report.biz.mapper.tms.WaybillAnomalyMapperExt;
+import com.jaagro.report.biz.service.OssSignUrlClientService;
 import com.jaagro.report.biz.service.UserClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,9 +45,13 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
     private OrderReportMapperExt orderReportMapperExt;
     @Autowired
     private WaybillAnomalyMapperExt waybillAnomalyMapperExt;
+    @Autowired
+    private WashTruckImageMapperExt washTruckImageMapperExt;
 
     @Autowired
     private DeptOrderMonthlyMapperExt deptOrderMontlyMapperExt;
+    @Autowired
+    private OssSignUrlClientService ossSignUrlClientService;
 
     /**
      * 客户贡献前十
@@ -318,8 +325,8 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
             dtoList = deptOrderMontlyMapperExt.listWaybillCountByProdTypeAndType(countCriteria);
             SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
             for (ListWaybillCountDto listWaybillCountDto : dtoList) {
-                String strD=listWaybillCountDto.getX() + "-01 00:00:00";
-                listWaybillCountDto.setX(strD.replace("-","/"));
+                String strD = listWaybillCountDto.getX() + "-01 00:00:00";
+                listWaybillCountDto.setX(strD.replace("-", "/"));
             }
 
         }
@@ -389,10 +396,61 @@ public class DataBigScreenServiceImpl implements DataBigScreenService {
         return dtoList;
     }
 
+    /**
+     * 大区运量数据
+     *
+     * @param productType
+     * @return
+     */
+    @Override
+    public List<ListDeptHistoryWaybillDto> listWaybillByNetwork(Integer productType) {
+        List<ListDeptHistoryWaybillDto> list = new ArrayList<>();
+        switch (productType) {
+            case 1:
+                list.add(new ListDeptHistoryWaybillDto().setX("正大").setY(2100L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东").setY(1900L));
+                list.add(new ListDeptHistoryWaybillDto().setX("湖北").setY(1000L));
+                break;
+            case 2:
+                list.add(new ListDeptHistoryWaybillDto().setX("中南大区").setY(18L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东大区").setY(16L));
+                list.add(new ListDeptHistoryWaybillDto().setX("东北大区").setY(11L));
+                list.add(new ListDeptHistoryWaybillDto().setX("西南大区").setY(9L));
+                list.add(new ListDeptHistoryWaybillDto().setX("河南大区").setY(8L));
+                break;
+            default:
+                list.add(new ListDeptHistoryWaybillDto().setX("中南大区").setY(64L));
+                list.add(new ListDeptHistoryWaybillDto().setX("华东大区").setY(54L));
+                list.add(new ListDeptHistoryWaybillDto().setX("东北大区").setY(72L));
+                list.add(new ListDeptHistoryWaybillDto().setX("西南大区").setY(46L));
+                list.add(new ListDeptHistoryWaybillDto().setX("河南大区").setY(50L));
+                break;
+        }
+        return list;
+    }
+
+    /**
+     * 洗车图片
+     *
+     * @return
+     */
+    @Override
+    public List<ListWashTruckImageDto> listWashTruckImage(String type) {
+        List<ListWashTruckImageDto> imageDtoList = washTruckImageMapperExt.listWashTruckImage(type);
+        if (!CollectionUtils.isEmpty(imageDtoList)) {
+            for (ListWashTruckImageDto dto : imageDtoList) {
+                String[] strArray = {dto.getUrl()};
+                List<URL> urlList = ossSignUrlClientService.listSignedUrl(strArray);
+                dto.setUrl(urlList.get(0).toString());
+            }
+        }
+        return imageDtoList;
+    }
+
     public static void main(String[] args) {
 
-        String strDate ="2019-10-01 00:00:00";
-        strDate = strDate.replace("-","/");
+        String strDate = "2019-10-01 00:00:00";
+        strDate = strDate.replace("-", "/");
         System.out.println(strDate);
 
 

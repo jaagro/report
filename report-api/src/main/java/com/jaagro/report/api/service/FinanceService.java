@@ -1,7 +1,6 @@
 package com.jaagro.report.api.service;
 
-import com.jaagro.report.api.dto.finance.CustomerBaseInfoDto;
-import com.jaagro.report.api.dto.finance.ReturnBreedingPlanInfoDto;
+import com.jaagro.report.api.dto.finance.*;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public interface FinanceService {
      *
      * @return
      */
-    List<ReturnBreedingPlanInfoDto> listBreedingPlanInfo();
+    List<ReturnBreedingPlanInfoDto> listBreedingPlanInfo(String type);
 
     /**
      * 贷款申请 选择订单
@@ -35,5 +34,19 @@ public interface FinanceService {
      *
      * @return
      */
-    List<ReturnBreedingPlanInfoDto> getBreedingPlanInfo();
+    List<ReturnBreedingPlanDetailsDto> getBreedingPlanInfo(BreedingPlanInfoCriteria criteria);
+
+    /**
+     * 贷款记录保存
+     *
+     * @param dto
+     */
+    ReturnCustomerInfoDto saveLoanApplyRecord(CreateLoanApplyRecordDto dto);
+
+    /**
+     * 贷款预审-养殖详情
+     * @param batchNo
+     * @return
+     */
+    BatchDetailDto getBreedingDetail(String batchNo);
 }

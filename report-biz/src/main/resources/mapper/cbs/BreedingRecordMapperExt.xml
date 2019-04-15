@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.BreedingRecordMapperExt">
+    <select id="statisticsByParams" resultType="map">
+        SELECT
+          count(1) feedTimes,
+          sum(breeding_value) totalFeed,
+          max(unit) unit
+        FROM
+            breeding_record
+        WHERE
+        enable = 1
+        AND batch_no = #{batchNo}
+        AND record_type = #{recordType}
+        AND day_age = #{dayAge}
+    </select>
+    <select id="listFeedDrugItems" resultType="com.jaagro.report.api.dto.finance.FeedMedicineDto">
+        SELECT
+        br.day_age,
+        bri.breeding_value
+        FROM
+        breeding_record br
+        LEFT JOIN breeding_record_items bri on br.id = bri.breeding_record_id
+        WHERE br.batch_no = #{batchNo}
+        AND br.day_age &gt;= #{dayAgeStart}
+        AND br.day_age &lt;= #{dayAgeEnd}
+        AND br.record_type = 2
+        AND bri.product_id = #{productId}
+    </select>
+</mapper>

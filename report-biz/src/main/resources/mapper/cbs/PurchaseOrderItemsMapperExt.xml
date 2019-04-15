@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jaagro.report.biz.mapper.cbs.PurchaseOrderItemsMapperExt">
+
+    <!--          自动生成扩展XML author: generator on 2019/3/9                 -->
+    <select id="calculateTotalPurchaseOrderQuantity" resultType="java.math.BigDecimal"
+            parameterType="java.lang.Integer">
+        select ifnull( sum(quantity),0) totalQuantity  from purchase_order_items where purchase_order_id=#{purchaseOrderId}
+    </select>
+</mapper>

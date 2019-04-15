@@ -14,6 +14,7 @@ public interface DataBigScreenService {
 
     /**
      * 客户贡献前十
+     *
      * @return
      */
     List<ContributionTopTenCustomerDto> listTopTenCustomerData();
@@ -42,6 +43,7 @@ public interface DataBigScreenService {
 
     /**
      * 大屏红黑榜数据
+     *
      * @param boardType
      * @return
      */
@@ -66,6 +68,7 @@ public interface DataBigScreenService {
      * 数据大屏当月货物明细统计
      * type:1 统计前5天该货物的总运量
      * type:2 统计前5个月货物的总运量
+     *
      * @param productType
      * @param type
      * @return
@@ -74,6 +77,7 @@ public interface DataBigScreenService {
 
     /**
      * 数据大屏运量总和
+     *
      * @param productType
      * @param type
      * @return
@@ -82,9 +86,25 @@ public interface DataBigScreenService {
 
     /**
      * 数据大屏货物同比
+     *
      * @param productType
      * @param type
      * @return
      */
     List<ListWaybillTotalDto> listTotalCompareByProdTypeAndType(String productType, String type);
+
+    /**
+     * 大区运量数据
+     *
+     * @param productType
+     * @return
+     */
+    List<ListDeptHistoryWaybillDto> listWaybillByNetwork(Integer productType);
+
+    /**
+     * 洗车图片
+     *
+     * @return
+     */
+    List<ListWashTruckImageDto> listWashTruckImage(String type);
 }

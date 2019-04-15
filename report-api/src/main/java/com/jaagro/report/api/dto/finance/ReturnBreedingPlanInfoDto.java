@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @description: 贷款-选择协议 出参
@@ -41,6 +42,9 @@ public class ReturnBreedingPlanInfoDto implements Serializable {
      */
     private Integer planChickenQuantity;
 
+
+    private String breedingType;
+
     /**
      * 批次金额
      */
@@ -65,4 +69,14 @@ public class ReturnBreedingPlanInfoDto implements Serializable {
      * 来源
      */
     private String source;
+
+    /**
+     * 养殖场相关信息
+     */
+    private List<ReturnPlantDto> returnPlantDtos;
+
+    /**
+     * 采购单列表
+     */
+    List<ReturnPurchaseOrderDto> returnPurchaseOrderDtos;
 }
