@@ -69,4 +69,14 @@ public interface CustomerClientService {
      */
     @GetMapping("/getShowSite/{id}")
     ShowSiteDto getShowSiteById(@PathVariable("id") Integer id);
+
+    /**
+     * 查询全部正常合作的客户
+     *
+     * @author yj
+     * @return
+     *
+     */
+    @GetMapping("/listNormalCustomer")
+    List<ShowCustomerDto> listNormalCustomer();
 }
