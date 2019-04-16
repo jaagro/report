@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +70,8 @@ public class FinanceServiceImpl implements FinanceService {
     private BatchPlantCoopMapperExt batchPlantCoopMapper;
     @Autowired
     private CoopMapperExt coopMapper;
-
-
+    @Autowired
+    private BatchInfoMapperExt batchInfoMapper;
     /**
      * 获取客户基本信息
      *
@@ -186,7 +187,8 @@ public class FinanceServiceImpl implements FinanceService {
                     .setBreedingType("活禽")
                     .setOperatorCode(Constants.OPERATOR_CODE)
                     .setOperatorName(Constants.OPERATOR_NAME)
-                    .setSource(Constants.SOURCE);
+                    .setSource(Constants.SOURCE)
+                    .setChickenUnit(PackageUnitEnum.getDescByCode(3));
             if (null != breedingPlan.getId()) {
                 List<ReturnPlantDto> returnPlantDtos = batchPlantCoopMapper.listPlantPlanId(breedingPlan.getId());
                 for (ReturnPlantDto returnPlantDto : returnPlantDtos) {
@@ -418,6 +420,7 @@ public class FinanceServiceImpl implements FinanceService {
             throw new BusinessException("客户不存在");
         }
         BatchDetailDto batchDetailDto = breedingPlanMapper.selectByBatchNo(batchNo);
+        batchDetailDto.setChickenUnit(PackageUnitEnum.getDescByCode(3));
         if (batchDetailDto == null) {
             throw new BusinessException("批次不存在");
         }
@@ -462,8 +465,13 @@ public class FinanceServiceImpl implements FinanceService {
                 if (BreedingStandardParamEnum.DIE.getCode() == breedingParamDto.getParamType()) {
                     Map<String, Object> map = breedingRecordMapper.statisticsByParams(batchNo, BreedingRecordTypeEnum.DEATH_AMOUNT.getCode(), breedingParamDto.getDayAge());
                     if (!CollectionUtils.isEmpty(map)) {
-                        breedingParamDto.setActualValue((BigDecimal) map.get("totalFeed"));
-                        breedingParamDto.setUnit((String) map.get("unit"));
+                        BigDecimal totalDie = (BigDecimal) map.get("totalFeed");
+                        // 今日起始喂养数量
+                        Integer startAmount = batchInfoMapper.findByBatchNoAndDayAge(batchNo, breedingParamDto.getDayAge());
+                        if (startAmount != null && totalDie != null){
+                            breedingParamDto.setActualValue(totalDie.divide(new BigDecimal(startAmount),4, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP));
+                        }
+                        breedingParamDto.setUnit("%");
                     }
                 }
                 if (BreedingStandardParamEnum.FEEDING_WEIGHT.getCode() == breedingParamDto.getParamType()) {

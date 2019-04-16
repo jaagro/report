@@ -5,7 +5,7 @@
     <!--          自动生成扩展XML author: generator on 2019/2/21                 -->
     <select id="listCoopIdPlantId" resultType="java.lang.Integer"
             parameterType="java.lang.Integer">
-        select distinct coop_id from batch_plant_coop where enable=1 and plant_id = #{plantId,jdbcType=INTEGER}
+        select distinct coop_id from batch_plant_coop where enable=1 and plant_id = #{plantId,jdbcType=INTEGER} and coop_id is not null
     </select>
     <select id="listPlantPlanId" resultType="com.jaagro.report.api.dto.finance.ReturnPlantDto"
             parameterType="java.lang.Integer">
