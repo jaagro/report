@@ -13,6 +13,7 @@ import com.jaagro.report.api.dto.truck.ShowTruckDto;
 import com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto;
 import com.jaagro.report.api.dto.waybill.WaybillTracking;
 import com.jaagro.report.api.service.SettleManageService;
+import com.jaagro.report.biz.mapper.report.DriverMapperExt;
 import com.jaagro.report.biz.mapper.tms.*;
 import com.jaagro.report.biz.service.CustomerClientService;
 import com.jaagro.report.biz.service.TruckClientService;
@@ -52,6 +53,8 @@ public class SettleManageServiceImpl implements SettleManageService {
     private WaybillCustomerFeeMapperExt waybillCustomerFeeMapper;
     @Autowired
     private WaybillTruckFeeMapperExt waybillTruckFeeMapper;
+    @Autowired
+    private DriverMapperExt driverMapper;
 
 
     /**
@@ -163,12 +166,11 @@ public class SettleManageServiceImpl implements SettleManageService {
     /**
      * 司机费用
      *
-     * @param criteria
+     * @param
      * @return
      */
     @Override
-    public void litDriverFee(DriverFeeCriteria criteria) {
-
+    public void litDriverFee() {
 
     }
 

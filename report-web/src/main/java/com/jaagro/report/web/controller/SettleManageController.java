@@ -39,7 +39,8 @@ public class SettleManageController {
 
     @ApiOperation("司机费用")
     @PostMapping("/litDriverFee")
-    public BaseResponse litDriverFee(@RequestBody DriverFeeCriteria criteria) {
+    public BaseResponse litDriverFee() {
+
         return null;
     }
 }

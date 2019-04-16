@@ -18,8 +18,8 @@ public interface SettleManageService {
     /**
      * 司机费用
      *
-     * @param criteria
+     * @param
      * @return
      */
-    void litDriverFee(DriverFeeCriteria criteria);
+    void litDriverFee();
 }

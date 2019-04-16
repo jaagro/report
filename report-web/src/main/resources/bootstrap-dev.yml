@@ -5,3 +5,9 @@ spring:
       profile: dev
       label: master
       uri: http://tools.jaagro.com:9040     #SpringCloudConfig获取的服务地址
+
+feignClient:
+  application:
+    crm: crm
+    tms: tms
+    user: uaa

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jaagro.report.biz.mapper.report.DriverMapperExt">
+    <select id="listDriverInfo" resultType="com.jaagro.report.api.dto.settlemanage.ReturnDriverInfoDto">
+	     select dr.id,dr.name driverName,dr.truck_id,tk.truck_number ,wb.id waybillId ,count(1) waybillAmount
+		 from userserver.driver dr inner join crmserver.truck tk on (dr.truck_id=tk.id) LEFT JOIN tmsserver2.waybill wb on (dr.id=wb.driver_id)
+		 where  wb.driver_id is not NULL group by dr.id
+    </select>
+</mapper>
