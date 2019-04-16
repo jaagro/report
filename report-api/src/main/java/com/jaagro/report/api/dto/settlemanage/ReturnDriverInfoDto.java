@@ -23,6 +23,12 @@ public class ReturnDriverInfoDto {
      * 车辆id
      */
     private Integer truckId;
+
+    /**
+     * 车牌号
+     */
+    private String truckNumber;
+
     /**
      * 车牌号
      */
@@ -32,5 +38,4 @@ public class ReturnDriverInfoDto {
      * 运单数
      */
     private Integer waybillAmount;
-
 }

@@ -5,13 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.jaagro.report.api.constant.GoodsUnit;
 import com.jaagro.report.api.dto.customer.ShowCustomerDto;
 import com.jaagro.report.api.dto.customer.ShowSiteDto;
-import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
-import com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto;
-import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
-import com.jaagro.report.api.dto.settlemanage.WaybillGoodDto;
+import com.jaagro.report.api.dto.settlemanage.*;
 import com.jaagro.report.api.dto.truck.ShowTruckDto;
 import com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto;
 import com.jaagro.report.api.dto.waybill.WaybillTracking;
+import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.report.biz.mapper.report.DriverMapperExt;
 import com.jaagro.report.biz.mapper.tms.*;
@@ -122,36 +120,24 @@ public class SettleManageServiceImpl implements SettleManageService {
                 returnWaybillFeeDto.setNetWorkName(deptName);
             }
             //货物信息
-            Integer totalQuantity = 0;
-            BigDecimal totalWeight = BigDecimal.ZERO;
-            List<GetWaybillGoodsDto> waybillGoodsDtos = waybillGoodsMapper.listGoodsByWaybillId(returnWaybillFeeDto.getWaybillId());
-            List<WaybillGoodDto> waybillGoods = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(waybillGoodsDtos)) {
-                for (GetWaybillGoodsDto waybillGoodsDto : waybillGoodsDtos) {
-                    if (GoodsUnit.TON.equals(waybillGoodsDto.getGoodsUnit())) {
-                        totalWeight = totalWeight.add(waybillGoodsDto.getUnloadWeight());
-                    } else {
-                        totalQuantity = totalQuantity + waybillGoodsDto.getUnloadQuantity();
-                    }
-                    WaybillGoodDto goods = new WaybillGoodDto();
-                    BeanUtils.copyProperties(waybillGoodsDto, goods);
-                    waybillGoods.add(goods);
-                }
+            List<GetWaybillGoodsDto> waybillGoodsDtos = waybillGoodsMapper.listGoodsByWaybillId(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
+            ReturnAccumulativeGoodsDto returnAccumulativeGoodsDto = accumulativeGoods(waybillGoodsDtos);
+            if (returnAccumulativeGoodsDto != null) {
+                returnWaybillFeeDto
+                        .setTotalQuantity(returnAccumulativeGoodsDto.getTotalQuantity())
+                        .setTotalWeight(returnAccumulativeGoodsDto.getTotalWeight())
+                        .setWaybillGoodDtos(returnAccumulativeGoodsDto.getWaybillGoods());
             }
-            returnWaybillFeeDto
-                    .setTotalQuantity(totalQuantity)
-                    .setTotalWeight(totalWeight)
-                    .setWaybillGoodDtos(waybillGoods);
             //客户费用
-            BigDecimal waybillCustomerFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerFee(returnWaybillFeeDto.getWaybillId());
-            BigDecimal customerAnomalyFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerAnomalyFee(returnWaybillFeeDto.getWaybillId());
+            BigDecimal waybillCustomerFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
+            BigDecimal customerAnomalyFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerAnomalyFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
             returnWaybillFeeDto
                     .setCustomerFee(waybillCustomerFee);
             returnWaybillFeeDto
                     .setAnomalyCustomerFee(customerAnomalyFee.multiply(BigDecimal.valueOf(-1)));
             //运力侧费用
-            BigDecimal truckAnomalyFee = waybillTruckFeeMapper.accumulativeWaybillTruckAnomalyFee(returnWaybillFeeDto.getWaybillId());
-            BigDecimal truckFee = waybillTruckFeeMapper.accumulativeWaybillTruckFee(returnWaybillFeeDto.getWaybillId());
+            BigDecimal truckAnomalyFee = waybillTruckFeeMapper.accumulativeWaybillTruckAnomalyFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
+            BigDecimal truckFee = waybillTruckFeeMapper.accumulativeWaybillTruckFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
             returnWaybillFeeDto
                     .setWaybillFee(truckFee);
             returnWaybillFeeDto
@@ -171,7 +157,57 @@ public class SettleManageServiceImpl implements SettleManageService {
      */
     @Override
     public void litDriverFee() {
+        List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
+        for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
+            DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
+            BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
+            //查询当前客户运单id集合
+            List<Integer> waybillIds = driverMapper.listWaybillIdByDriverId(returnDriverInfoDto.getDriverId());
+            if (!CollectionUtils.isEmpty(waybillIds)) {
+                BigDecimal waybillTruckFee = waybillTruckFeeMapper.accumulativeWaybillTruckFee(waybillIds);
+                BigDecimal AnomalyFee = waybillTruckFeeMapper.accumulativeWaybillTruckAnomalyFee(waybillIds);
+                driverSettleFeeMonthly
+                        .setTotalAnomalyFee(AnomalyFee)
+                        .setTotalFreight(waybillTruckFee);
+                List<GetWaybillGoodsDto> getWaybillGoodsDtos = waybillGoodsMapper.listGoodsByWaybillId(waybillIds);
+                ReturnAccumulativeGoodsDto returnAccumulativeGoodsDto = accumulativeGoods(getWaybillGoodsDtos);
+                if (returnAccumulativeGoodsDto != null) {
+                    driverSettleFeeMonthly
+                            .setTotalWeight(returnAccumulativeGoodsDto.getTotalWeight())
+                            .setTotalQuantity(returnAccumulativeGoodsDto.getTotalQuantity());
+                }
+            }
+        }
+    }
 
+    /**
+     * 累计商品信息
+     *
+     * @param waybillGoodsDtos
+     * @return
+     */
+    private ReturnAccumulativeGoodsDto accumulativeGoods(List<GetWaybillGoodsDto> waybillGoodsDtos) {
+        ReturnAccumulativeGoodsDto returnAccumulativeGoodsDto = new ReturnAccumulativeGoodsDto();
+        Integer totalQuantity = 0;
+        BigDecimal totalWeight = BigDecimal.ZERO;
+        List<WaybillGoodDto> waybillGoods = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(waybillGoodsDtos)) {
+            for (GetWaybillGoodsDto waybillGoodsDto : waybillGoodsDtos) {
+                if (GoodsUnit.TON.equals(waybillGoodsDto.getGoodsUnit())) {
+                    totalWeight = totalWeight.add(waybillGoodsDto.getUnloadWeight());
+                } else {
+                    totalQuantity = totalQuantity + waybillGoodsDto.getUnloadQuantity();
+                }
+                WaybillGoodDto goods = new WaybillGoodDto();
+                BeanUtils.copyProperties(waybillGoodsDto, goods);
+                waybillGoods.add(goods);
+            }
+        }
+        returnAccumulativeGoodsDto
+                .setTotalWeight(totalWeight)
+                .setWaybillGoods(waybillGoods)
+                .setTotalQuantity(totalQuantity);
+        return returnAccumulativeGoodsDto;
     }
 
     /**

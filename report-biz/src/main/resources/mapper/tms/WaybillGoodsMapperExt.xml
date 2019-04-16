@@ -3,6 +3,15 @@
 <mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillGoodsMapperExt">
     <select id="listGoodsByWaybillId" resultType="com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto"
             parameterType="java.lang.Integer">
-        select *  from waybill_goods  where waybill_id = #{waybillId} and enabled=1
+        select * from waybill_goods
+        <where>
+            enabled=1
+            <if test="waybillIds!=null">
+                and waybill_id IN
+                <foreach collection="waybillIds" open="(" separator="," close=")" item="waybillId">
+                    ${waybillId}
+                </foreach>
+            </if>
+        </where>
     </select>
 </mapper>
