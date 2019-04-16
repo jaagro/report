@@ -1,14 +1,13 @@
 package com.jaagro.report.biz.service;
 
-import com.jaagro.report.api.dto.customer.CustomerContacts;
-import com.jaagro.report.api.dto.customer.CustomerContactsReturnDto;
-import com.jaagro.report.api.dto.customer.CustomerReturnDto;
-import com.jaagro.report.api.dto.customer.ShowCustomerDto;
+import com.jaagro.report.api.dto.customer.*;
 import com.jaagro.utils.BaseResponse;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 
 /**
@@ -52,4 +51,22 @@ public interface CustomerClientService {
     @Ignore
     @GetMapping("/getCustomerContactByCustomerId/{customerId}")
     CustomerContactsReturnDto getCustomerContactByCustomerId(@PathVariable("customerId") Integer customerId);
+
+    /**
+     * 根据关键字查询客户id集合
+     *
+     * @param keyword
+     * @return
+     */
+    @GetMapping("/listCustomerIdByKeyWord/{keyword}")
+    BaseResponse<List<Integer>> listCustomerIdByKeyWord(@PathVariable("keyword") String keyword);
+
+    /**
+     * 获取装卸货地显示对象
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/getShowSite/{id}")
+    ShowSiteDto getShowSiteById(@PathVariable("id") Integer id);
 }

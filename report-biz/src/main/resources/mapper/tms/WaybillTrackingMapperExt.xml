@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillTrackingMapperExt">
+    <select id="getUnLoadSiteInfoByWaybillId" resultType="com.jaagro.report.api.dto.waybill.WaybillTracking"
+            parameterType="java.lang.Integer">
+        select *
+        from waybill_tracking
+        where enabled=1 and waybill_id=#{waybillId}
+        and new_status='已完成'
+        limit 1
+    </select>
+    <select id="getLoadSiteInfoByWaybillId" resultType="com.jaagro.report.api.dto.waybill.WaybillTracking"
+            parameterType="java.lang.Integer">
+        select *
+        from waybill_tracking
+        where enabled=1 and waybill_id=#{waybillId}
+        and new_status='待出发'
+        limit 1
+    </select>
+
+</mapper>

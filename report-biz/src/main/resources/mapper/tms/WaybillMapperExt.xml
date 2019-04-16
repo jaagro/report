@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillMapperExt">
+    <select id="listSettleManageWaybillFee" resultType="com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto"
+            parameterType="com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria">
+        select wb.id waybillId,wb.load_site_id loadSiteId,wb.truck_id truckId,wb.network_id netWorkId,os.customer_id customerId from waybill wb
+        inner join orders os on (wb.order_id=os.id)
+        <where>
+            wb.enabled = 1 and wb.receipt_status=2
+            <if test="waybillId!=null">
+                and wb.id=#{waybillId}
+            </if>
+            <if test="goodsType!=null">
+                and wb.goodsType=#{goodsType}
+            </if>
+            <if test="truckIds!=null">
+                and wb.truck_id in
+                <foreach collection="truckIds" open="(" separator="," close=")" item="truckId">
+                    ${truckId}
+                </foreach>
+            </if>
+            <if test="customerIds!=null">
+                and os.customer_id in
+                <foreach collection="customerIds" open="(" separator="," close=")" item="customerId">
+                    ${customerId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>
