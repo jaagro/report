@@ -21,5 +21,5 @@ public interface SettleManageService {
      * @param
      * @return
      */
-    void litDriverFee();
+    void litDriverFee(String month);
 }

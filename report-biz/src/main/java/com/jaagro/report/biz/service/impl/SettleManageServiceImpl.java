@@ -156,7 +156,7 @@ public class SettleManageServiceImpl implements SettleManageService {
      * @return
      */
     @Override
-    public void litDriverFee() {
+    public void litDriverFee(String month) {
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
