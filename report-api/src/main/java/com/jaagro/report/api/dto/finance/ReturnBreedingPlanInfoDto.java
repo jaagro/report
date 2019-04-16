@@ -41,6 +41,10 @@ public class ReturnBreedingPlanInfoDto implements Serializable {
      * 计划上鸡数量
      */
     private Integer planChickenQuantity;
+    /**
+     * 鸡单位：只
+     */
+    private String chickenUnit;
 
 
     private String breedingType;

@@ -37,6 +37,10 @@ public class BatchDetailDto implements Serializable{
      */
     private Integer planChickenQuantity;
     /**
+     * 鸡单位：只
+     */
+    private String chickenUnit;
+    /**
      * 上鸡时间
      */
     private Date planTime;
