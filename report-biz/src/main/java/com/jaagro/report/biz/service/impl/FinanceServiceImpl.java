@@ -187,7 +187,8 @@ public class FinanceServiceImpl implements FinanceService {
                     .setBreedingType("活禽")
                     .setOperatorCode(Constants.OPERATOR_CODE)
                     .setOperatorName(Constants.OPERATOR_NAME)
-                    .setSource(Constants.SOURCE);
+                    .setSource(Constants.SOURCE)
+                    .setChickenUnit(PackageUnitEnum.getDescByCode(3));
             if (null != breedingPlan.getId()) {
                 List<ReturnPlantDto> returnPlantDtos = batchPlantCoopMapper.listPlantPlanId(breedingPlan.getId());
                 for (ReturnPlantDto returnPlantDto : returnPlantDtos) {
@@ -419,6 +420,7 @@ public class FinanceServiceImpl implements FinanceService {
             throw new BusinessException("客户不存在");
         }
         BatchDetailDto batchDetailDto = breedingPlanMapper.selectByBatchNo(batchNo);
+        batchDetailDto.setChickenUnit(PackageUnitEnum.getDescByCode(3));
         if (batchDetailDto == null) {
             throw new BusinessException("批次不存在");
         }
