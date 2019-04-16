@@ -1,6 +1,7 @@
 package com.jaagro.report.api.service;
 
 import com.github.pagehelper.PageInfo;
+import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
 
 
@@ -13,4 +14,12 @@ public interface SettleManageService {
      * @return
      */
     PageInfo listWaybillFee(WaybillFeeCriteria criteria);
+
+    /**
+     * 司机费用
+     *
+     * @param criteria
+     * @return
+     */
+    void litDriverFee(DriverFeeCriteria criteria);
 }
