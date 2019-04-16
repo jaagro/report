@@ -33,26 +33,31 @@
         targetProject：目标工程
         -->
         <javaModelGenerator targetPackage="com.jaagro.report.api.entity"
-                            targetProject="/Users/tony/Documents/jaagro_repository/jaagro-platform-report/report-biz/src/main/java">
+                            targetProject="D:\workSpace\report\report-api\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
             <property name="" value=""/>
         </javaModelGenerator>
 
         <!-- 生成 mapper.xml文件路径 -->
-        <sqlMapGenerator targetPackage="mapper"
-                         targetProject="/Users/tony/Documents/jaagro_repository/jaagro-platform-report/report-biz/src/main/resources">
+        <sqlMapGenerator targetPackage="mapper.report"
+                         targetProject="D:\workSpace\report\report-biz\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <!-- 生成 dao 接口的包路径 -->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.jaagro.report.biz.mapper"
-                             targetProject="/Users/tony/Documents/jaagro_repository/jaagro-platform-report/report-biz/src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.jaagro.report.biz.mapper.report"
+                             targetProject="D:\workSpace\report\report-biz\src\main\java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
-        <table tableName="%" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <!--<table tableName="customer_report" domainObjectName="CustomerReport" enableCountByExample="true"-->
-               <!--enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="true"-->
-               <!--selectByExampleQueryId="false"></table>-->
+        <table tableName="customer_settle_fee_monthly" domainObjectName="CustomerSettleFeeMonthly" enableCountByExample="true"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="true"
+               selectByExampleQueryId="false"></table>
+        <table tableName="driver_settle_fee_monthly" domainObjectName="DriverSettleFeeMonthly" enableCountByExample="true"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="true"
+               selectByExampleQueryId="false"></table>
+        <table tableName="settle_billing_day_config" domainObjectName="SettleBillingDayConfig" enableCountByExample="true"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="true"
+               selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>
