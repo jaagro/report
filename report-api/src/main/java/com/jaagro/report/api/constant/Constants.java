@@ -34,5 +34,5 @@ public class Constants {
     /**
      * 默认养殖品类
      */
-    public static final String BREEDING_TYPE = "白羽鸡";
+    public static final String BREEDING_TYPE = "白羽肉鸡";
 }
