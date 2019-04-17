@@ -15,7 +15,6 @@ import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
 import com.jaagro.report.api.entity.SettleBillingDayConfig;
 import com.jaagro.report.api.entity.SettleBillingDayConfigExample;
 import com.jaagro.report.api.exception.BusinessException;
-import com.jaagro.report.api.entity.*;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.report.biz.mapper.report.DriverMapperExt;
 import com.jaagro.report.api.util.DateUtil;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import sun.applet.Main;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -74,6 +72,7 @@ public class SettleManageServiceImpl implements SettleManageService {
     private DriverSettleFeeMonthlyMapperExt driverSettleFeeMonthlyMapper;
 
     private static final Integer BILLING_DAY_SEPARATE = 15;
+
     /**
      * 运单结算费用报表
      *
@@ -190,6 +189,9 @@ public class SettleManageServiceImpl implements SettleManageService {
         //查询所有司机
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
         ReturnTimeIntervalDto returnTimeIntervalDto = accumulativeTimeInterval(month, SettleBillingDayConfigType.DRIVER);
+        if (returnTimeIntervalDto.getEnd() == null || returnTimeIntervalDto.getStart() == null) {
+            return;
+        }
         DriverFeeCriteria driverFeeCriteria = new DriverFeeCriteria();
         driverFeeCriteria
                 .setEndDate(returnTimeIntervalDto.getEnd())
@@ -197,6 +199,10 @@ public class SettleManageServiceImpl implements SettleManageService {
         List<DriverSettleFeeMonthly> driverSettleFeeMonthlyList = new ArrayList<>();
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
+            driverSettleFeeMonthly
+                    .setEndTime(returnTimeIntervalDto.getEnd())
+                    .setStartTime(returnTimeIntervalDto.getStart())
+                    .setReportTime(month);
             BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
             //查询当前客户运单id集合
             driverFeeCriteria
@@ -299,7 +305,7 @@ public class SettleManageServiceImpl implements SettleManageService {
         }
 
         ReturnTimeIntervalDto returnTimeIntervalDto = accumulativeTimeInterval(month, SettleBillingDayConfigType.CUSTOMER);
-        if (returnTimeIntervalDto.getEnd() == null || returnTimeIntervalDto.getStart() == null){
+        if (returnTimeIntervalDto.getEnd() == null || returnTimeIntervalDto.getStart() == null) {
             return;
         }
         Date start = returnTimeIntervalDto.getStart();
@@ -340,8 +346,8 @@ public class SettleManageServiceImpl implements SettleManageService {
      */
     @Override
     public PageInfo<CustomerSettleFeeMonthly> listCustomerSettleFeeMonthly(CustomerSettleFeeMonthlyCriteria criteria) {
-        PageHelper.startPage(criteria.getPageNum(),criteria.getPageSize());
-        List<CustomerSettleFeeMonthly> settleFeeMonthlyList =  customerSettleFeeMonthlyMapper.listByCriteria(criteria);
+        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
+        List<CustomerSettleFeeMonthly> settleFeeMonthlyList = customerSettleFeeMonthlyMapper.listByCriteria(criteria);
         return new PageInfo<>(settleFeeMonthlyList);
     }
 
@@ -386,43 +392,43 @@ public class SettleManageServiceImpl implements SettleManageService {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         int day = cal.get(Calendar.DAY_OF_MONTH);
-        int monthToday = cal.get(Calendar.MONTH)+1;
-        int monthInt = Integer.parseInt(month.substring(5,7));
-        if (monthInt > monthToday){
+        int monthToday = cal.get(Calendar.MONTH) + 1;
+        int monthInt = Integer.parseInt(month.substring(5, 7));
+        if (monthInt > monthToday) {
             throw new BusinessException("月份不能大于当月");
         }
         String billingDay = config.getBillingDay();
         int billingDayInt = Integer.parseInt(billingDay);
         if (Integer.parseInt(billingDay) < BILLING_DAY_SEPARATE) {
-            if (monthToday == monthInt){
-                if (day <= billingDayInt){
+            if (monthToday == monthInt) {
+                if (day <= billingDayInt) {
                     end = DateUtil.truncate(now);
                     start = DateUtils.addMonths(end, -1);
-                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month),-1));
+                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month), -1));
                 } else {
                     start = DateUtil.parseDate(month + "-" + billingDay);
                     end = DateUtil.truncate(now);
                 }
-            }else {
-                start = DateUtil.parseDate(month+"-"+billingDay);
-                end = DateUtils.addMonths(start,1);
-                if (end.after(now)){
+            } else {
+                start = DateUtil.parseDate(month + "-" + billingDay);
+                end = DateUtils.addMonths(start, 1);
+                if (end.after(now)) {
                     end = DateUtil.truncate(end);
                 }
             }
         } else {
-            if (monthToday == monthInt){
-                if (day <= billingDayInt){
+            if (monthToday == monthInt) {
+                if (day <= billingDayInt) {
                     end = DateUtil.truncate(now);
-                    start = DateUtils.addMonths(DateUtil.parseDate(month+"-"+billingDay), -1);
-                }else {
-                    start = DateUtil.parseDate(month+"-"+billingDay);
+                    start = DateUtils.addMonths(DateUtil.parseDate(month + "-" + billingDay), -1);
+                } else {
+                    start = DateUtil.parseDate(month + "-" + billingDay);
                     end = DateUtil.truncate(now);
-                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month),1));
+                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month), 1));
                 }
-            }else {
-                end = DateUtil.parseDate(month+"-"+billingDay);
-                start = DateUtils.addMonths(end,-1);
+            } else {
+                end = DateUtil.parseDate(month + "-" + billingDay);
+                start = DateUtils.addMonths(end, -1);
             }
         }
         returnTimeIntervalDto
@@ -439,6 +445,6 @@ public class SettleManageServiceImpl implements SettleManageService {
         cal.get(Calendar.DAY_OF_MONTH);
         System.out.println(cal.get(Calendar.DAY_OF_MONTH));
         System.out.println(cal.get(Calendar.MONTH));
-        System.out.println("2019-04-03".substring(5,7));
+        System.out.println("2019-04-03".substring(5, 7));
     }
 }

@@ -2,7 +2,6 @@ package com.jaagro.report.biz.mapper.report;
 
 import com.jaagro.report.api.dto.settlemanage.ListDriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.ReturnSettleDriverFeeMonthlyDto;
-import com.jaagro.report.api.entity.DeptWaybillfeeMonthly;
 import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
 import org.apache.ibatis.annotations.Param;
 
