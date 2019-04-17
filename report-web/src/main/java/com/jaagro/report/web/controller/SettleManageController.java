@@ -1,4 +1,6 @@
 package com.jaagro.report.web.controller;
+
+import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.utils.BaseResponse;
@@ -23,7 +25,7 @@ public class SettleManageController {
     @Autowired
     private SettleManageService settleManageService;
 
-    @ApiOperation("web查询订单日报表数据")
+    @ApiOperation("运单费用")
     @PostMapping("/listWaybillFee")
     public BaseResponse listWaybillFee(@RequestBody WaybillFeeCriteria criteria) {
         if (criteria.getPageNum() == null) {
@@ -33,5 +35,11 @@ public class SettleManageController {
             return BaseResponse.errorInstance(ResponseStatusCode.QUERY_DATA_ERROR.getCode(), "每页条数不能为空");
         }
         return BaseResponse.successInstance(settleManageService.listWaybillFee(criteria));
+    }
+
+    @ApiOperation("司机费用")
+    @PostMapping("/litDriverFee")
+    public BaseResponse litDriverFee(@RequestBody DriverFeeCriteria criteria) {
+        return null;
     }
 }

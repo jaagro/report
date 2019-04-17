@@ -2,11 +2,10 @@ package com.jaagro.report.biz.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jaagro.report.api.constant.CostType;
-import com.jaagro.report.api.constant.Direction;
 import com.jaagro.report.api.constant.GoodsUnit;
 import com.jaagro.report.api.dto.customer.ShowCustomerDto;
 import com.jaagro.report.api.dto.customer.ShowSiteDto;
+import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.WaybillGoodDto;
@@ -26,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -65,15 +65,15 @@ public class SettleManageServiceImpl implements SettleManageService {
         PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
         if (criteria.getTruckNumber() != null) {
             BaseResponse<List<Integer>> truckIds = truckClientService.listTruckIdsByKeyword(criteria.getTruckNumber());
-            if (truckIds != null && truckIds.getData() != null) {
+            if (!CollectionUtils.isEmpty(truckIds.getData())) {
                 criteria.setTruckIds(truckIds.getData());
+            } else {
+                criteria.setTruckIds(Collections.singletonList(999999999));
             }
         }
         if (criteria.getCustomerName() != null) {
-            BaseResponse<List<Integer>> customerIds = customerClientService.listCustomerIdByKeyWord(criteria.getCustomerName());
-            if (customerIds != null && customerIds.getData() != null) {
-                criteria.setCustomerIds(customerIds.getData());
-            }
+            List<Integer> customerIds = listCustomerIdsByKeyword(criteria.getCustomerName());
+            criteria.setCustomerIds(customerIds);
         }
         List<ReturnWaybillFeeDto> returnWaybillFeeDtos = waybillMapper.listSettleManageWaybillFee(criteria);
         for (ReturnWaybillFeeDto returnWaybillFeeDto : returnWaybillFeeDtos) {
@@ -144,19 +144,48 @@ public class SettleManageServiceImpl implements SettleManageService {
             BigDecimal customerAnomalyFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerAnomalyFee(returnWaybillFeeDto.getWaybillId());
             returnWaybillFeeDto
                     .setCustomerFee(waybillCustomerFee);
-                returnWaybillFeeDto
-                        .setAnomalyCustomerFee(customerAnomalyFee.multiply(BigDecimal.valueOf(-1)));
+            returnWaybillFeeDto
+                    .setAnomalyCustomerFee(customerAnomalyFee.multiply(BigDecimal.valueOf(-1)));
             //运力侧费用
             BigDecimal truckAnomalyFee = waybillTruckFeeMapper.accumulativeWaybillTruckAnomalyFee(returnWaybillFeeDto.getWaybillId());
             BigDecimal truckFee = waybillTruckFeeMapper.accumulativeWaybillTruckFee(returnWaybillFeeDto.getWaybillId());
             returnWaybillFeeDto
                     .setWaybillFee(truckFee);
-                returnWaybillFeeDto
-                        .setAnomalyWaybillFee(truckAnomalyFee.multiply(BigDecimal.valueOf(-1)));
+            returnWaybillFeeDto
+                    .setAnomalyWaybillFee(truckAnomalyFee.multiply(BigDecimal.valueOf(-1)));
             //毛利
             BigDecimal grossProfit = waybillCustomerFee.add(customerAnomalyFee).subtract(truckAnomalyFee.add(truckAnomalyFee));
             returnWaybillFeeDto.setGrossProfit(grossProfit);
         }
         return new PageInfo(returnWaybillFeeDtos);
+    }
+
+    /**
+     * 司机费用
+     *
+     * @param criteria
+     * @return
+     */
+    @Override
+    public void litDriverFee(DriverFeeCriteria criteria) {
+
+
+    }
+
+    /**
+     * 根据客户名称迷糊查询出客户id集合
+     *
+     * @param keyword
+     * @return
+     */
+    private List<Integer> listCustomerIdsByKeyword(String keyword) {
+        List<Integer> customerIds;
+        BaseResponse<List<Integer>> listBaseResponse = customerClientService.listCustomerIdByKeyWord(keyword);
+        if (!CollectionUtils.isEmpty(listBaseResponse.getData())) {
+            customerIds = listBaseResponse.getData();
+        } else {
+            customerIds = Collections.singletonList(999999999);
+        }
+        return customerIds;
     }
 }
