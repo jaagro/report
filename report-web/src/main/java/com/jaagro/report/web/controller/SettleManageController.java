@@ -1,8 +1,11 @@
 package com.jaagro.report.web.controller;
 
+import com.jaagro.report.api.dto.settlemanage.CustomerSettleFeeMonthlyCriteria;
+import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.DriverFeeDetailsCriteria;
 import com.jaagro.report.api.dto.settlemanage.ListDriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
+import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.utils.BaseResponse;
 import com.jaagro.utils.ResponseStatusCode;
@@ -11,9 +14,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 /**
@@ -64,5 +70,12 @@ public class SettleManageController {
         log.info("O createCustomerSettleFeeMonthly month={}", month);
         settleManageService.createCustomerSettleFeeMonthly(month);
         return BaseResponse.successInstance("触发成功");
+    }
+
+    @ApiOperation("查询客户费用月度报表")
+    @PostMapping("/listCustomerSettleFeeMonthly")
+    public BaseResponse listCustomerSettleFeeMonthly(@RequestBody CustomerSettleFeeMonthlyCriteria criteria){
+        log.info("O listCustomerSettleFeeMonthly params={}",criteria);
+        return BaseResponse.successInstance(settleManageService.listCustomerSettleFeeMonthly(criteria));
     }
 }

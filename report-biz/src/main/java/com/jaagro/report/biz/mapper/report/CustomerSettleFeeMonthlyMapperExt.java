@@ -1,5 +1,6 @@
 package com.jaagro.report.biz.mapper.report;
 
+import com.jaagro.report.api.dto.settlemanage.CustomerSettleFeeMonthlyCriteria;
 import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,4 +16,11 @@ public interface CustomerSettleFeeMonthlyMapperExt extends CustomerSettleFeeMont
      * @param feeMonthlyList
      */
     void batchInsert(@Param("feeMonthlyList") List<CustomerSettleFeeMonthly> feeMonthlyList);
+
+    /**
+     * 分页查询客户结算月度费用列表
+     * @param criteria
+     * @return
+     */
+    List<CustomerSettleFeeMonthly> listByCriteria(CustomerSettleFeeMonthlyCriteria criteria);
 }

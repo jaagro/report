@@ -10,6 +10,11 @@ import com.jaagro.report.api.dto.settlemanage.*;
 import com.jaagro.report.api.dto.truck.ShowTruckDto;
 import com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto;
 import com.jaagro.report.api.dto.waybill.WaybillTracking;
+import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
+import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
+import com.jaagro.report.api.entity.SettleBillingDayConfig;
+import com.jaagro.report.api.entity.SettleBillingDayConfigExample;
+import com.jaagro.report.api.exception.BusinessException;
 import com.jaagro.report.api.entity.*;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.report.biz.mapper.report.DriverMapperExt;
@@ -29,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import sun.applet.Main;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -67,6 +73,7 @@ public class SettleManageServiceImpl implements SettleManageService {
     @Autowired
     private DriverSettleFeeMonthlyMapperExt driverSettleFeeMonthlyMapper;
 
+    private static final Integer BILLING_DAY_SEPARATE = 15;
     /**
      * 运单结算费用报表
      *
@@ -280,7 +287,7 @@ public class SettleManageServiceImpl implements SettleManageService {
         List<ShowCustomerDto> showCustomerDtoList = customerClientService.listNormalCustomer();
         if (CollectionUtils.isEmpty(showCustomerDtoList)) {
             log.info("there is no normal customer");
-            return;
+            throw new BusinessException("客户列表为空");
         }
         List<CustomerSettleFeeMonthly> customerSettleFeeMonthlyList = new ArrayList<>();
         SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
@@ -288,8 +295,16 @@ public class SettleManageServiceImpl implements SettleManageService {
         List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
         if (settleBillingDayConfigList.isEmpty()) {
             log.info("there is not settleBillingDayConfig type={}", SettleBillingDayConfigType.CUSTOMER);
+            throw new BusinessException("结算账单日未配置");
+        }
+
+        ReturnTimeIntervalDto returnTimeIntervalDto = accumulativeTimeInterval(month, SettleBillingDayConfigType.CUSTOMER);
+        if (returnTimeIntervalDto.getEnd() == null || returnTimeIntervalDto.getStart() == null){
             return;
         }
+        Date start = returnTimeIntervalDto.getStart();
+        Date end = returnTimeIntervalDto.getEnd();
+        month = returnTimeIntervalDto.getMonth();
         SettleBillingDayConfig config = settleBillingDayConfigList.get(0);
         for (ShowCustomerDto customerDto : showCustomerDtoList) {
             CustomerSettleFeeMonthly settleFeeMonthly = new CustomerSettleFeeMonthly();
@@ -297,15 +312,6 @@ public class SettleManageServiceImpl implements SettleManageService {
                     .setCustomerId(customerDto.getId())
                     .setCustomerName(customerDto.getCustomerName())
                     .setCustomerType(customerDto.getCustomerType());
-            Date start = null;
-            Date end = null;
-            if (Integer.parseInt(config.getBillingDay()) < 15) {
-                start = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
-                end = DateUtils.addMonths(start, 1);
-            } else {
-                end = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
-                start = DateUtils.addMonths(end, -1);
-            }
             settleFeeMonthly.setEndTime(end)
                     .setReportTime(month)
                     .setStartTime(start);
@@ -324,6 +330,19 @@ public class SettleManageServiceImpl implements SettleManageService {
             customerSettleFeeMonthlyList.add(settleFeeMonthly);
         }
         customerSettleFeeMonthlyMapper.batchInsert(customerSettleFeeMonthlyList);
+    }
+
+    /**
+     * 查询客户结算费用月度报表
+     *
+     * @param criteria
+     * @return
+     */
+    @Override
+    public PageInfo<CustomerSettleFeeMonthly> listCustomerSettleFeeMonthly(CustomerSettleFeeMonthlyCriteria criteria) {
+        PageHelper.startPage(criteria.getPageNum(),criteria.getPageSize());
+        List<CustomerSettleFeeMonthly> settleFeeMonthlyList =  customerSettleFeeMonthlyMapper.listByCriteria(criteria);
+        return new PageInfo<>(settleFeeMonthlyList);
     }
 
     /**
@@ -350,28 +369,76 @@ public class SettleManageServiceImpl implements SettleManageService {
      * @param settleBillingDayConfigType
      * @return
      */
-    private ReturnTimeIntervalDto accumulativeTimeInterval(String month, Integer settleBillingDayConfigType) {
+    @Override
+    public ReturnTimeIntervalDto accumulativeTimeInterval(String month, Integer settleBillingDayConfigType) {
         ReturnTimeIntervalDto returnTimeIntervalDto = new ReturnTimeIntervalDto();
         SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
         configExample.createCriteria().andTypeEqualTo(settleBillingDayConfigType);
         List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
         if (settleBillingDayConfigList.isEmpty()) {
             log.info("there is not settleBillingDayConfig type={}", settleBillingDayConfigType);
-            return returnTimeIntervalDto;
+            throw new BusinessException("未找到结算账单日配置");
         }
         SettleBillingDayConfig config = settleBillingDayConfigList.get(0);
         Date start = null;
         Date end = null;
-        if (Integer.parseInt(config.getBillingDay()) < 15) {
-            start = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
-            end = DateUtils.addMonths(start, 1);
+        Date now = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int monthToday = cal.get(Calendar.MONTH)+1;
+        int monthInt = Integer.parseInt(month.substring(5,7));
+        if (monthInt > monthToday){
+            throw new BusinessException("月份不能大于当月");
+        }
+        String billingDay = config.getBillingDay();
+        int billingDayInt = Integer.parseInt(billingDay);
+        if (Integer.parseInt(billingDay) < BILLING_DAY_SEPARATE) {
+            if (monthToday == monthInt){
+                if (day <= billingDayInt){
+                    end = DateUtil.truncate(now);
+                    start = DateUtils.addMonths(end, -1);
+                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month),-1));
+                } else {
+                    start = DateUtil.parseDate(month + "-" + billingDay);
+                    end = DateUtil.truncate(now);
+                }
+            }else {
+                start = DateUtil.parseDate(month+"-"+billingDay);
+                end = DateUtils.addMonths(start,1);
+                if (end.after(now)){
+                    end = DateUtil.truncate(end);
+                }
+            }
         } else {
-            end = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
-            start = DateUtils.addMonths(end, -1);
+            if (monthToday == monthInt){
+                if (day <= billingDayInt){
+                    end = DateUtil.truncate(now);
+                    start = DateUtils.addMonths(DateUtil.parseDate(month+"-"+billingDay), -1);
+                }else {
+                    start = DateUtil.parseDate(month+"-"+billingDay);
+                    end = DateUtil.truncate(now);
+                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month),1));
+                }
+            }else {
+                end = DateUtil.parseDate(month+"-"+billingDay);
+                start = DateUtils.addMonths(end,-1);
+            }
         }
         returnTimeIntervalDto
                 .setEnd(end)
-                .setStart(start);
+                .setStart(start)
+                .setMonth(month);
         return returnTimeIntervalDto;
+    }
+
+    public static void main(String[] args) {
+        Date now = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.get(Calendar.DAY_OF_MONTH);
+        System.out.println(cal.get(Calendar.DAY_OF_MONTH));
+        System.out.println(cal.get(Calendar.MONTH));
+        System.out.println("2019-04-03".substring(5,7));
     }
 }
