@@ -22,7 +22,7 @@
             wtf.id=wfa.relevance_id and wfa.relevance_type=2 and wtf.enabled=1 and wfa.enabled=1
             and wtf.anomaly_id is not null
             <if test="waybillIds!=null">
-                and waybill_id IN
+                and wtf.waybill_id IN
                 <foreach collection="waybillIds" open="(" separator="," close=")" item="waybillId">
                     ${waybillId}
                 </foreach>

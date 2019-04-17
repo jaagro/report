@@ -15,10 +15,12 @@ import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
 import com.jaagro.report.api.entity.SettleBillingDayConfig;
 import com.jaagro.report.api.entity.SettleBillingDayConfigExample;
 import com.jaagro.report.api.exception.BusinessException;
+import com.jaagro.report.api.entity.*;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.report.biz.mapper.report.DriverMapperExt;
 import com.jaagro.report.api.util.DateUtil;
 import com.jaagro.report.biz.mapper.report.CustomerSettleFeeMonthlyMapperExt;
+import com.jaagro.report.biz.mapper.report.DriverSettleFeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.SettleBillingDayConfigMapperExt;
 import com.jaagro.report.biz.mapper.tms.*;
 import com.jaagro.report.biz.service.CustomerClientService;
@@ -67,6 +69,8 @@ public class SettleManageServiceImpl implements SettleManageService {
     private SettleBillingDayConfigMapperExt settleBillingDayConfigMapper;
     @Autowired
     private CustomerSettleFeeMonthlyMapperExt customerSettleFeeMonthlyMapper;
+    @Autowired
+    private DriverSettleFeeMonthlyMapperExt driverSettleFeeMonthlyMapper;
 
     private static final Integer BILLING_DAY_SEPARATE = 15;
     /**
@@ -74,6 +78,7 @@ public class SettleManageServiceImpl implements SettleManageService {
      *
      * @param criteria
      * @return
+     * @author @Gao.
      */
     @Override
     public PageInfo listWaybillFee(WaybillFeeCriteria criteria) {
@@ -164,29 +169,25 @@ public class SettleManageServiceImpl implements SettleManageService {
     }
 
     /**
-     * 司机费用
+     * 生成司机费用月度报表
      *
      * @param
      * @return
+     * @author @Gao.
      */
     @Override
     public void createDriverSettleFeeMonthly(String month) {
         //查询所有司机
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
-        SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
-        configExample.createCriteria().andTypeEqualTo(SettleBillingDayConfigType.DRIVER);
-        List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
-        if (settleBillingDayConfigList.isEmpty()) {
-            log.info("there is not settleBillingDayConfig type={}", SettleBillingDayConfigType.CUSTOMER);
-            return;
-        }
+        ReturnTimeIntervalDto returnTimeIntervalDto = accumulativeTimeInterval(month, SettleBillingDayConfigType.DRIVER);
         DriverFeeCriteria driverFeeCriteria = new DriverFeeCriteria();
-
+        driverFeeCriteria
+                .setEndDate(returnTimeIntervalDto.getEnd())
+                .setBeginDate(returnTimeIntervalDto.getStart());
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
             BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
             //查询当前客户运单id集合
-
             driverFeeCriteria
                     .setDriverId(returnDriverInfoDto.getDriverId());
             List<Integer> waybillIds = driverMapper.listWaybillIdByCriteria(driverFeeCriteria);
@@ -211,11 +212,35 @@ public class SettleManageServiceImpl implements SettleManageService {
         }
     }
 
+    @Override
+    public PageInfo listDriverSettleFeeMonthly(ListDriverFeeCriteria criteria) {
+        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
+        List<ReturnSettleDriverFeeMonthlyDto> driverSettleFeeMonthlies = driverSettleFeeMonthlyMapper.selectByCriteria(criteria);
+        return new PageInfo(driverSettleFeeMonthlies);
+    }
+
+    /**
+     * 司机结算费用详情
+     *
+     * @param criteria
+     * @return
+     */
+    @Override
+    public PageInfo driverSettleFeeMonthlyDetails(DriverFeeDetailsCriteria criteria) {
+        WaybillFeeCriteria waybillFeeCriteria = new WaybillFeeCriteria();
+        waybillFeeCriteria
+                .setStartDate(criteria.getStartDate())
+                .setEndDate(criteria.getEndDate())
+                .setDriverId(criteria.getDriverId());
+        return listWaybillFee(waybillFeeCriteria);
+    }
+
     /**
      * 累计商品信息
      *
      * @param waybillGoodsDtos
      * @return
+     * @author @Gao.
      */
     private ReturnAccumulativeGoodsDto accumulativeGoods(List<GetWaybillGoodsDto> waybillGoodsDtos) {
         ReturnAccumulativeGoodsDto returnAccumulativeGoodsDto = new ReturnAccumulativeGoodsDto();
@@ -330,6 +355,7 @@ public class SettleManageServiceImpl implements SettleManageService {
 
     /**
      * 计算账单起始时间与截止时间
+     *
      * @param month
      * @param settleBillingDayConfigType
      * @return

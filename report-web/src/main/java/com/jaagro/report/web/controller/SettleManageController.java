@@ -2,6 +2,8 @@ package com.jaagro.report.web.controller;
 
 import com.jaagro.report.api.dto.settlemanage.CustomerSettleFeeMonthlyCriteria;
 import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
+import com.jaagro.report.api.dto.settlemanage.DriverFeeDetailsCriteria;
+import com.jaagro.report.api.dto.settlemanage.ListDriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
 import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
 import com.jaagro.report.api.service.SettleManageService;
@@ -30,7 +32,7 @@ public class SettleManageController {
     @Autowired
     private SettleManageService settleManageService;
 
-    @ApiOperation("运单费用")
+    @ApiOperation("运单费用报表")
     @PostMapping("/listWaybillFee")
     public BaseResponse listWaybillFee(@RequestBody WaybillFeeCriteria criteria) {
         if (criteria.getPageNum() == null) {
@@ -42,17 +44,30 @@ public class SettleManageController {
         return BaseResponse.successInstance(settleManageService.listWaybillFee(criteria));
     }
 
-    @ApiOperation("司机费用")
-    @PostMapping("/litDriverFee")
-    public BaseResponse litDriverFee() {
+    @ApiOperation("生成司机费用月度报表")
+    @PostMapping("/createDriverSettleFeeMonthly")
+    public BaseResponse createDriverSettleFeeMonthly(@RequestBody String month) {
+        log.info("O createDriverSettleFeeMonthly month={}", month);
+        settleManageService.createDriverSettleFeeMonthly(month);
+        return BaseResponse.successInstance("触发成功");
+    }
 
-        return null;
+    @ApiOperation("司机费用月度报表")
+    @PostMapping("/listDriverSettleFeeMonthly")
+    public BaseResponse listDriverSettleFeeMonthly(@RequestBody ListDriverFeeCriteria criteria) {
+        return BaseResponse.successInstance(settleManageService.listDriverSettleFeeMonthly(criteria));
+    }
+
+    @ApiOperation("司机费用月度报表详情")
+    @PostMapping("/driverSettleFeeMonthlyDetails")
+    public BaseResponse driverSettleFeeMonthlyDetails(@RequestBody DriverFeeDetailsCriteria criteria) {
+        return BaseResponse.successInstance(settleManageService.driverSettleFeeMonthlyDetails(criteria));
     }
 
     @ApiOperation("生成客户费用月度报表")
     @PostMapping("/createCustomerSettleFeeMonthly")
-    public BaseResponse createCustomerSettleFeeMonthly(@RequestBody String month){
-        log.info("O createCustomerSettleFeeMonthly month={}",month);
+    public BaseResponse createCustomerSettleFeeMonthly(@RequestBody String month) {
+        log.info("O createCustomerSettleFeeMonthly month={}", month);
         settleManageService.createCustomerSettleFeeMonthly(month);
         return BaseResponse.successInstance("触发成功");
     }

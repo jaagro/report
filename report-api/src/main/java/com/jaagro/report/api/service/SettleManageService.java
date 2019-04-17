@@ -4,9 +4,14 @@ import com.github.pagehelper.PageInfo;
 import com.jaagro.report.api.dto.settlemanage.CustomerSettleFeeMonthlyCriteria;
 import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.ReturnTimeIntervalDto;
+import com.jaagro.report.api.dto.settlemanage.DriverFeeDetailsCriteria;
+import com.jaagro.report.api.dto.settlemanage.ListDriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
 import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
 import com.jaagro.utils.BaseResponse;
+
+import java.util.List;
+import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
 
 import java.util.List;
 
@@ -18,14 +23,16 @@ public interface SettleManageService {
      *
      * @param criteria
      * @return
+     * @author @Gao.
      */
     PageInfo listWaybillFee(WaybillFeeCriteria criteria);
 
     /**
-     * 司机费用
+     * 生成司机费用月度报表
      *
      * @param
      * @return
+     * @author @Gao.
      */
     void createDriverSettleFeeMonthly(String month);
 
@@ -51,4 +58,20 @@ public interface SettleManageService {
      * @return
      */
     ReturnTimeIntervalDto accumulativeTimeInterval(String month, Integer settleBillingDayConfigType);
+
+    /**
+     * 司机费用月度报表列表
+     *
+     * @param criteria
+     * @return
+     */
+    PageInfo listDriverSettleFeeMonthly(ListDriverFeeCriteria criteria);
+
+    /**
+     * 司机结算费用详情
+     *
+     * @param criteria
+     * @return
+     */
+    PageInfo driverSettleFeeMonthlyDetails(DriverFeeDetailsCriteria criteria);
 }

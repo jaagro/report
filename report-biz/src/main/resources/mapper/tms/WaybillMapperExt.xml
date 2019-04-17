@@ -3,7 +3,8 @@
 <mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillMapperExt">
     <select id="listSettleManageWaybillFee" resultType="com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto"
             parameterType="com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria">
-        select wb.id waybillId,wb.load_site_id loadSiteId,wb.truck_id truckId,wb.network_id netWorkId,os.customer_id customerId from waybill wb
+        select wb.id waybillId,wb.load_site_id loadSiteId,wb.truck_id truckId,wb.network_id netWorkId,os.customer_id
+        customerId from waybill wb
         inner join orders os on (wb.order_id=os.id)
         <where>
             wb.enabled = 1 and wb.receipt_status=2
@@ -24,6 +25,16 @@
                 <foreach collection="customerIds" open="(" separator="," close=")" item="customerId">
                     ${customerId}
                 </foreach>
+            </if>
+            <if test="finishTime!=null">
+                and date_format(wb.modify_time, '%Y-%m')=#{finishTime}
+            </if>
+            <if test="driverId!=null">
+                and wb.driver_id=#{driverId}
+            </if>
+            <if test="startDate!=null and endDate!=null">
+                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) >= #{startDate}]]>
+                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) <= #{endDate}]]>
             </if>
         </where>
     </select>

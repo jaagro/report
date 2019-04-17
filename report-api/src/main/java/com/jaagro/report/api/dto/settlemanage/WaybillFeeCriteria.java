@@ -51,9 +51,25 @@ public class WaybillFeeCriteria implements Serializable {
     private Integer goodsType;
 
     /**
+     * 司机id
+     */
+    private Integer driverId;
+
+    /**
+     * 起始时间
+     */
+    private Date startDate;
+
+    /**
+     * 结束时间
+     */
+    private Date endDate;
+
+    /**
      * 车辆id
      */
     private List<Integer> truckIds;
+
     /**
      * 客户id
      */
