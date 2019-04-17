@@ -22,4 +22,8 @@ public class ReturnTimeIntervalDto implements Serializable {
      * 结束时间
      */
     private Date end;
+    /**
+     * 月份
+     */
+    private String month;
 }

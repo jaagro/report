@@ -23,11 +23,11 @@ public class SettleManageTaskService {
     /**
      * 定时生成客户结算月度费用报表
      */
-    @Scheduled( cron = "0 0/1 * * * ? ")
+    //@Scheduled( cron = "0 0/1 * * * ? ")
     public void createCustomerSettleFeeMonthly(){
         log.info("SettleManageTaskService.createCustomerSettleFeeMonthly begin");
         long start = System.currentTimeMillis();
-        settleManageService.createCustomerSettleFeeMonthly(DateUtil.format(new Date(),"yyyy-MM"));
+        settleManageService.createCustomerSettleFeeMonthly(DateUtil.formatDate(new Date()));
         long end = System.currentTimeMillis();
         log.info("SettleManageTaskService.createCustomerSettleFeeMonthly end use time="+(end-start));
     }

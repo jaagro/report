@@ -1,11 +1,15 @@
 package com.jaagro.report.web.controller;
 
+import com.jaagro.report.api.dto.settlemanage.ReturnTimeIntervalDto;
+import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.report.api.service.WaybillFeeReportTaskService;
 import com.jaagro.report.biz.mapper.report.UserLoginMapperExt;
+import com.jaagro.utils.BaseResponse;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +25,8 @@ public class Test {
     private UserLoginMapperExt userLoginMapper;
     @Autowired
     private WaybillFeeReportTaskService waybillFeeReportTaskService;
+    @Autowired
+    private SettleManageService settleManageService;
 
     @GetMapping("/test")
     public void test() {
@@ -47,5 +53,11 @@ public class Test {
     @GetMapping("/getApplicationYaml")
     public String getApplicationYaml(){
         return app;
+    }
+
+    @GetMapping("/accumulativeTimeInterval")
+    public BaseResponse accumulativeTimeInterval(@RequestParam String month, @RequestParam Integer settleBillingDayConfigType){
+        ReturnTimeIntervalDto returnTimeIntervalDto = settleManageService.accumulativeTimeInterval(month, settleBillingDayConfigType);
+        return BaseResponse.successInstance(returnTimeIntervalDto);
     }
 }

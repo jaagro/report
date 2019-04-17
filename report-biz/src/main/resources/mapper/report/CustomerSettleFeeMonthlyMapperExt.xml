@@ -16,4 +16,16 @@
             #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
+    <select id="listByCriteria" parameterType="com.jaagro.report.api.dto.settlemanage.CustomerSettleFeeMonthlyCriteria" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM customer_settle_fee_monthly
+        WHERE 1=1
+        <if test="month != null and month != ''">
+            AND report_time = #{month}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND customer_name = #{customerName}
+        </if>
+    </select>
 </mapper>

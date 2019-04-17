@@ -1,8 +1,10 @@
 package com.jaagro.report.api.util;
 
 
+import com.jaagro.report.api.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -18,46 +20,87 @@ import java.util.Date;
 /**
  * @author yj
  */
+@Slf4j
 public class DateUtil {
+    private static ThreadLocal<DateFormat> threadLocalDateTime = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        }
+    };
 
-    public static String format(Date date,String format){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        return dateToLocalDateTime(date).format(formatter);
+    private static ThreadLocal<DateFormat> threadLocalDate = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd");
+        }
+    };
+
+    private static ThreadLocal<DateFormat> threadLocalMonth = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM");
+        }
+    };
+
+    public static String formatDateTime(Date dateTime){
+        return threadLocalDateTime.get().format(dateTime);
     }
 
-    public static Date parse(String dateStr,String format){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        LocalDateTime localDateTime = LocalDateTime.parse(dateStr, formatter);
-        return localDateTimeToDate(localDateTime);
+    public static String formatDate(Date date){
+        return threadLocalDate.get().format(date);
     }
+
+    public static String formatMonth(Date date){
+        return threadLocalMonth.get().format(date);
+    }
+
+    public static Date parseDateTime(String dateTimeStr){
+        try {
+            return threadLocalDateTime.get().parse(dateTimeStr);
+        } catch (ParseException e) {
+            log.error("parseDateTime error dateTimeStr="+dateTimeStr,e);
+            throw new BusinessException("日期转换出错");
+        }
+    }
+
+    public static Date parseDate(String dateStr){
+        try {
+            return threadLocalDate.get().parse(dateStr);
+        } catch (ParseException e) {
+            log.error("parseDate error dateStr="+dateStr,e);
+            throw new BusinessException("日期转换出错");
+        }
+    }
+
+    public static Date parseMonth(String monthStr){
+        try {
+            return threadLocalMonth.get().parse(monthStr);
+        } catch (ParseException e) {
+            log.error("parseMonth error monthStr="+monthStr,e);
+            throw new BusinessException("日期转换出错");
+        }
+    }
+
+
     /**
-     * 将Date转换为LocalDatetime
+     * 获取当天的零时零分零秒
      * @param date
+     * @return
      */
-    public static LocalDateTime dateToLocalDateTime(Date date) {
-       //1.从日期获取ZonedDateTime并使用其方法toLocalDateTime（）获取LocalDateTime
-      //2.使用LocalDateTime的Instant（）工厂方法
-        Instant instant = date.toInstant();
-        ZoneId zoneId = ZoneId.systemDefault();
-        LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
-        return localDateTime;
-    }
-
-    /**
-     *  将LocalDateTime转换回java.util.Date：
-     * 1.使用atZone（）方法将LocalDateTime转换为ZonedDateTime
-     2.将ZonedDateTime转换为Instant，并从中获取Date
-     * @param localDateTime
-     */
-    public static Date localDateTimeToDate(LocalDateTime localDateTime) {
-        ZoneId zoneId = ZoneId.systemDefault();
-        ZonedDateTime zdt = localDateTime.atZone(zoneId);
-        Date date = Date.from(zdt.toInstant());
-        return date;
+    public static Date truncate(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        return calendar.getTime();
     }
 
     public static void main(String[] args) {
-        System.out.println(format(new Date(),"yyyy-MM-dd HH:mm:ss"));
-        System.out.println(parse("2019-04-16 16:39:59","yyyy-MM-dd HH:mm:ss"));
+        System.out.println(formatDateTime(new Date()));
+        System.out.println(parseDateTime("2019-04-16 16:39:59"));
+        System.out.println(truncate(new Date()));
     }
 }
