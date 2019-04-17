@@ -1,7 +1,7 @@
 package com.jaagro.report.biz.mapper.report;
 
+import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.ReturnDriverInfoDto;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,9 +17,9 @@ public interface DriverMapperExt {
     /**
      * 根据司机查询所有的运单id
      *
-     * @param driverId
+     * @param criteria
      * @return
      */
-    List<Integer> listWaybillIdByDriverId(@Param("driverId") Integer driverId);
+    List<Integer> listWaybillIdByCriteria(DriverFeeCriteria criteria);
 
 }

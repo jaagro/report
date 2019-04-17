@@ -168,14 +168,31 @@ public class SettleManageServiceImpl implements SettleManageService {
      */
     @Override
     public void createDriverSettleFeeMonthly(String month) {
+        //查询所有司机
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
+        SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
+        configExample.createCriteria().andTypeEqualTo(SettleBillingDayConfigType.DRIVER);
+        List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
+        if (settleBillingDayConfigList.isEmpty()) {
+            log.info("there is not settleBillingDayConfig type={}", SettleBillingDayConfigType.CUSTOMER);
+            return;
+        }
+        DriverFeeCriteria driverFeeCriteria = new DriverFeeCriteria();
+
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
             BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
             //查询当前客户运单id集合
-            List<Integer> waybillIds = driverMapper.listWaybillIdByDriverId(returnDriverInfoDto.getDriverId());
+
+            driverFeeCriteria
+                    .setDriverId(returnDriverInfoDto.getDriverId());
+            List<Integer> waybillIds = driverMapper.listWaybillIdByCriteria(driverFeeCriteria);
             if (!CollectionUtils.isEmpty(waybillIds)) {
+                //运单数
+                driverSettleFeeMonthly.setTotalWaybill(waybillIds.size());
+                //运力费用
                 BigDecimal waybillTruckFee = waybillTruckFeeMapper.accumulativeWaybillTruckFee(waybillIds);
+                //异常费用
                 BigDecimal AnomalyFee = waybillTruckFeeMapper.accumulativeWaybillTruckAnomalyFee(waybillIds);
                 driverSettleFeeMonthly
                         .setTotalAnomalyFee(AnomalyFee)
@@ -294,5 +311,36 @@ public class SettleManageServiceImpl implements SettleManageService {
             customerIds = Collections.singletonList(999999999);
         }
         return customerIds;
+    }
+
+    /**
+     * 计算账单起始时间与截止时间
+     * @param month
+     * @param settleBillingDayConfigType
+     * @return
+     */
+    private ReturnTimeIntervalDto accumulativeTimeInterval(String month, Integer settleBillingDayConfigType) {
+        ReturnTimeIntervalDto returnTimeIntervalDto = new ReturnTimeIntervalDto();
+        SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
+        configExample.createCriteria().andTypeEqualTo(settleBillingDayConfigType);
+        List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
+        if (settleBillingDayConfigList.isEmpty()) {
+            log.info("there is not settleBillingDayConfig type={}", settleBillingDayConfigType);
+            return returnTimeIntervalDto;
+        }
+        SettleBillingDayConfig config = settleBillingDayConfigList.get(0);
+        Date start = null;
+        Date end = null;
+        if (Integer.parseInt(config.getBillingDay()) < 15) {
+            start = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
+            end = DateUtils.addMonths(start, 1);
+        } else {
+            end = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
+            start = DateUtils.addMonths(end, -1);
+        }
+        returnTimeIntervalDto
+                .setEnd(end)
+                .setStart(start);
+        return returnTimeIntervalDto;
     }
 }
