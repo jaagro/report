@@ -27,4 +27,23 @@
             </if>
         </where>
     </select>
+    <select id="selectByParams" resultType="map">
+        SELECT
+            count(1) AS total_waybill,
+            SUM(CASE WHEN wg.unload_quantity IS NULL THEN 0 ELSE wg.unload_quantity END) AS total_quantity,
+            SUM(CASE WHEN wg.unload_weight IS NULL THEN 0 ELSE wg.unload_weight END) AS total_weight,
+            SUM(wcf.money) AS total_freight
+        FROM
+            waybill w
+        INNER JOIN orders o on w.order_id = o.id
+        LEFT JOIN waybill_customer_fee wcf ON wcf.enabled = 1 AND w.id = wcf.waybill_id AND wcf.anomaly_id is NULL AND wcf.earning_type = 1
+        LEFT JOIN waybill_goods wg on w.id = wg.waybill_id
+        WHERE
+            w.create_time BETWEEN #{start}
+        AND #{end}
+        AND w.enabled = 1
+        AND wg.enabled = 1
+        AND w.waybill_status = '已完成'
+        AND o.customer_id = #{customerId}
+    </select>
 </mapper>

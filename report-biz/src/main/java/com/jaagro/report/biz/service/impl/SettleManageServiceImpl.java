@@ -10,28 +10,35 @@ import com.jaagro.report.api.dto.truck.ShowTruckDto;
 import com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto;
 import com.jaagro.report.api.dto.waybill.WaybillTracking;
 import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
+import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
+import com.jaagro.report.api.entity.SettleBillingDayConfig;
+import com.jaagro.report.api.entity.SettleBillingDayConfigExample;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.report.biz.mapper.report.DriverMapperExt;
+import com.jaagro.report.api.util.DateUtil;
+import com.jaagro.report.biz.mapper.report.CustomerSettleFeeMonthlyMapperExt;
+import com.jaagro.report.biz.mapper.report.SettleBillingDayConfigMapperExt;
 import com.jaagro.report.biz.mapper.tms.*;
 import com.jaagro.report.biz.service.CustomerClientService;
 import com.jaagro.report.biz.service.TruckClientService;
 import com.jaagro.report.biz.service.UserClientService;
 import com.jaagro.utils.BaseResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @description: 结算管理服务
  * @author: @Gao.
  * @create: 2019-04-11 15:48
  **/
+@Slf4j
 @Service
 public class SettleManageServiceImpl implements SettleManageService {
 
@@ -53,7 +60,10 @@ public class SettleManageServiceImpl implements SettleManageService {
     private WaybillTruckFeeMapperExt waybillTruckFeeMapper;
     @Autowired
     private DriverMapperExt driverMapper;
-
+    @Autowired
+    private SettleBillingDayConfigMapperExt settleBillingDayConfigMapper;
+    @Autowired
+    private CustomerSettleFeeMonthlyMapperExt customerSettleFeeMonthlyMapper;
 
     /**
      * 运单结算费用报表
@@ -208,6 +218,64 @@ public class SettleManageServiceImpl implements SettleManageService {
                 .setWaybillGoods(waybillGoods)
                 .setTotalQuantity(totalQuantity);
         return returnAccumulativeGoodsDto;
+    }
+
+    /**
+     * 生成客户结算费用月度报表
+     *
+     * @param month
+     * @author yj
+     */
+    @Override
+    public void createCustomerSettleFeeMonthly(String month) {
+        // 查询所有客户
+        List<ShowCustomerDto> showCustomerDtoList = customerClientService.listNormalCustomer();
+        if (CollectionUtils.isEmpty(showCustomerDtoList)){
+            log.info("there is no normal customer");
+            return;
+        }
+        List<CustomerSettleFeeMonthly> customerSettleFeeMonthlyList = new ArrayList<>();
+        SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
+        configExample.createCriteria().andTypeEqualTo(SettleBillingDayConfigType.CUSTOMER);
+        List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
+        if (settleBillingDayConfigList.isEmpty()){
+            log.info("there is not settleBillingDayConfig type={}",SettleBillingDayConfigType.CUSTOMER);
+            return;
+        }
+        SettleBillingDayConfig config = settleBillingDayConfigList.get(0);
+        for (ShowCustomerDto customerDto : showCustomerDtoList){
+            CustomerSettleFeeMonthly settleFeeMonthly = new CustomerSettleFeeMonthly();
+            settleFeeMonthly.setCreateTime(new Date())
+                    .setCustomerId(customerDto.getId())
+                    .setCustomerName(customerDto.getCustomerName())
+                    .setCustomerType(customerDto.getCustomerType());
+            Date start = null;
+            Date end = null;
+            if (Integer.parseInt(config.getBillingDay()) < 15){
+                start = DateUtil.parse(month+"-"+config.getBillingDay(),"yyyy-MM-dd");
+                end = DateUtils.addMonths(start,1);
+            }else {
+                end = DateUtil.parse(month+"-"+config.getBillingDay(),"yyyy-MM-dd");
+                start = DateUtils.addMonths(end,-1);
+            }
+            settleFeeMonthly.setEndTime(end)
+                    .setReportTime(month)
+                    .setStartTime(start);
+            Map<String,Object> map = waybillMapper.selectByParams(customerDto.getId(),start,end);
+            if (!CollectionUtils.isEmpty(map)){
+                settleFeeMonthly.setTotalFreight(map.get("total_freight") == null ? new BigDecimal("0") : (BigDecimal)map.get("total_freight"))
+                        .setTotalQuantity(map.get("total_quantity") == null ? 0 : ((Long) map.get("total_quantity")).intValue())
+                        .setTotalWaybill(map.get("total_waybill") == null ? 0 : ((Long) map.get("total_waybill")).intValue())
+                        .setTotalWeight(map.get("total_weight") == null ? new BigDecimal("0") : (BigDecimal)map.get("total_weight"));
+            }else {
+                settleFeeMonthly.setTotalWeight(new BigDecimal("0"))
+                        .setTotalWaybill(0)
+                        .setTotalQuantity(0)
+                        .setTotalFreight(new BigDecimal("0"));
+            }
+            customerSettleFeeMonthlyList.add(settleFeeMonthly);
+        }
+        customerSettleFeeMonthlyMapper.batchInsert(customerSettleFeeMonthlyList);
     }
 
     /**

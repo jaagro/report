@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.jaagro.report.biz.mapper.report.CustomerSettleFeeMonthlyMapperExt" >
-
+    <insert id="batchInsert" parameterType="list">
+        insert into customer_settle_fee_monthly (customer_id, customer_name,
+          customer_type, report_time, start_time,
+          end_time, total_waybill, total_quantity,
+          total_weight, total_freight, total_anomaly_fee,
+          create_time, modify_time)
+        values
+        <foreach collection="feeMonthlyList" item="item" separator=",">
+            ( #{item.customerId,jdbcType=INTEGER}, #{item.customerName,jdbcType=VARCHAR},
+            #{item.customerType,jdbcType=INTEGER}, #{item.reportTime,jdbcType=VARCHAR}, #{item.startTime,jdbcType=DATE},
+            #{item.endTime,jdbcType=DATE}, #{item.totalWaybill,jdbcType=INTEGER}, #{item.totalQuantity,jdbcType=INTEGER},
+            #{item.totalWeight,jdbcType=DECIMAL}, #{item.totalFreight,jdbcType=DECIMAL}, #{item.totalAnomalyFee,jdbcType=DECIMAL},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
 </mapper>

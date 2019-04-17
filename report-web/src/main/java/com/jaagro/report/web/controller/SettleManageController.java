@@ -43,4 +43,12 @@ public class SettleManageController {
 
         return null;
     }
+
+    @ApiOperation("生成客户费用月度报表")
+    @PostMapping("/createCustomerSettleFeeMonthly")
+    public BaseResponse createCustomerSettleFeeMonthly(@RequestBody String month){
+        log.info("O createCustomerSettleFeeMonthly month={}",month);
+        settleManageService.createCustomerSettleFeeMonthly(month);
+        return BaseResponse.successInstance("触发成功");
+    }
 }
