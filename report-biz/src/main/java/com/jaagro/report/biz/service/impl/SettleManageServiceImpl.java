@@ -27,6 +27,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -161,6 +162,13 @@ public class SettleManageServiceImpl implements SettleManageService {
         return new PageInfo(returnWaybillFeeDtos);
     }
 
+    @Override
+    public PageInfo listDriverSettleFeeMonthly(ListDriverFeeCriteria criteria) {
+        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
+        List<ReturnSettleDriverFeeMonthlyDto> driverSettleFeeMonthlies = driverSettleFeeMonthlyMapper.selectByCriteria(criteria);
+        return new PageInfo(driverSettleFeeMonthlies);
+    }
+
     /**
      * 生成司机费用月度报表
      *
@@ -168,7 +176,9 @@ public class SettleManageServiceImpl implements SettleManageService {
      * @return
      * @author @Gao.
      */
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void createDriverSettleFeeMonthly(String month) {
         //查询所有司机
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
@@ -177,6 +187,7 @@ public class SettleManageServiceImpl implements SettleManageService {
         driverFeeCriteria
                 .setEndDate(returnTimeIntervalDto.getEnd())
                 .setBeginDate(returnTimeIntervalDto.getStart());
+        List<DriverSettleFeeMonthly> driverSettleFeeMonthlyList = new ArrayList<>();
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
             BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
@@ -202,14 +213,12 @@ public class SettleManageServiceImpl implements SettleManageService {
                             .setTotalQuantity(returnAccumulativeGoodsDto.getTotalQuantity());
                 }
             }
+            driverSettleFeeMonthlyList.add(driverSettleFeeMonthly);
         }
-    }
-
-    @Override
-    public PageInfo listDriverSettleFeeMonthly(ListDriverFeeCriteria criteria) {
-        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
-        List<ReturnSettleDriverFeeMonthlyDto> driverSettleFeeMonthlies = driverSettleFeeMonthlyMapper.selectByCriteria(criteria);
-        return new PageInfo(driverSettleFeeMonthlies);
+        if (!CollectionUtils.isEmpty(driverSettleFeeMonthlyList)) {
+            driverSettleFeeMonthlyMapper.deleteByReportTime(month);
+            driverSettleFeeMonthlyMapper.batchSettleFeeMonthInsert(driverSettleFeeMonthlyList);
+        }
     }
 
     /**
