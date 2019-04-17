@@ -199,11 +199,11 @@ public class SettleManageServiceImpl implements SettleManageService {
         List<DriverSettleFeeMonthly> driverSettleFeeMonthlyList = new ArrayList<>();
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
+            BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
             driverSettleFeeMonthly
                     .setEndTime(returnTimeIntervalDto.getEnd())
                     .setStartTime(returnTimeIntervalDto.getStart())
                     .setReportTime(month);
-            BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
             //查询当前客户运单id集合
             driverFeeCriteria
                     .setDriverId(returnDriverInfoDto.getDriverId());
