@@ -32,8 +32,10 @@
             <if test="driverId!=null">
                 and wb.driver_id=#{driverId}
             </if>
-            <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) >= startDate]]>
-            <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) <= endDate ]]>
+            <if test="startDate!=null and endDate!=null">
+                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) >= #{startDate}]]>
+                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) <= #{endDate}]]>
+            </if>
         </where>
     </select>
     <select id="selectByParams" resultType="map">

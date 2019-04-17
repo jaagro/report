@@ -26,7 +26,7 @@ public class SettleManageController {
     @Autowired
     private SettleManageService settleManageService;
 
-    @ApiOperation("运单费用")
+    @ApiOperation("运单费用报表")
     @PostMapping("/listWaybillFee")
     public BaseResponse listWaybillFee(@RequestBody WaybillFeeCriteria criteria) {
         if (criteria.getPageNum() == null) {
