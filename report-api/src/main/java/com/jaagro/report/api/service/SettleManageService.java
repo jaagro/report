@@ -18,13 +18,14 @@ public interface SettleManageService {
     /**
      * 司机费用
      *
-     * @param criteria
+     * @param
      * @return
      */
-    void litDriverFee(DriverFeeCriteria criteria);
+    void createDriverSettleFeeMonthly(String month);
 
     /**
      * 生成客户结算费用月度报表
+     *
      * @param month
      * @author yj
      */

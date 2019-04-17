@@ -3,6 +3,7 @@ package com.jaagro.report.biz.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jaagro.report.api.constant.GoodsUnit;
+import com.jaagro.report.api.constant.SettleBillingDayConfigType;
 import com.jaagro.report.api.dto.customer.ShowCustomerDto;
 import com.jaagro.report.api.dto.customer.ShowSiteDto;
 import com.jaagro.report.api.dto.settlemanage.*;
@@ -166,7 +167,7 @@ public class SettleManageServiceImpl implements SettleManageService {
      * @return
      */
     @Override
-    public void litDriverFee(String month) {
+    public void createDriverSettleFeeMonthly(String month) {
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
@@ -230,7 +231,7 @@ public class SettleManageServiceImpl implements SettleManageService {
     public void createCustomerSettleFeeMonthly(String month) {
         // 查询所有客户
         List<ShowCustomerDto> showCustomerDtoList = customerClientService.listNormalCustomer();
-        if (CollectionUtils.isEmpty(showCustomerDtoList)){
+        if (CollectionUtils.isEmpty(showCustomerDtoList)) {
             log.info("there is no normal customer");
             return;
         }
@@ -238,12 +239,12 @@ public class SettleManageServiceImpl implements SettleManageService {
         SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
         configExample.createCriteria().andTypeEqualTo(SettleBillingDayConfigType.CUSTOMER);
         List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
-        if (settleBillingDayConfigList.isEmpty()){
-            log.info("there is not settleBillingDayConfig type={}",SettleBillingDayConfigType.CUSTOMER);
+        if (settleBillingDayConfigList.isEmpty()) {
+            log.info("there is not settleBillingDayConfig type={}", SettleBillingDayConfigType.CUSTOMER);
             return;
         }
         SettleBillingDayConfig config = settleBillingDayConfigList.get(0);
-        for (ShowCustomerDto customerDto : showCustomerDtoList){
+        for (ShowCustomerDto customerDto : showCustomerDtoList) {
             CustomerSettleFeeMonthly settleFeeMonthly = new CustomerSettleFeeMonthly();
             settleFeeMonthly.setCreateTime(new Date())
                     .setCustomerId(customerDto.getId())
@@ -251,23 +252,23 @@ public class SettleManageServiceImpl implements SettleManageService {
                     .setCustomerType(customerDto.getCustomerType());
             Date start = null;
             Date end = null;
-            if (Integer.parseInt(config.getBillingDay()) < 15){
-                start = DateUtil.parse(month+"-"+config.getBillingDay(),"yyyy-MM-dd");
-                end = DateUtils.addMonths(start,1);
-            }else {
-                end = DateUtil.parse(month+"-"+config.getBillingDay(),"yyyy-MM-dd");
-                start = DateUtils.addMonths(end,-1);
+            if (Integer.parseInt(config.getBillingDay()) < 15) {
+                start = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
+                end = DateUtils.addMonths(start, 1);
+            } else {
+                end = DateUtil.parse(month + "-" + config.getBillingDay(), "yyyy-MM-dd");
+                start = DateUtils.addMonths(end, -1);
             }
             settleFeeMonthly.setEndTime(end)
                     .setReportTime(month)
                     .setStartTime(start);
-            Map<String,Object> map = waybillMapper.selectByParams(customerDto.getId(),start,end);
-            if (!CollectionUtils.isEmpty(map)){
-                settleFeeMonthly.setTotalFreight(map.get("total_freight") == null ? new BigDecimal("0") : (BigDecimal)map.get("total_freight"))
+            Map<String, Object> map = waybillMapper.selectByParams(customerDto.getId(), start, end);
+            if (!CollectionUtils.isEmpty(map)) {
+                settleFeeMonthly.setTotalFreight(map.get("total_freight") == null ? new BigDecimal("0") : (BigDecimal) map.get("total_freight"))
                         .setTotalQuantity(map.get("total_quantity") == null ? 0 : ((Long) map.get("total_quantity")).intValue())
                         .setTotalWaybill(map.get("total_waybill") == null ? 0 : ((Long) map.get("total_waybill")).intValue())
-                        .setTotalWeight(map.get("total_weight") == null ? new BigDecimal("0") : (BigDecimal)map.get("total_weight"));
-            }else {
+                        .setTotalWeight(map.get("total_weight") == null ? new BigDecimal("0") : (BigDecimal) map.get("total_weight"));
+            } else {
                 settleFeeMonthly.setTotalWeight(new BigDecimal("0"))
                         .setTotalWaybill(0)
                         .setTotalQuantity(0)
