@@ -5,8 +5,9 @@
 	select DISTINCT dr.id,dr.name,dr.truck_id,tk.truck_number
 	from userserver.driver dr left join crmserver.truck tk on (dr.truck_id=tk.id)
     </select>
-    <select id="listWaybillIdByCriteria" resultType="java.lang.Integer">
+    <select id="listWaybillIdByCriteria" resultType="java.lang.Integer"
+            parameterType="com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria">
 	      select DISTINCT wb.id from userserver.driver dr  inner join tmsserver2.waybill wb on (dr.id=wb.driver_id)
-		  where  wb.driver_id=#{driverId}
+		  where wb.modify_time between #{start} and #{end} and wb.receipt_status=2 and wb.driver_id=#{driverId}
     </select>
 </mapper>

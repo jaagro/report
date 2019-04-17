@@ -170,20 +170,15 @@ public class SettleManageServiceImpl implements SettleManageService {
     public void createDriverSettleFeeMonthly(String month) {
         //查询所有司机
         List<ReturnDriverInfoDto> returnDriverInfoDtos = driverMapper.listDriverInfo();
-        SettleBillingDayConfigExample configExample = new SettleBillingDayConfigExample();
-        configExample.createCriteria().andTypeEqualTo(SettleBillingDayConfigType.DRIVER);
-        List<SettleBillingDayConfig> settleBillingDayConfigList = settleBillingDayConfigMapper.selectByExample(configExample);
-        if (settleBillingDayConfigList.isEmpty()) {
-            log.info("there is not settleBillingDayConfig type={}", SettleBillingDayConfigType.CUSTOMER);
-            return;
-        }
+        ReturnTimeIntervalDto returnTimeIntervalDto = accumulativeTimeInterval(month, SettleBillingDayConfigType.DRIVER);
         DriverFeeCriteria driverFeeCriteria = new DriverFeeCriteria();
-
+        driverFeeCriteria
+                .setEndDate(returnTimeIntervalDto.getEnd())
+                .setBeginDate(returnTimeIntervalDto.getStart());
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
             BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
             //查询当前客户运单id集合
-
             driverFeeCriteria
                     .setDriverId(returnDriverInfoDto.getDriverId());
             List<Integer> waybillIds = driverMapper.listWaybillIdByCriteria(driverFeeCriteria);
@@ -315,6 +310,7 @@ public class SettleManageServiceImpl implements SettleManageService {
 
     /**
      * 计算账单起始时间与截止时间
+     *
      * @param month
      * @param settleBillingDayConfigType
      * @return
