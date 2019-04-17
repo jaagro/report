@@ -1,3 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.jaagro.report.biz.mapper.report.DriverSettleFeeMonthlyMapperExt" ></mapper>
+<mapper namespace="com.jaagro.report.biz.mapper.report.DriverSettleFeeMonthlyMapperExt">
+    <select id="selectByCriteria" resultType="com.jaagro.report.api.dto.settlemanage.ReturnSettleDriverFeeMonthlyDto"
+            parameterType="com.jaagro.report.api.dto.settlemanage.ListDriverFeeCriteria">
+        select
+        <include refid="Base_Column_List"/>
+        from driver_settle_fee_monthly
+        <where>
+            <if test="driverName!=null">
+                and driver_name like concat('%',#{driverName},'%')
+            </if>
+            <if test="truckNumber!=null">
+                and truck_number like concat('%',#{truckNumber},'%')
+            </if>
+            <if test="month!=null">
+                and report_time=#{month}
+            </if>
+            order by create_time desc
+        </where>
+    </select>
+</mapper>
