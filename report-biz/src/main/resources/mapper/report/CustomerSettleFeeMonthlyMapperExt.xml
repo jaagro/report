@@ -28,4 +28,9 @@
             AND customer_name = #{customerName}
         </if>
     </select>
+    <delete id="delByReportTime">
+        DELETE
+        FROM customer_settle_fee_monthly
+        WHERE report_time = #{month}
+    </delete>
 </mapper>

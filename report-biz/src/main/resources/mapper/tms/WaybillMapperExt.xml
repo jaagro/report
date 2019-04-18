@@ -36,9 +36,15 @@
                 <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) >= #{startDate}]]>
                 <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) <= #{endDate}]]>
             </if>
+            <if test="networkIds!=null and networkIds.size > 0">
+                and os.customer_id in
+                <foreach collection="networkIds" open="(" separator="," close=")" item="networkId">
+                    ${networkId}
+                </foreach>
+            </if>
         </where>
     </select>
-    <select id="selectByParams" resultType="map">
+    <select id="selectByParams" resultType="java.util.Map">
         SELECT
             count(1) AS total_waybill,
             SUM(CASE WHEN wg.unload_quantity IS NULL THEN 0 ELSE wg.unload_quantity END) AS total_quantity,
@@ -50,7 +56,7 @@
         LEFT JOIN waybill_customer_fee wcf ON wcf.enabled = 1 AND w.id = wcf.waybill_id AND wcf.anomaly_id is NULL AND wcf.earning_type = 1
         LEFT JOIN waybill_goods wg on w.id = wg.waybill_id
         WHERE
-            w.create_time BETWEEN #{start}
+            w.modify_time BETWEEN #{start}
         AND #{end}
         AND w.enabled = 1
         AND wg.enabled = 1

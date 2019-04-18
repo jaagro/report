@@ -58,4 +58,12 @@ public interface UserClientService {
      */
     @GetMapping("/getDownDeptIdsByDeptId/{deptId}")
     List<Integer> getDownDeptIdsByDeptId(@PathVariable("deptId") Integer deptId);
+
+    /**
+     * 根据网点id查询所属大区信息
+     * @param networkId
+     * @return
+     */
+    @GetMapping("/getRegionByNetworkId/{networkId}")
+    BaseResponse<DepartmentReturnDto> getRegionByNetworkId(@PathVariable("networkId") Integer networkId);
 }

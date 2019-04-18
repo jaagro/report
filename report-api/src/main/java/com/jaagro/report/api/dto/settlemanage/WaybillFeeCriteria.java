@@ -66,6 +66,11 @@ public class WaybillFeeCriteria implements Serializable {
     private Date endDate;
 
     /**
+     * 项目部id
+     */
+    private Integer departmentId;
+
+    /**
      * 车辆id
      */
     private List<Integer> truckIds;
@@ -74,4 +79,9 @@ public class WaybillFeeCriteria implements Serializable {
      * 客户id
      */
     private List<Integer> customerIds;
+
+    /**
+     * 网点id
+     */
+    private List<Integer> networkIds;
 }

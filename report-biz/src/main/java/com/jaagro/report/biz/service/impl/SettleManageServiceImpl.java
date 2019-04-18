@@ -4,22 +4,22 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jaagro.report.api.constant.GoodsUnit;
 import com.jaagro.report.api.constant.SettleBillingDayConfigType;
+import com.jaagro.report.api.dto.DepartmentReturnDto;
 import com.jaagro.report.api.dto.customer.ShowCustomerDto;
 import com.jaagro.report.api.dto.customer.ShowSiteDto;
 import com.jaagro.report.api.dto.settlemanage.*;
 import com.jaagro.report.api.dto.truck.ShowTruckDto;
 import com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto;
 import com.jaagro.report.api.dto.waybill.WaybillTracking;
-import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
 import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
+import com.jaagro.report.api.entity.DriverSettleFeeMonthly;
 import com.jaagro.report.api.entity.SettleBillingDayConfig;
 import com.jaagro.report.api.entity.SettleBillingDayConfigExample;
 import com.jaagro.report.api.exception.BusinessException;
-import com.jaagro.report.api.entity.*;
 import com.jaagro.report.api.service.SettleManageService;
-import com.jaagro.report.biz.mapper.report.DriverMapperExt;
 import com.jaagro.report.api.util.DateUtil;
 import com.jaagro.report.biz.mapper.report.CustomerSettleFeeMonthlyMapperExt;
+import com.jaagro.report.biz.mapper.report.DriverMapperExt;
 import com.jaagro.report.biz.mapper.report.DriverSettleFeeMonthlyMapperExt;
 import com.jaagro.report.biz.mapper.report.SettleBillingDayConfigMapperExt;
 import com.jaagro.report.biz.mapper.tms.*;
@@ -33,7 +33,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import sun.applet.Main;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -73,6 +72,7 @@ public class SettleManageServiceImpl implements SettleManageService {
     private DriverSettleFeeMonthlyMapperExt driverSettleFeeMonthlyMapper;
 
     private static final Integer BILLING_DAY_SEPARATE = 15;
+
     /**
      * 运单结算费用报表
      *
@@ -94,6 +94,11 @@ public class SettleManageServiceImpl implements SettleManageService {
         if (criteria.getCustomerName() != null) {
             List<Integer> customerIds = listCustomerIdsByKeyword(criteria.getCustomerName());
             criteria.setCustomerIds(customerIds);
+        }
+
+        if (criteria.getDepartmentId() != null){
+            List<Integer> networkIds = listNetworkIdsByDepartmentId(criteria.getDepartmentId());
+            criteria.setNetworkIds(networkIds);
         }
         List<ReturnWaybillFeeDto> returnWaybillFeeDtos = waybillMapper.listSettleManageWaybillFee(criteria);
         for (ReturnWaybillFeeDto returnWaybillFeeDto : returnWaybillFeeDtos) {
@@ -133,10 +138,15 @@ public class SettleManageServiceImpl implements SettleManageService {
                     returnWaybillFeeDto.setTruckNumber(truck.getTruckNumber());
                 }
             }
-            //部门名称
+            //部门名称,大区名称
             if (returnWaybillFeeDto.getNetWorkId() != null) {
                 String deptName = userClientService.getDeptNameById(returnWaybillFeeDto.getNetWorkId());
                 returnWaybillFeeDto.setNetWorkName(deptName);
+                BaseResponse<DepartmentReturnDto> response = userClientService.getRegionByNetworkId(returnWaybillFeeDto.getNetWorkId());
+                if (response.getData() != null){
+                    returnWaybillFeeDto.setRegionId(response.getData().getId())
+                            .setRegionName(response.getData().getDepartmentName());
+                }
             }
             //货物信息
             List<GetWaybillGoodsDto> waybillGoodsDtos = waybillGoodsMapper.listGoodsByWaybillId(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
@@ -166,6 +176,15 @@ public class SettleManageServiceImpl implements SettleManageService {
             returnWaybillFeeDto.setGrossProfit(grossProfit);
         }
         return new PageInfo(returnWaybillFeeDtos);
+    }
+
+    private List<Integer> listNetworkIdsByDepartmentId(Integer departmentId) {
+        if (departmentId != null){
+            List<Integer> downDepartmentIds = userClientService.getDownDepartmentByDeptId(departmentId);
+            return downDepartmentIds;
+        }else {
+            return null;
+        }
     }
 
     /**
@@ -231,7 +250,31 @@ public class SettleManageServiceImpl implements SettleManageService {
         waybillFeeCriteria
                 .setStartDate(criteria.getStartDate())
                 .setEndDate(criteria.getEndDate())
-                .setDriverId(criteria.getDriverId());
+                .setDriverId(criteria.getDriverId())
+                .setWaybillId(criteria.getWaybillId())
+                .setGoodsType(criteria.getGoodsType());
+        return listWaybillFee(waybillFeeCriteria);
+    }
+
+    /**
+     * 客户结算费用详情
+     *
+     * @param criteria
+     * @return
+     */
+    @Override
+    public PageInfo customerSettleFeeMonthlyDetails(CustomerFeeDetailsCriteria criteria) {
+        WaybillFeeCriteria waybillFeeCriteria = new WaybillFeeCriteria();
+        if (criteria.getCustomerId() != null){
+            List<Integer> customerIdList = new ArrayList<>();
+            customerIdList.add(criteria.getCustomerId());
+            waybillFeeCriteria.setCustomerIds(customerIdList);
+        }
+        waybillFeeCriteria
+                .setStartDate(criteria.getStartDate())
+                .setEndDate(criteria.getEndDate())
+                .setWaybillId(criteria.getWaybillId())
+                .setDepartmentId(criteria.getDepartmentId());
         return listWaybillFee(waybillFeeCriteria);
     }
 
@@ -290,7 +333,7 @@ public class SettleManageServiceImpl implements SettleManageService {
         }
 
         ReturnTimeIntervalDto returnTimeIntervalDto = accumulativeTimeInterval(month, SettleBillingDayConfigType.CUSTOMER);
-        if (returnTimeIntervalDto.getEnd() == null || returnTimeIntervalDto.getStart() == null){
+        if (returnTimeIntervalDto.getEnd() == null || returnTimeIntervalDto.getStart() == null) {
             return;
         }
         Date start = returnTimeIntervalDto.getStart();
@@ -320,6 +363,7 @@ public class SettleManageServiceImpl implements SettleManageService {
             }
             customerSettleFeeMonthlyList.add(settleFeeMonthly);
         }
+        customerSettleFeeMonthlyMapper.delByReportTime(month);
         customerSettleFeeMonthlyMapper.batchInsert(customerSettleFeeMonthlyList);
     }
 
@@ -331,8 +375,8 @@ public class SettleManageServiceImpl implements SettleManageService {
      */
     @Override
     public PageInfo<CustomerSettleFeeMonthly> listCustomerSettleFeeMonthly(CustomerSettleFeeMonthlyCriteria criteria) {
-        PageHelper.startPage(criteria.getPageNum(),criteria.getPageSize());
-        List<CustomerSettleFeeMonthly> settleFeeMonthlyList =  customerSettleFeeMonthlyMapper.listByCriteria(criteria);
+        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
+        List<CustomerSettleFeeMonthly> settleFeeMonthlyList = customerSettleFeeMonthlyMapper.listByCriteria(criteria);
         return new PageInfo<>(settleFeeMonthlyList);
     }
 
@@ -377,43 +421,43 @@ public class SettleManageServiceImpl implements SettleManageService {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         int day = cal.get(Calendar.DAY_OF_MONTH);
-        int monthToday = cal.get(Calendar.MONTH)+1;
-        int monthInt = Integer.parseInt(month.substring(5,7));
-        if (monthInt > monthToday){
+        int monthToday = cal.get(Calendar.MONTH) + 1;
+        int monthInt = Integer.parseInt(month.substring(5, 7));
+        if (monthInt > monthToday) {
             throw new BusinessException("月份不能大于当月");
         }
         String billingDay = config.getBillingDay();
         int billingDayInt = Integer.parseInt(billingDay);
         if (Integer.parseInt(billingDay) < BILLING_DAY_SEPARATE) {
-            if (monthToday == monthInt){
-                if (day <= billingDayInt){
+            if (monthToday == monthInt) {
+                if (day <= billingDayInt) {
                     end = DateUtil.truncate(now);
                     start = DateUtils.addMonths(end, -1);
-                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month),-1));
+                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month), -1));
                 } else {
                     start = DateUtil.parseDate(month + "-" + billingDay);
                     end = DateUtil.truncate(now);
                 }
-            }else {
-                start = DateUtil.parseDate(month+"-"+billingDay);
-                end = DateUtils.addMonths(start,1);
-                if (end.after(now)){
+            } else {
+                start = DateUtil.parseDate(month + "-" + billingDay);
+                end = DateUtils.addMonths(start, 1);
+                if (end.after(now)) {
                     end = DateUtil.truncate(end);
                 }
             }
         } else {
-            if (monthToday == monthInt){
-                if (day <= billingDayInt){
+            if (monthToday == monthInt) {
+                if (day <= billingDayInt) {
                     end = DateUtil.truncate(now);
-                    start = DateUtils.addMonths(DateUtil.parseDate(month+"-"+billingDay), -1);
-                }else {
-                    start = DateUtil.parseDate(month+"-"+billingDay);
+                    start = DateUtils.addMonths(DateUtil.parseDate(month + "-" + billingDay), -1);
+                } else {
+                    start = DateUtil.parseDate(month + "-" + billingDay);
                     end = DateUtil.truncate(now);
-                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month),1));
+                    month = DateUtil.formatMonth(DateUtils.addMonths(DateUtil.parseMonth(month), 1));
                 }
-            }else {
-                end = DateUtil.parseDate(month+"-"+billingDay);
-                start = DateUtils.addMonths(end,-1);
+            } else {
+                end = DateUtil.parseDate(month + "-" + billingDay);
+                start = DateUtils.addMonths(end, -1);
             }
         }
         returnTimeIntervalDto
@@ -430,6 +474,6 @@ public class SettleManageServiceImpl implements SettleManageService {
         cal.get(Calendar.DAY_OF_MONTH);
         System.out.println(cal.get(Calendar.DAY_OF_MONTH));
         System.out.println(cal.get(Calendar.MONTH));
-        System.out.println("2019-04-03".substring(5,7));
+        System.out.println("2019-04-03".substring(5, 7));
     }
 }

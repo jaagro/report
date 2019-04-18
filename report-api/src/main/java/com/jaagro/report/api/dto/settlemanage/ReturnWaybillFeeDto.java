@@ -87,6 +87,16 @@ public class ReturnWaybillFeeDto implements Serializable {
     private String netWorkName;
 
     /**
+     * 大区id
+     */
+    private Integer regionId;
+
+    /**
+     * 大区名称
+     */
+    private String regionName;
+
+    /**
      * 客户费用
      */
     private BigDecimal customerFee;

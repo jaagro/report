@@ -23,4 +23,11 @@ public interface CustomerSettleFeeMonthlyMapperExt extends CustomerSettleFeeMont
      * @return
      */
     List<CustomerSettleFeeMonthly> listByCriteria(CustomerSettleFeeMonthlyCriteria criteria);
+
+    /**
+     * 根据月份删除
+     * @param month
+     * @return
+     */
+    Integer delByReportTime(@Param("month") String month);
 }
