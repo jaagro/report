@@ -26,8 +26,8 @@ public interface SettleManageService {
      * 生成司机费用月度报表
      *
      * @param
-     * @return
      * @author @Gao.
+     * @return
      */
     void createDriverSettleFeeMonthly(String month);
 
@@ -36,6 +36,7 @@ public interface SettleManageService {
      *
      * @param month
      * @author yj
+     * @return
      */
     void createCustomerSettleFeeMonthly(String month);
 

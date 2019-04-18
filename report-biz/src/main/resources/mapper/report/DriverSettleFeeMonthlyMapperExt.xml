@@ -20,18 +20,20 @@
         </where>
     </select>
     <insert id="batchSettleFeeMonthInsert" parameterType="list">
-        insert into driver_settle_fee_monthly (id, driver_id, driver_name, truck_id, truck_number, report_time,
-        start_time, end_time,
-        total_waybill, total_quantity, total_weight, total_freight, total_anomaly_fee, modify_time)
+        insert into driver_settle_fee_monthly (driver_id, driver_name,
+        truck_id, truck_number, report_time,
+        start_time, end_time, total_waybill,
+        total_quantity, total_weight, total_freight,
+        total_anomaly_fee, create_time, modify_time
+        )
         values
-        <foreach collection="driverSettleFeeMonthlyList" item="item" separator=",">
-            (#{item.id}, #{item.driverId}, #{item.driverName},
-            #{item.truckId}, #{item.truckNumber},
-            #{item.reportTime},#{item.startTime},
-            #{item.endTime}, #{item.totalWaybill},
-            #{item.totalQuantity}, #{item.totalWeight},
-            #{item.totalFreight}, #{item.totalAnomalyFee},
-            #{item.modifyTime})
+        <foreach collection="driverSettleFeeMonthlyList" separator="," item="item">
+            (#{item.driverId,jdbcType=INTEGER}, #{item.driverName,jdbcType=VARCHAR},
+            #{item.truckId,jdbcType=INTEGER}, #{item.truckNumber,jdbcType=VARCHAR}, #{item.reportTime,jdbcType=VARCHAR},
+            #{item.startTime,jdbcType=DATE}, #{item.endTime,jdbcType=DATE}, #{item.totalWaybill,jdbcType=INTEGER},
+            #{item.totalQuantity,jdbcType=INTEGER}, #{item.totalWeight,jdbcType=DECIMAL}, #{item.totalFreight,jdbcType=DECIMAL},
+            #{item.totalAnomalyFee,jdbcType=DECIMAL}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.modifyTime,jdbcType=TIMESTAMP}
+            )
         </foreach>
     </insert>
     <delete id="deleteByReportTime">

@@ -14,12 +14,4 @@ public interface DriverMapperExt {
      */
     List<ReturnDriverInfoDto> listDriverInfo();
 
-    /**
-     * 根据司机查询所有的运单id
-     *
-     * @param criteria
-     * @return
-     */
-    List<Integer> listWaybillIdByCriteria(DriverFeeCriteria criteria);
-
 }

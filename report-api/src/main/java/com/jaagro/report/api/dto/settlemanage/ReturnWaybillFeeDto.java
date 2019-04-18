@@ -122,6 +122,11 @@ public class ReturnWaybillFeeDto implements Serializable {
     private BigDecimal grossProfit;
 
     /**
+     * 货物类型(1-毛鸡,2-饲料,3-母猪,4-公猪,5-仔猪,6-生猪)
+     */
+    private Integer goodsType;
+
+    /**
      * 运单商品信息
      */
     private List<WaybillGoodDto> waybillGoodDtos;

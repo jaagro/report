@@ -4,10 +4,10 @@
     <select id="listSettleManageWaybillFee" resultType="com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto"
             parameterType="com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria">
         select wb.id waybillId,wb.load_site_id loadSiteId,wb.truck_id truckId,wb.network_id netWorkId,os.customer_id
-        customerId from waybill wb
+        customerId, os.goods_type goodsType from waybill wb
         inner join orders os on (wb.order_id=os.id)
         <where>
-            wb.enabled = 1 and wb.receipt_status=2
+            wb.enabled = 1 and wb.receipt_status=2 and wb.waybill_status = '已完成'
             <if test="waybillId!=null">
                 and wb.id=#{waybillId}
             </if>
@@ -61,6 +61,16 @@
         AND w.enabled = 1
         AND wg.enabled = 1
         AND w.waybill_status = '已完成'
+        AND w.receipt_status=2
         AND o.customer_id = #{customerId}
+    </select>
+    <select id="listWaybillIdByCriteria" resultType="java.lang.Integer"
+            parameterType="com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria">
+        SELECT DISTINCT
+        wb.id
+        FROM
+          waybill wb
+        WHERE
+        wb.modify_time BETWEEN #{beginDate} and #{endDate} and wb.receipt_status=2 and wb.driver_id=#{driverId}
     </select>
 </mapper>

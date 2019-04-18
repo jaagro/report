@@ -32,7 +32,6 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -97,7 +96,7 @@ public class SettleManageServiceImpl implements SettleManageService {
             criteria.setCustomerIds(customerIds);
         }
 
-        if (criteria.getDepartmentId() != null){
+        if (criteria.getDepartmentId() != null) {
             List<Integer> networkIds = listNetworkIdsByDepartmentId(criteria.getDepartmentId());
             criteria.setNetworkIds(networkIds);
         }
@@ -144,7 +143,7 @@ public class SettleManageServiceImpl implements SettleManageService {
                 String deptName = userClientService.getDeptNameById(returnWaybillFeeDto.getNetWorkId());
                 returnWaybillFeeDto.setNetWorkName(deptName);
                 BaseResponse<DepartmentReturnDto> response = userClientService.getRegionByNetworkId(returnWaybillFeeDto.getNetWorkId());
-                if (response.getData() != null){
+                if (response.getData() != null) {
                     returnWaybillFeeDto.setRegionId(response.getData().getId())
                             .setRegionName(response.getData().getDepartmentName());
                 }
@@ -179,18 +178,11 @@ public class SettleManageServiceImpl implements SettleManageService {
         return new PageInfo(returnWaybillFeeDtos);
     }
 
-    @Override
-    public PageInfo listDriverSettleFeeMonthly(ListDriverFeeCriteria criteria) {
-        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
-        List<ReturnSettleDriverFeeMonthlyDto> driverSettleFeeMonthlies = driverSettleFeeMonthlyMapper.selectByCriteria(criteria);
-        return new PageInfo(driverSettleFeeMonthlies);
-    }
-
     private List<Integer> listNetworkIdsByDepartmentId(Integer departmentId) {
-        if (departmentId != null){
+        if (departmentId != null) {
             List<Integer> downDepartmentIds = userClientService.getDownDepartmentByDeptId(departmentId);
             return downDepartmentIds;
-        }else {
+        } else {
             return null;
         }
     }
@@ -211,13 +203,18 @@ public class SettleManageServiceImpl implements SettleManageService {
         driverFeeCriteria
                 .setEndDate(returnTimeIntervalDto.getEnd())
                 .setBeginDate(returnTimeIntervalDto.getStart());
+        List<DriverSettleFeeMonthly> driverSettleFeeMonthlyList = new ArrayList<>();
         for (ReturnDriverInfoDto returnDriverInfoDto : returnDriverInfoDtos) {
             DriverSettleFeeMonthly driverSettleFeeMonthly = new DriverSettleFeeMonthly();
             BeanUtils.copyProperties(returnDriverInfoDto, driverSettleFeeMonthly);
-            //查询当前客户运单id集合
+            driverSettleFeeMonthly.setCreateTime(new Date())
+                    .setEndTime(returnTimeIntervalDto.getEnd())
+                    .setReportTime(returnTimeIntervalDto.getMonth())
+                    .setStartTime(returnTimeIntervalDto.getStart());
+            //查询当前司机运单id集合
             driverFeeCriteria
                     .setDriverId(returnDriverInfoDto.getDriverId());
-            List<Integer> waybillIds = driverMapper.listWaybillIdByCriteria(driverFeeCriteria);
+            List<Integer> waybillIds = waybillMapper.listWaybillIdByCriteria(driverFeeCriteria);
             if (!CollectionUtils.isEmpty(waybillIds)) {
                 //运单数
                 driverSettleFeeMonthly.setTotalWaybill(waybillIds.size());
@@ -235,8 +232,17 @@ public class SettleManageServiceImpl implements SettleManageService {
                             .setTotalWeight(returnAccumulativeGoodsDto.getTotalWeight())
                             .setTotalQuantity(returnAccumulativeGoodsDto.getTotalQuantity());
                 }
+            }else {
+                driverSettleFeeMonthly.setTotalAnomalyFee(BigDecimal.ZERO)
+                        .setTotalFreight(BigDecimal.ZERO)
+                        .setTotalQuantity(0)
+                        .setTotalWaybill(0)
+                        .setTotalWeight(BigDecimal.ZERO);
             }
+            driverSettleFeeMonthlyList.add(driverSettleFeeMonthly);
         }
+        driverSettleFeeMonthlyMapper.deleteByReportTime(month);
+        driverSettleFeeMonthlyMapper.batchSettleFeeMonthInsert(driverSettleFeeMonthlyList);
     }
 
     @Override
@@ -260,7 +266,9 @@ public class SettleManageServiceImpl implements SettleManageService {
                 .setEndDate(criteria.getEndDate())
                 .setDriverId(criteria.getDriverId())
                 .setWaybillId(criteria.getWaybillId())
-                .setGoodsType(criteria.getGoodsType());
+                .setGoodsType(criteria.getGoodsType())
+                .setPageSize(criteria.getPageSize())
+                .setPageNum(criteria.getPageNum());
         return listWaybillFee(waybillFeeCriteria);
     }
 
@@ -273,7 +281,7 @@ public class SettleManageServiceImpl implements SettleManageService {
     @Override
     public PageInfo customerSettleFeeMonthlyDetails(CustomerFeeDetailsCriteria criteria) {
         WaybillFeeCriteria waybillFeeCriteria = new WaybillFeeCriteria();
-        if (criteria.getCustomerId() != null){
+        if (criteria.getCustomerId() != null) {
             List<Integer> customerIdList = new ArrayList<>();
             customerIdList.add(criteria.getCustomerId());
             waybillFeeCriteria.setCustomerIds(customerIdList);
@@ -282,7 +290,9 @@ public class SettleManageServiceImpl implements SettleManageService {
                 .setStartDate(criteria.getStartDate())
                 .setEndDate(criteria.getEndDate())
                 .setWaybillId(criteria.getWaybillId())
-                .setDepartmentId(criteria.getDepartmentId());
+                .setDepartmentId(criteria.getDepartmentId())
+                .setPageNum(criteria.getPageNum())
+                .setPageSize(criteria.getPageSize());
         return listWaybillFee(waybillFeeCriteria);
     }
 
@@ -360,7 +370,7 @@ public class SettleManageServiceImpl implements SettleManageService {
             Map<String, Object> map = waybillMapper.selectByParams(customerDto.getId(), start, end);
             if (!CollectionUtils.isEmpty(map)) {
                 settleFeeMonthly.setTotalFreight(map.get("total_freight") == null ? new BigDecimal("0") : (BigDecimal) map.get("total_freight"))
-                        .setTotalQuantity(map.get("total_quantity") == null ? 0 : ((Long) map.get("total_quantity")).intValue())
+                        .setTotalQuantity(map.get("total_quantity") == null ? 0 : ((BigDecimal) map.get("total_quantity")).intValue())
                         .setTotalWaybill(map.get("total_waybill") == null ? 0 : ((Long) map.get("total_waybill")).intValue())
                         .setTotalWeight(map.get("total_weight") == null ? new BigDecimal("0") : (BigDecimal) map.get("total_weight"));
             } else {

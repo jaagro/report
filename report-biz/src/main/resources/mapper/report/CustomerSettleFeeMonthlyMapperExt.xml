@@ -25,7 +25,7 @@
             AND report_time = #{month}
         </if>
         <if test="customerName != null and customerName != ''">
-            AND customer_name = #{customerName}
+            AND customer_name like concat('%',#{customerName},'%')
         </if>
     </select>
     <delete id="delByReportTime">

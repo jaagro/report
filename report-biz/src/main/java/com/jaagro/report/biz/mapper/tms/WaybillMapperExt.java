@@ -1,5 +1,6 @@
 package com.jaagro.report.biz.mapper.tms;
 
+import com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria;
 import com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto;
 import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
 import com.jaagro.report.api.entity.CustomerSettleFeeMonthly;
@@ -29,4 +30,12 @@ public interface WaybillMapperExt {
      * @return
      */
     Map<String,Object> selectByParams(@Param("customerId") Integer customerId, @Param("start") Date start, @Param("end") Date end);
+
+    /**
+     * 根据司机查询所有的运单id
+     *
+     * @param criteria
+     * @return
+     */
+    List<Integer> listWaybillIdByCriteria(DriverFeeCriteria criteria);
 }
