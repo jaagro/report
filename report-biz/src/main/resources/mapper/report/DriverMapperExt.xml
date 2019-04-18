@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jaagro.report.biz.mapper.report.DriverMapperExt">
+    <select id="listDriverInfo" resultType="com.jaagro.report.api.dto.settlemanage.ReturnDriverInfoDto">
+	select DISTINCT dr.id driverId,dr.name driverName,dr.truck_id truckId,tk.truck_number truckNumber
+	from userserver.driver dr left join crmserver.truck tk on (dr.truck_id=tk.id)
+    </select>
+
+</mapper>

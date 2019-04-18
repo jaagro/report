@@ -4,6 +4,7 @@ package com.jaagro.report.biz.mapper.tms;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -15,13 +16,13 @@ public interface WaybillCustomerFeeMapperExt {
      *
      * @return
      */
-    BigDecimal accumulativeWaybillCustomerFee(@Param("waybillId") Integer waybillId);
+    BigDecimal accumulativeWaybillCustomerFee(@Param("waybillIds") List<Integer> waybillIds);
 
     /**
      * 累计所有运单客户费用
      *
-     * @param waybillId
+     * @param waybillIds
      * @return
      */
-    BigDecimal accumulativeWaybillCustomerAnomalyFee(@Param("waybillId") Integer waybillId);
+    BigDecimal accumulativeWaybillCustomerAnomalyFee(@Param("waybillIds") List<Integer> waybillIds);
 }

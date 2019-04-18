@@ -3,13 +3,30 @@
 <mapper namespace="com.jaagro.report.biz.mapper.tms.WaybillTruckFeeMapperExt">
     <select id="accumulativeWaybillTruckFee" resultType="java.math.BigDecimal"
             parameterType="java.lang.Integer">
-        select ifnull(sum(money),0) from waybill_truck_fee  where  anomaly_id is null and waybill_id = #{waybillId,jdbcType=INTEGER}
+        select ifnull(sum(money),0) from waybill_truck_fee
+        <where>
+            anomaly_id is null
+            <if test="waybillIds!=null">
+                and waybill_id IN
+                <foreach collection="waybillIds" open="(" separator="," close=")" item="waybillId">
+                    ${waybillId}
+                </foreach>
+            </if>
+        </where>
     </select>
     <select id="accumulativeWaybillTruckAnomalyFee" resultType="java.math.BigDecimal"
             parameterType="java.lang.Integer">
-   	select ifnull(sum(case when wfa.adjust_type=3 then wtf.money when wfa.adjust_type=4 then -(wtf.money) end ),0) as total
-    from waybill_truck_fee wtf ,waybill_fee_adjustment wfa
-    where wtf.id=wfa.relevance_id and wfa.relevance_type=2 and wtf.enabled=1 and wfa.enabled=1
-    and wtf.anomaly_id is not null and wfa.waybill_id=#{waybillId}
+        select ifnull(sum(case when wfa.adjust_type=3 then wtf.money when wfa.adjust_type=4 then -(wtf.money) end ),0)as total
+        from waybill_truck_fee wtf ,waybill_fee_adjustment wfa
+        <where>
+            wtf.id=wfa.relevance_id and wfa.relevance_type=2 and wtf.enabled=1 and wfa.enabled=1
+            and wtf.anomaly_id is not null
+            <if test="waybillIds!=null">
+                and wtf.waybill_id IN
+                <foreach collection="waybillIds" open="(" separator="," close=")" item="waybillId">
+                    ${waybillId}
+                </foreach>
+            </if>
+        </where>
     </select>
 </mapper>

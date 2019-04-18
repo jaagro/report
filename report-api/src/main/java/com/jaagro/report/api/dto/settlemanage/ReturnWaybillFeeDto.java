@@ -87,6 +87,16 @@ public class ReturnWaybillFeeDto implements Serializable {
     private String netWorkName;
 
     /**
+     * 大区id
+     */
+    private Integer regionId;
+
+    /**
+     * 大区名称
+     */
+    private String regionName;
+
+    /**
      * 客户费用
      */
     private BigDecimal customerFee;
@@ -110,6 +120,11 @@ public class ReturnWaybillFeeDto implements Serializable {
      * 毛利
      */
     private BigDecimal grossProfit;
+
+    /**
+     * 货物类型(1-毛鸡,2-饲料,3-母猪,4-公猪,5-仔猪,6-生猪)
+     */
+    private Integer goodsType;
 
     /**
      * 运单商品信息

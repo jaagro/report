@@ -1,6 +1,7 @@
 package com.jaagro.report.biz.mapper.tms;
 
 import com.jaagro.report.api.dto.waybill.GetWaybillGoodsDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface WaybillGoodsMapperExt  {
      * @param waybillId
      * @return
      */
-    List<GetWaybillGoodsDto> listGoodsByWaybillId(Integer waybillId);
+    List<GetWaybillGoodsDto> listGoodsByWaybillId(@Param("waybillIds") List<Integer> waybillIds);
 
 
 

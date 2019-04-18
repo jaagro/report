@@ -7,26 +7,23 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @description: 司机费用
+ * @description: 时间间隔
  * @author: @Gao.
- * @create: 2019-04-16 14:31
+ * @create: 2019-04-17 10:32
  **/
 @Data
 @Accessors(chain = true)
-public class DriverFeeCriteria implements Serializable {
-
+public class ReturnTimeIntervalDto implements Serializable {
     /**
      * 开始时间
      */
-    private Date beginDate;
-
+    private Date start;
     /**
      * 结束时间
      */
-    private Date endDate;
-
+    private Date end;
     /**
-     * 司机id
+     * 月份
      */
-    private Integer driverId;
+    private String month;
 }
