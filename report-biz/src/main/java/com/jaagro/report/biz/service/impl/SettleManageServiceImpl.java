@@ -33,6 +33,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -83,15 +84,15 @@ public class SettleManageServiceImpl implements SettleManageService {
     @Override
     public PageInfo listWaybillFee(WaybillFeeCriteria criteria) {
         PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
-        if (criteria.getTruckNumber() != null) {
-            BaseResponse<List<Integer>> truckIds = truckClientService.listTruckIdsByKeyword(criteria.getTruckNumber());
-            if (!CollectionUtils.isEmpty(truckIds.getData())) {
-                criteria.setTruckIds(truckIds.getData());
+        if (StringUtils.hasText(criteria.getTruckNumber())) {
+            List<Integer> truckIds = truckClientService.getTruckIdsByTruckNum(criteria.getTruckNumber());
+            if (!CollectionUtils.isEmpty(truckIds)) {
+                criteria.setTruckIds(truckIds);
             } else {
                 criteria.setTruckIds(Collections.singletonList(999999999));
             }
         }
-        if (criteria.getCustomerName() != null) {
+        if (StringUtils.hasText(criteria.getCustomerName())) {
             List<Integer> customerIds = listCustomerIdsByKeyword(criteria.getCustomerName());
             criteria.setCustomerIds(customerIds);
         }
