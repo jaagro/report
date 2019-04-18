@@ -32,6 +32,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -176,6 +177,13 @@ public class SettleManageServiceImpl implements SettleManageService {
             returnWaybillFeeDto.setGrossProfit(grossProfit);
         }
         return new PageInfo(returnWaybillFeeDtos);
+    }
+
+    @Override
+    public PageInfo listDriverSettleFeeMonthly(ListDriverFeeCriteria criteria) {
+        PageHelper.startPage(criteria.getPageNum(), criteria.getPageSize());
+        List<ReturnSettleDriverFeeMonthlyDto> driverSettleFeeMonthlies = driverSettleFeeMonthlyMapper.selectByCriteria(criteria);
+        return new PageInfo(driverSettleFeeMonthlies);
     }
 
     private List<Integer> listNetworkIdsByDepartmentId(Integer departmentId) {
