@@ -99,22 +99,32 @@ public class ReturnWaybillFeeDto implements Serializable {
     /**
      * 客户费用
      */
-    private BigDecimal customerFee;
+    private BigDecimal waybillCustomerFee;
 
     /**
-     * 客户费用
+     * 客户异常费用
      */
     private BigDecimal anomalyCustomerFee;
 
     /**
      * 运力费用
      */
-    private BigDecimal waybillFee;
+    private BigDecimal waybillTruckFee;
 
     /**
      * 运力费用
      */
-    private BigDecimal anomalyWaybillFee;
+    private BigDecimal anomalyTruckFee;
+
+    /**
+     * 客户运费加客户异常费
+     */
+    private BigDecimal totalCustomerFee;
+
+    /**
+     * 客户运费加客户异常费
+     */
+    private BigDecimal totalTruckFee;
 
     /**
      * 毛利

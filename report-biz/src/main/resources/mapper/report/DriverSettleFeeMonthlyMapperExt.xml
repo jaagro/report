@@ -7,6 +7,7 @@
         <include refid="Base_Column_List"/>
         from driver_settle_fee_monthly
         <where>
+            1 = 1
             <if test="driverName!=null">
                 and driver_name like concat('%',#{driverName},'%')
             </if>

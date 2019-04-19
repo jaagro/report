@@ -12,7 +12,7 @@
                 and wb.id=#{waybillId}
             </if>
             <if test="goodsType!=null">
-                and wb.goodsType=#{goodsType}
+                and os.goods_type=#{goodsType}
             </if>
             <if test="truckIds!=null">
                 and wb.truck_id in
@@ -32,9 +32,11 @@
             <if test="driverId!=null">
                 and wb.driver_id=#{driverId}
             </if>
-            <if test="startDate!=null and endDate!=null">
-                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) >= #{startDate}]]>
-                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) <= #{endDate}]]>
+            <if test="startDate != null">
+                and wb.modify_time &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and wb.modify_time &lt; #{endDate}
             </if>
             <if test="networkIds!=null and networkIds.size > 0">
                 and os.customer_id in

@@ -27,6 +27,7 @@
         <if test="customerName != null and customerName != ''">
             AND customer_name like concat('%',#{customerName},'%')
         </if>
+        order by create_time desc
     </select>
     <delete id="delByReportTime">
         DELETE

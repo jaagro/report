@@ -101,8 +101,8 @@ public class SettleManageServiceImpl implements SettleManageService {
             List<Integer> networkIds = listNetworkIdsByDepartmentId(criteria.getDepartmentId());
             criteria.setNetworkIds(networkIds);
         }
-        List<ReturnWaybillFeeDto> returnWaybillFeeDtos = waybillMapper.listSettleManageWaybillFee(criteria);
-        for (ReturnWaybillFeeDto returnWaybillFeeDto : returnWaybillFeeDtos) {
+        List<ReturnWaybillFeeDto> returnWaybillFeeDtoList = waybillMapper.listSettleManageWaybillFee(criteria);
+        for (ReturnWaybillFeeDto returnWaybillFeeDto : returnWaybillFeeDtoList) {
             //客户名称
             if (returnWaybillFeeDto.getCustomerId() != null) {
                 ShowCustomerDto customer = customerClientService.getShowCustomerById(returnWaybillFeeDto.getCustomerId());
@@ -162,21 +162,24 @@ public class SettleManageServiceImpl implements SettleManageService {
             BigDecimal waybillCustomerFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
             BigDecimal customerAnomalyFee = waybillCustomerFeeMapper.accumulativeWaybillCustomerAnomalyFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
             returnWaybillFeeDto
-                    .setCustomerFee(waybillCustomerFee);
+                    .setWaybillCustomerFee(waybillCustomerFee);
             returnWaybillFeeDto
                     .setAnomalyCustomerFee(customerAnomalyFee.multiply(BigDecimal.valueOf(-1)));
+            returnWaybillFeeDto.setTotalCustomerFee(waybillCustomerFee.add(customerAnomalyFee.multiply(BigDecimal.valueOf(-1))));
             //运力侧费用
             BigDecimal truckAnomalyFee = waybillTruckFeeMapper.accumulativeWaybillTruckAnomalyFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
             BigDecimal truckFee = waybillTruckFeeMapper.accumulativeWaybillTruckFee(Collections.singletonList(returnWaybillFeeDto.getWaybillId()));
             returnWaybillFeeDto
-                    .setWaybillFee(truckFee);
+                    .setWaybillTruckFee(truckFee);
             returnWaybillFeeDto
-                    .setAnomalyWaybillFee(truckAnomalyFee.multiply(BigDecimal.valueOf(-1)));
+                    .setAnomalyTruckFee(truckAnomalyFee);
+            // 运费加异常费用
+            returnWaybillFeeDto.setTotalTruckFee(returnWaybillFeeDto.getWaybillTruckFee().add(returnWaybillFeeDto.getAnomalyTruckFee()));
             //毛利
-            BigDecimal grossProfit = waybillCustomerFee.add(customerAnomalyFee).subtract(truckAnomalyFee.add(truckAnomalyFee));
+            BigDecimal grossProfit = waybillCustomerFee.subtract(customerAnomalyFee).subtract(truckFee.add(truckAnomalyFee));
             returnWaybillFeeDto.setGrossProfit(grossProfit);
         }
-        return new PageInfo(returnWaybillFeeDtos);
+        return new PageInfo(returnWaybillFeeDtoList);
     }
 
     private List<Integer> listNetworkIdsByDepartmentId(Integer departmentId) {
