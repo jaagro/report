@@ -38,5 +38,5 @@ public class ListDriverFeeCriteria implements Serializable {
     /**
      * 月份
      */
-    private Date month;
+    private String month;
 }

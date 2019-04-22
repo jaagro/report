@@ -6,6 +6,7 @@ import com.jaagro.utils.BaseResponse;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -29,11 +30,11 @@ public interface TruckClientService {
     /**
      * 模糊查询车辆id
      *
-     * @param keyword
+     * @param truckNumber
      * @return
      */
-    @GetMapping("/listTruckIdsByKeyword/{keyword}")
-    BaseResponse<List<Integer>> listTruckIdsByKeyword(@PathVariable("keyword") String keyword);
+    @PostMapping("/getTruckIdsByTruckNum/{truckNumber}")
+    List<Integer> getTruckIdsByTruckNum(@PathVariable(value = "truckNumber") String truckNumber);
 
     /**
      * 获取车辆对象

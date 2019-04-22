@@ -9,13 +9,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @description: 司机结算费用详情
- * @author: @Gao.
- * @create: 2019-04-17 14:55
- **/
+ * @author yj
+ * @date 2019/4/18 13:49
+ */
 @Data
 @Accessors(chain = true)
-public class DriverFeeDetailsCriteria implements Serializable {
+public class CustomerFeeDetailsCriteria implements Serializable {
     /**
      * 起始页
      */
@@ -29,10 +28,7 @@ public class DriverFeeDetailsCriteria implements Serializable {
     @NotNull(message = "{pageSize.NotNull}")
     @Min(value = 1,message = "{pageSize.Min}")
     private Integer pageSize;
-    /**
-     * 司机id
-     */
-    private Integer driverId;
+
     /**
      * 起始时间
      */
@@ -49,7 +45,12 @@ public class DriverFeeDetailsCriteria implements Serializable {
     private Integer waybillId;
 
     /**
-     * 货物类型
+     * 客户id
      */
-    private Integer goodsType;
+    private Integer customerId;
+
+    /**
+     * 项目部id
+     */
+    private Integer departmentId;
 }

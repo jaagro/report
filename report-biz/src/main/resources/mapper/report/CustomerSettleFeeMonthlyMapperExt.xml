@@ -25,7 +25,13 @@
             AND report_time = #{month}
         </if>
         <if test="customerName != null and customerName != ''">
-            AND customer_name = #{customerName}
+            AND customer_name like concat('%',#{customerName},'%')
         </if>
+        order by create_time desc
     </select>
+    <delete id="delByReportTime">
+        DELETE
+        FROM customer_settle_fee_monthly
+        WHERE report_time = #{month}
+    </delete>
 </mapper>

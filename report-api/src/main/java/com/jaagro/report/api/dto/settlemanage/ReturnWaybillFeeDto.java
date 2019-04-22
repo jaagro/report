@@ -87,29 +87,54 @@ public class ReturnWaybillFeeDto implements Serializable {
     private String netWorkName;
 
     /**
-     * 客户费用
+     * 大区id
      */
-    private BigDecimal customerFee;
+    private Integer regionId;
+
+    /**
+     * 大区名称
+     */
+    private String regionName;
 
     /**
      * 客户费用
+     */
+    private BigDecimal waybillCustomerFee;
+
+    /**
+     * 客户异常费用
      */
     private BigDecimal anomalyCustomerFee;
 
     /**
      * 运力费用
      */
-    private BigDecimal waybillFee;
+    private BigDecimal waybillTruckFee;
 
     /**
      * 运力费用
      */
-    private BigDecimal anomalyWaybillFee;
+    private BigDecimal anomalyTruckFee;
+
+    /**
+     * 客户运费加客户异常费
+     */
+    private BigDecimal totalCustomerFee;
+
+    /**
+     * 客户运费加客户异常费
+     */
+    private BigDecimal totalTruckFee;
 
     /**
      * 毛利
      */
     private BigDecimal grossProfit;
+
+    /**
+     * 货物类型(1-毛鸡,2-饲料,3-母猪,4-公猪,5-仔猪,6-生猪)
+     */
+    private Integer goodsType;
 
     /**
      * 运单商品信息

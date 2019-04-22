@@ -1,9 +1,6 @@
 package com.jaagro.report.web.controller;
 
-import com.jaagro.report.api.dto.settlemanage.CustomerSettleFeeMonthlyCriteria;
-import com.jaagro.report.api.dto.settlemanage.DriverFeeDetailsCriteria;
-import com.jaagro.report.api.dto.settlemanage.ListDriverFeeCriteria;
-import com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria;
+import com.jaagro.report.api.dto.settlemanage.*;
 import com.jaagro.report.api.service.SettleManageService;
 import com.jaagro.utils.BaseResponse;
 import com.jaagro.utils.ResponseStatusCode;
@@ -12,11 +9,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-
 
 
 /**
@@ -32,6 +29,7 @@ public class SettleManageController {
     @ApiOperation("运单费用报表")
     @PostMapping("/listWaybillFee")
     public BaseResponse listWaybillFee(@RequestBody WaybillFeeCriteria criteria) {
+        log.info("O listWaybillFee criteria={}", criteria);
         if (criteria.getPageNum() == null) {
             return BaseResponse.errorInstance(ResponseStatusCode.QUERY_DATA_ERROR.getCode(), "起始页不能为空");
         }
@@ -43,7 +41,7 @@ public class SettleManageController {
 
     @ApiOperation("生成司机费用月度报表")
     @PostMapping("/createDriverSettleFeeMonthly")
-    public BaseResponse createDriverSettleFeeMonthly(@RequestBody String month) {
+    public BaseResponse createDriverSettleFeeMonthly(@RequestParam String month) {
         log.info("O createDriverSettleFeeMonthly month={}", month);
         settleManageService.createDriverSettleFeeMonthly(month);
         return BaseResponse.successInstance("触发成功");
@@ -52,18 +50,20 @@ public class SettleManageController {
     @ApiOperation("司机费用月度报表")
     @PostMapping("/listDriverSettleFeeMonthly")
     public BaseResponse listDriverSettleFeeMonthly(@RequestBody ListDriverFeeCriteria criteria) {
+        log.info("O listDriverSettleFeeMonthly params={}", criteria);
         return BaseResponse.successInstance(settleManageService.listDriverSettleFeeMonthly(criteria));
     }
 
     @ApiOperation("司机费用月度报表详情")
     @PostMapping("/driverSettleFeeMonthlyDetails")
-    public BaseResponse driverSettleFeeMonthlyDetails(@RequestBody DriverFeeDetailsCriteria criteria) {
+    public BaseResponse driverSettleFeeMonthlyDetails(@RequestBody @Validated DriverFeeDetailsCriteria criteria) {
+        log.info("O driverSettleFeeMonthlyDetails params={}", criteria);
         return BaseResponse.successInstance(settleManageService.driverSettleFeeMonthlyDetails(criteria));
     }
 
     @ApiOperation("生成客户费用月度报表")
     @PostMapping("/createCustomerSettleFeeMonthly")
-    public BaseResponse createCustomerSettleFeeMonthly(@RequestBody String month) {
+    public BaseResponse createCustomerSettleFeeMonthly(@RequestParam String month) {
         log.info("O createCustomerSettleFeeMonthly month={}", month);
         settleManageService.createCustomerSettleFeeMonthly(month);
         return BaseResponse.successInstance("触发成功");
@@ -71,8 +71,15 @@ public class SettleManageController {
 
     @ApiOperation("查询客户费用月度报表")
     @PostMapping("/listCustomerSettleFeeMonthly")
-    public BaseResponse listCustomerSettleFeeMonthly(@RequestBody CustomerSettleFeeMonthlyCriteria criteria){
-        log.info("O listCustomerSettleFeeMonthly params={}",criteria);
+    public BaseResponse listCustomerSettleFeeMonthly(@RequestBody @Validated CustomerSettleFeeMonthlyCriteria criteria) {
+        log.info("O listCustomerSettleFeeMonthly params={}", criteria);
         return BaseResponse.successInstance(settleManageService.listCustomerSettleFeeMonthly(criteria));
+    }
+
+    @ApiOperation("客户费用月度报表详情")
+    @PostMapping("/customerSettleFeeMonthlyDetails")
+    public BaseResponse customerSettleFeeMonthlyDetails(@RequestBody @Validated CustomerFeeDetailsCriteria criteria) {
+        log.info("O customerSettleFeeMonthlyDetails params={}", criteria);
+        return BaseResponse.successInstance(settleManageService.customerSettleFeeMonthlyDetails(criteria));
     }
 }

@@ -4,15 +4,15 @@
     <select id="listSettleManageWaybillFee" resultType="com.jaagro.report.api.dto.settlemanage.ReturnWaybillFeeDto"
             parameterType="com.jaagro.report.api.dto.settlemanage.WaybillFeeCriteria">
         select wb.id waybillId,wb.load_site_id loadSiteId,wb.truck_id truckId,wb.network_id netWorkId,os.customer_id
-        customerId from waybill wb
+        customerId, os.goods_type goodsType from waybill wb
         inner join orders os on (wb.order_id=os.id)
         <where>
-            wb.enabled = 1 and wb.receipt_status=2
+            wb.enabled = 1 and wb.receipt_status=2 and wb.waybill_status = '已完成'
             <if test="waybillId!=null">
                 and wb.id=#{waybillId}
             </if>
             <if test="goodsType!=null">
-                and wb.goodsType=#{goodsType}
+                and os.goods_type=#{goodsType}
             </if>
             <if test="truckIds!=null">
                 and wb.truck_id in
@@ -32,13 +32,21 @@
             <if test="driverId!=null">
                 and wb.driver_id=#{driverId}
             </if>
-            <if test="startDate!=null and endDate!=null">
-                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) >= #{startDate}]]>
-                <![CDATA[ and DATE_FORMAT(wb.modify_time, '%Y-%m-%d' ) <= #{endDate}]]>
+            <if test="startDate != null">
+                and wb.modify_time &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and wb.modify_time &lt; #{endDate}
+            </if>
+            <if test="networkIds!=null and networkIds.size > 0">
+                and os.customer_id in
+                <foreach collection="networkIds" open="(" separator="," close=")" item="networkId">
+                    ${networkId}
+                </foreach>
             </if>
         </where>
     </select>
-    <select id="selectByParams" resultType="map">
+    <select id="selectByParams" resultType="java.util.Map">
         SELECT
             count(1) AS total_waybill,
             SUM(CASE WHEN wg.unload_quantity IS NULL THEN 0 ELSE wg.unload_quantity END) AS total_quantity,
@@ -50,11 +58,21 @@
         LEFT JOIN waybill_customer_fee wcf ON wcf.enabled = 1 AND w.id = wcf.waybill_id AND wcf.anomaly_id is NULL AND wcf.earning_type = 1
         LEFT JOIN waybill_goods wg on w.id = wg.waybill_id
         WHERE
-            w.create_time BETWEEN #{start}
+            w.modify_time BETWEEN #{start}
         AND #{end}
         AND w.enabled = 1
         AND wg.enabled = 1
         AND w.waybill_status = '已完成'
+        AND w.receipt_status=2
         AND o.customer_id = #{customerId}
+    </select>
+    <select id="listWaybillIdByCriteria" resultType="java.lang.Integer"
+            parameterType="com.jaagro.report.api.dto.settlemanage.DriverFeeCriteria">
+        SELECT DISTINCT
+        wb.id
+        FROM
+          waybill wb
+        WHERE
+        wb.modify_time BETWEEN #{beginDate} and #{endDate} and wb.receipt_status=2 and wb.driver_id=#{driverId}
     </select>
 </mapper>
