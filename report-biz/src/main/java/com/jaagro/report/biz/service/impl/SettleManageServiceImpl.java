@@ -317,9 +317,13 @@ public class SettleManageServiceImpl implements SettleManageService {
         if (!CollectionUtils.isEmpty(waybillGoodsDtos)) {
             for (GetWaybillGoodsDto waybillGoodsDto : waybillGoodsDtos) {
                 if (GoodsUnit.TON.equals(waybillGoodsDto.getGoodsUnit())) {
-                    totalWeight = totalWeight.add(waybillGoodsDto.getUnloadWeight());
+                    if (waybillGoodsDto.getUnloadWeight() != null) {
+                        totalWeight = totalWeight.add(waybillGoodsDto.getUnloadWeight());
+                    }
                 } else {
-                    totalQuantity = totalQuantity + waybillGoodsDto.getUnloadQuantity();
+                    if (waybillGoodsDto.getUnloadQuantity() != null) {
+                        totalQuantity = totalQuantity + waybillGoodsDto.getUnloadQuantity();
+                    }
                 }
                 WaybillGoodDto goods = new WaybillGoodDto();
                 BeanUtils.copyProperties(waybillGoodsDto, goods);
