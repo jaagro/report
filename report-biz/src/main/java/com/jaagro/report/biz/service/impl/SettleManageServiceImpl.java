@@ -236,7 +236,7 @@ public class SettleManageServiceImpl implements SettleManageService {
                             .setTotalWeight(returnAccumulativeGoodsDto.getTotalWeight())
                             .setTotalQuantity(returnAccumulativeGoodsDto.getTotalQuantity());
                 }
-            }else {
+            } else {
                 driverSettleFeeMonthly.setTotalAnomalyFee(BigDecimal.ZERO)
                         .setTotalFreight(BigDecimal.ZERO)
                         .setTotalQuantity(0)
@@ -245,8 +245,10 @@ public class SettleManageServiceImpl implements SettleManageService {
             }
             driverSettleFeeMonthlyList.add(driverSettleFeeMonthly);
         }
-        driverSettleFeeMonthlyMapper.deleteByReportTime(month);
-        driverSettleFeeMonthlyMapper.batchSettleFeeMonthInsert(driverSettleFeeMonthlyList);
+        if (!CollectionUtils.isEmpty(driverSettleFeeMonthlyList)) {
+            driverSettleFeeMonthlyMapper.deleteByReportTime(month);
+            driverSettleFeeMonthlyMapper.batchSettleFeeMonthInsert(driverSettleFeeMonthlyList);
+        }
     }
 
     @Override
@@ -315,9 +317,13 @@ public class SettleManageServiceImpl implements SettleManageService {
         if (!CollectionUtils.isEmpty(waybillGoodsDtos)) {
             for (GetWaybillGoodsDto waybillGoodsDto : waybillGoodsDtos) {
                 if (GoodsUnit.TON.equals(waybillGoodsDto.getGoodsUnit())) {
-                    totalWeight = totalWeight.add(waybillGoodsDto.getUnloadWeight());
+                    if (waybillGoodsDto.getUnloadWeight() != null) {
+                        totalWeight = totalWeight.add(waybillGoodsDto.getUnloadWeight());
+                    }
                 } else {
-                    totalQuantity = totalQuantity + waybillGoodsDto.getUnloadQuantity();
+                    if (waybillGoodsDto.getUnloadQuantity() != null) {
+                        totalQuantity = totalQuantity + waybillGoodsDto.getUnloadQuantity();
+                    }
                 }
                 WaybillGoodDto goods = new WaybillGoodDto();
                 BeanUtils.copyProperties(waybillGoodsDto, goods);
@@ -385,8 +391,10 @@ public class SettleManageServiceImpl implements SettleManageService {
             }
             customerSettleFeeMonthlyList.add(settleFeeMonthly);
         }
-        customerSettleFeeMonthlyMapper.delByReportTime(month);
-        customerSettleFeeMonthlyMapper.batchInsert(customerSettleFeeMonthlyList);
+        if (!CollectionUtils.isEmpty(customerSettleFeeMonthlyList)) {
+            customerSettleFeeMonthlyMapper.delByReportTime(month);
+            customerSettleFeeMonthlyMapper.batchInsert(customerSettleFeeMonthlyList);
+        }
     }
 
     /**
