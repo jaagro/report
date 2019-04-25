@@ -340,7 +340,7 @@ public class SettleManageServiceImpl implements SettleManageService {
     @Override
     public void createCustomerSettleFeeMonthly(String month) {
         // 查询所有客户
-        List<ShowCustomerDto> showCustomerDtoList = customerClientService.listNormalCustomer();
+        List<ShowCustomerDto> showCustomerDtoList = customerClientService.listNormalCustomerByTenantId(1);
         if (CollectionUtils.isEmpty(showCustomerDtoList)) {
             log.info("there is no normal customer");
             throw new BusinessException("客户列表为空");

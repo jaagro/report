@@ -75,8 +75,9 @@ public interface CustomerClientService {
      *
      * @author yj
      * @return
+     * @param tenantId
      *
      */
-    @GetMapping("/listNormalCustomer")
-    List<ShowCustomerDto> listNormalCustomer();
+    @GetMapping("/listNormalCustomerByTenantId/{tenantId}")
+    List<ShowCustomerDto> listNormalCustomerByTenantId(@PathVariable("tenantId") Integer tenantId);
 }
